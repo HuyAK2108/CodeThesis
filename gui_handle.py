@@ -19,6 +19,8 @@ class MainWindow (QMainWindow):
         self.uic.btn_offCAM.clicked.connect(self.stop_capture_video)
         
     def start_capture_video(self):
+        self.uic.btn_onCAM.setEnabled(False)
+        self.uic.btn_offCAM.setEnabled(True)
         # create the video capture thread
         self.thread = VideoThread()
         # connect its signal to the update_image slot
@@ -27,6 +29,8 @@ class MainWindow (QMainWindow):
         self.thread.start()
 
     def stop_capture_video(self):
+        self.uic.btn_onCAM.setEnabled(True)
+        self.uic.btn_offCAM.setEnabled(False)
         self.thread.stop()
     
     def closeEvent(self, event):
@@ -38,7 +42,7 @@ class MainWindow (QMainWindow):
         """Updates the image_label with a new opencv image"""
         qt_img = self.convert_cv_qt(cv_img)
         self.uic.Frame.setPixmap(qt_img)
-    
+
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
@@ -48,7 +52,7 @@ class MainWindow (QMainWindow):
         p = convert_to_Qt_format.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
         return QPixmap.fromImage(p)
     
-if __name__ =="__main__":
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     a = MainWindow()
     a.show()
