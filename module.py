@@ -18,13 +18,13 @@ class VideoThread(QThread):
         self.classes = None
         self._run_flag = True
         self.no_signal = cv2.imread("no_signal.jpg")
+        self.model = self.load_model()  # Load model 
 
     def run(self):
         """
         Initializes the model, classes and device
         """
-        self.model = self.load_model()  # Load model 
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
         self.run_program()
 
     def stop(self):
@@ -39,6 +39,7 @@ class VideoThread(QThread):
             Trained Yolov5 model
         """
         self.model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
         return self.model
     
@@ -55,21 +56,9 @@ class VideoThread(QThread):
         self.model.to(self.device)
         frame = [frame]
         results = self.model(frame)
-        # labels, cord = results.xyxyn[0][:, -1].numpy(), results.xyxyn[0][:, :-1].numpy()
         labels = results.pandas().xyxy[0]
         cord = results.pandas().xyxy[0]
         return labels, cord
-    
-    def class_to_label(self, x):
-        """For a given label value, return the corresponding string value
-            
-        Args:
-            x : numeric label - 0,1,2,3,4
-            
-        Returns:
-            ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
-        """
-        return self.classes[int(x)]
     
     def plot_boxes(self, results, frame):
         """Takes a frame and its results as input, and plots the bounding boxes and label on to the frame.
@@ -81,17 +70,6 @@ class VideoThread(QThread):
         Returns:
             Frame with bouding boxes and labels ploted on it 
         """
-        # labels, cord = results
-        # n = len(labels)
-        # x_shape, y_shape = frame.shape[1], frame.shape[0]
-        # for i in range(n):
-        #     row = cord[i]
-        #     # print("ddd", round(cord[i][4], 2))
-        #     if row[4] >= 0.2:
-        #         x1, y1, x2, y2 = int(row[0] * x_shape), int(row[1] * y_shape), int(row[2] * x_shape), int(row[3] * y_shape)
-        #         bgr = (0, 255, 0)
-        #         cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
-        #         cv2.putText(frame, self.class_to_label(labels[i]) + " " + str(round(row[4], 2)), (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.9, bgr, 2)
 
         results = self.model(frame)
         # print(result)         
@@ -123,27 +101,12 @@ class VideoThread(QThread):
             results = self.score_frame(cv_img)
             cv_img = self.plot_boxes(results, cv_img)
             end_time = time()
-            fps = 1 / (np.round(end_time - start_time, 3))
-            print(f"Frames Per Second : {round(fps,2)} FPS")
+            self.fps = 1 / (np.round(end_time - start_time, 3))
+            text = round(self.fps,2)
+            cv2.putText(cv_img,"FPS: {}".format(str(text)), (10, 40), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2) # write FPS on bbox
+            # print(f"Frames Per Second : {round(self.fps,2)} FPS")
             if ret:
                 self.change_pixmap_signal.emit(cv_img)
-            
-            
-            # result = self.model(cv_img)
-            # # print(result)         
-            # df = result.pandas().xyxy[0]
-            # # print(df)
-
-            # for ind in df.index:
-            #     x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
-            #     x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
-            #     label = df['name'][ind]
-            #     conf = df['confidence'][ind]
-            #     text = label + ' ' + str(conf.round(decimals= 2))
-            #     cv2.rectangle(cv_img, (x1, y1), (x2, y2), (255, 255, 0), 2)
-            #     cv2.putText(cv_img, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 0), 2)
-            # if ret:
-            #     self.change_pixmap_signal.emit(cv_img)
                
         # shut down capture system
         cap.release()   

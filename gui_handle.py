@@ -1,14 +1,15 @@
 # Use this file to control GUI
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5 import QtGui, QtSerialPort, QtCore
+from PyQt5.QtSerialPort import QSerialPortInfo
+from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QPlainTextEdit
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import  pyqtSlot, Qt, pyqtSignal, QStringListModel, QByteArray
 import sys
 import cv2
-from PyQt5.QtCore import  pyqtSlot, Qt
 import numpy as np
 from gui import Ui_MainWindow
 from module import VideoThread
-
+     
 class MainWindow (QMainWindow):
     def __init__(self):
         super().__init__()
@@ -17,12 +18,12 @@ class MainWindow (QMainWindow):
         self.uic.setupUi(self)
         self.uic.btn_onCAM.clicked.connect(self.start_capture_video)
         self.uic.btn_offCAM.clicked.connect(self.stop_capture_video)
+        # create the video capture thread
+        self.thread = VideoThread()
         
     def start_capture_video(self):
         self.uic.btn_onCAM.setEnabled(False)
         self.uic.btn_offCAM.setEnabled(True)
-        # create the video capture thread
-        self.thread = VideoThread()
         # connect its signal to the update_image slot
         self.thread.change_pixmap_signal.connect(self.update_image)
         # start the thread
