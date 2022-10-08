@@ -18,12 +18,12 @@ class MainWindow (QMainWindow):
         self.uic.setupUi(self)
         self.uic.btn_onCAM.clicked.connect(self.start_capture_video)
         self.uic.btn_offCAM.clicked.connect(self.stop_capture_video)
-        # create the video capture thread
-        self.thread = VideoThread()
         
     def start_capture_video(self):
         self.uic.btn_onCAM.setEnabled(False)
         self.uic.btn_offCAM.setEnabled(True)
+        # create the video capture thread
+        self.thread = VideoThread()
         # connect its signal to the update_image slot
         self.thread.change_pixmap_signal.connect(self.update_image)
         # start the thread

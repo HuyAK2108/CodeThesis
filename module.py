@@ -8,23 +8,34 @@ from PyQt5.QtCore import Qt
 from PyQt5 import QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap
+from tracker import CentroidTracker
+
+tracker = CentroidTracker()
+
+# Load model
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
 
     def __init__(self):
-        super().__init__()
-        self.device = None
-        self.classes = None
+        super(VideoThread, self).__init__()
+        
+        # Live stream parameters
         self._run_flag = True
         self.no_signal = cv2.imread("no_signal.jpg")
-        self.model = self.load_model()  # Load model 
+        
+        # Model parameters
+        self.device = None
+        self.classes = None
 
     def run(self):
         """
         Initializes the model, classes and device
         """
-
+        # self.model = self.load_model()  # Load model 
         self.run_program()
 
     def stop(self):
@@ -38,10 +49,10 @@ class VideoThread(QThread):
         Returns:
             Trained Yolov5 model
         """
-        self.model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
+        model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
-        return self.model
+        return model
     
     def score_frame(self, frame):
         """Takes a single frame as input and scores the frame using yolov5 model
@@ -53,9 +64,9 @@ class VideoThread(QThread):
              Labels and Coordinates of objects detected by model in the frame.
         """
         # a = torch.Tensor.cpu()
-        self.model.to(self.device)
+        model.to(self.device)
         frame = [frame]
-        results = self.model(frame)
+        results = model(frame)
         labels = results.pandas().xyxy[0]
         cord = results.pandas().xyxy[0]
         return labels, cord
@@ -70,22 +81,29 @@ class VideoThread(QThread):
         Returns:
             Frame with bouding boxes and labels ploted on it 
         """
-
-        results = self.model(frame)
+        
+        results = model(frame)
         # print(result)         
         df = results.pandas().xyxy[0]
+        rects = []                              
+        detections = []
         # print(df)
         for ind in df.index:
-            x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
-            x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
-            label = df['name'][ind]
-            conf = df['confidence'][ind]
-            text = label + ' ' + str(conf.round(decimals= 2))
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 0), 2)
-            cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 0), 2)
-            # cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2)
+            if df['confidence'][ind] > 0.7:
+                x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
+                x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
+                label = df['name'][ind]
+                conf = df['confidence'][ind]
+                text = label + ' ' + str(conf.round(decimals= 2))
+                detections.append([x1, y1, x2 - x1, y2 - y1])
+                rects.append([x1, y1, x2, y2])
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 128, 128), 3)
+                cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (255, 128, 128), 3)
+                # cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2)
+        rects_ids = tracker.update(rects)
+        for objectID, centroid in rects_ids.items():
+            cv2.putText(frame, str(objectID), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 3)
         return frame
-        
     
     def run_program(self):
         """This function runs the loop to read the video frame by frame 
