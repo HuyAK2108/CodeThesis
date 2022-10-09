@@ -4,14 +4,10 @@ from time import time
 import cv2
 import numpy as np
 import torch
-from PyQt5.QtCore import Qt
-from PyQt5 import QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap
 from tracker import CentroidTracker
 
 tracker = CentroidTracker()
-
 # Load model
 model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -19,8 +15,9 @@ classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
-
-    def __init__(self):
+    signal = pyqtSignal(str)
+    
+    def __init__(self, index = 0):
         super(VideoThread, self).__init__()
         
         # Live stream parameters
@@ -71,6 +68,14 @@ class VideoThread(QThread):
         cord = results.pandas().xyxy[0]
         return labels, cord
     
+    def class_to_label(self, x):
+        """
+        For a given label value, return corresponding string label.
+        :param x: numeric label
+        :return: corresponding string label
+        """
+        return self.classes[int(x)]
+    
     def plot_boxes(self, results, frame):
         """Takes a frame and its results as input, and plots the bounding boxes and label on to the frame.
 
@@ -81,7 +86,7 @@ class VideoThread(QThread):
         Returns:
             Frame with bouding boxes and labels ploted on it 
         """
-        
+        # self.label = ''
         results = model(frame)
         # print(result)         
         df = results.pandas().xyxy[0]
@@ -89,20 +94,21 @@ class VideoThread(QThread):
         detections = []
         # print(df)
         for ind in df.index:
-            if df['confidence'][ind] > 0.7:
+            label = df['name'][ind]
+            conf = df['confidence'][ind]
+            if conf > 0.7:
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
-                label = df['name'][ind]
-                conf = df['confidence'][ind]
                 text = label + ' ' + str(conf.round(decimals= 2))
                 detections.append([x1, y1, x2 - x1, y2 - y1])
                 rects.append([x1, y1, x2, y2])
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 128, 128), 3)
                 cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (255, 128, 128), 3)
                 # cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2)
+                self.signal.emit(label)
         rects_ids = tracker.update(rects)
         for objectID, centroid in rects_ids.items():
-            cv2.putText(frame, str(objectID), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 3)
+            cv2.putText(frame, str(objectID), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
         return frame
     
     def run_program(self):
@@ -110,14 +116,13 @@ class VideoThread(QThread):
         """
         # Capture from web cam
         cap = cv2.VideoCapture(0)
-        
         # Loop to read the video frame by frame
         while self._run_flag:
-            start_time = time()
-            ret, cv_img = cap.read()
-            
+            start_time = time()            
+            ret, cv_img = cap.read() 
             results = self.score_frame(cv_img)
             cv_img = self.plot_boxes(results, cv_img)
+            # objectname = self.label 
             end_time = time()
             self.fps = 1 / (np.round(end_time - start_time, 3))
             text = round(self.fps,2)
@@ -125,7 +130,7 @@ class VideoThread(QThread):
             # print(f"Frames Per Second : {round(self.fps,2)} FPS")
             if ret:
                 self.change_pixmap_signal.emit(cv_img)
-               
+                # self.change_pixmap_signal.emit(objectname)
         # shut down capture system
         cap.release()   
-        self.change_pixmap_signal.emit(self.no_signal)
+        self.change_pixmap_signal.emit(self.no_signal) 
