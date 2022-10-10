@@ -25,14 +25,12 @@ class MainWindow (QMainWindow):
         self.uic.btn_offCAM.setEnabled(True)
         # create the video capture thread
         self.thread = VideoThread()
+        # connect its signal to the show_info slot to display object name
         self.thread.signal.connect(self.show_info)
-        # connect its signal to the update_image slot
+        # connect its signal to the update_image slot to display webcam
         self.thread.change_pixmap_signal.connect(self.update_image)
         # start the thread
         self.thread.start()
-    @pyqtSlot(str) 
-    def show_info(self, name):
-        self.uic.text_name.setPlainText(name)
         
     def stop_capture_video(self):
         self.uic.btn_onCAM.setEnabled(True)
@@ -58,6 +56,10 @@ class MainWindow (QMainWindow):
         p = convert_to_Qt_format.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
         return QPixmap.fromImage(p)
     
+    @pyqtSlot(str) 
+    def show_info(self, name):
+        self.uic.text_name.setPlainText(name)
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     a = MainWindow()

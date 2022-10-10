@@ -11,13 +11,14 @@ tracker = CentroidTracker()
 # Load model
 model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
+clasess = model.names
+# classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     signal = pyqtSignal(str)
     
-    def __init__(self, index = 0):
+    def __init__(self):
         super(VideoThread, self).__init__()
         
         # Live stream parameters
@@ -86,7 +87,7 @@ class VideoThread(QThread):
         Returns:
             Frame with bouding boxes and labels ploted on it 
         """
-        # self.label = ''
+        # self.object_name = ''
         results = model(frame)
         # print(result)         
         df = results.pandas().xyxy[0]
@@ -96,18 +97,21 @@ class VideoThread(QThread):
         for ind in df.index:
             label = df['name'][ind]
             conf = df['confidence'][ind]
-            if conf > 0.7:
+            if conf > 0.8:
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
                 text = label + ' ' + str(conf.round(decimals= 2))
                 detections.append([x1, y1, x2 - x1, y2 - y1])
                 rects.append([x1, y1, x2, y2])
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 128, 128), 3)
-                cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (255, 128, 128), 3)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
                 # cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2)
-                self.signal.emit(label)
+                # self.object_name = label
+                self.signal.emit(label)     
         rects_ids = tracker.update(rects)
         for objectID, centroid in rects_ids.items():
+            # print("str(objectID)", objectID) # 1 - số lượng object
+            # print("centroid", centroid)      # [X_center, Y_center] - tọa độ điểm giữa của object
             cv2.putText(frame, str(objectID), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
         return frame
     
@@ -130,7 +134,6 @@ class VideoThread(QThread):
             # print(f"Frames Per Second : {round(self.fps,2)} FPS")
             if ret:
                 self.change_pixmap_signal.emit(cv_img)
-                # self.change_pixmap_signal.emit(objectname)
         # shut down capture system
         cap.release()   
         self.change_pixmap_signal.emit(self.no_signal) 
