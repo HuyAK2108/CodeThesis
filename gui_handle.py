@@ -27,6 +27,12 @@ class MainWindow (QMainWindow):
         self.thread = VideoThread()
         # connect its signal to the show_info slot to display object name
         self.thread.signal.connect(self.show_info)
+        # connect its signal to the show_number slot to display object number
+        self.thread.number.connect(self.show_number)
+        self.thread.number2.connect(self.show_number2)
+        self.thread.number3.connect(self.show_number3)
+        self.thread.number4.connect(self.show_number4)
+        self.thread.number5.connect(self.show_number5)
         # connect its signal to the update_image slot to display webcam
         self.thread.change_pixmap_signal.connect(self.update_image)
         # start the thread
@@ -59,6 +65,22 @@ class MainWindow (QMainWindow):
     @pyqtSlot(str) 
     def show_info(self, name):
         self.uic.text_name.setPlainText(name)
+    
+    @pyqtSlot(str)
+    def show_number(self, gaudo):
+        self.uic.num_gaudo.setPlainText(gaudo)
+    @pyqtSlot(str)
+    def show_number2(self, cungdinh):
+        self.uic.num_cungdinh.setPlainText(cungdinh)
+    @pyqtSlot(str)
+    def show_number3(self, haohao):
+        self.uic.num_haohao.setPlainText(haohao)
+    @pyqtSlot(str)
+    def show_number4(self, omachi102):
+        self.uic.num_omachi102.setPlainText(omachi102)
+    @pyqtSlot(str)
+    def show_number5(self, omachispa):
+        self.uic.num_omachispa.setPlainText(omachispa)
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

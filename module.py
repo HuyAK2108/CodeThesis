@@ -1,13 +1,15 @@
-# Module to Process
-
 from time import time
 import cv2
 import numpy as np
 import torch
 from PyQt5.QtCore import QThread, pyqtSignal
-from tracker import CentroidTracker
+from tracker import CentroidTracker, CentroidTracker2, CentroidTracker3, CentroidTracker4, CentroidTracker5
 
-tracker = CentroidTracker()
+tracker   = CentroidTracker()
+tracker_2 = CentroidTracker2()
+tracker_3 = CentroidTracker3()
+tracker_4 = CentroidTracker4()
+tracker_5 = CentroidTracker5()
 # Load model
 model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -16,7 +18,12 @@ clasess = model.names
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
-    signal = pyqtSignal(str)
+    signal  = pyqtSignal(str)
+    number  = pyqtSignal(str)
+    number2 = pyqtSignal(str)
+    number3 = pyqtSignal(str)
+    number4 = pyqtSignal(str)
+    number5 = pyqtSignal(str)
     
     def __init__(self):
         super(VideoThread, self).__init__()
@@ -24,12 +31,19 @@ class VideoThread(QThread):
         # Live stream parameters
         self._run_flag = True
         self.no_signal = cv2.imread("no_signal.jpg")
+        
+        # Object parameters
+        self.object_name = ''
+        self.count_gaudo        = -1
+        self.count_haohao       = -1 
+        self.count_omachi102    = -1
+        self.count_cungdinh     = -1 
+        self.count_omachispa    = -1 
 
     def run(self):
         """
         Initializes the model, classes and device
         """
-        # self.model = self.load_model()  # Load model 
         self.run_program()
 
     def stop(self):
@@ -46,8 +60,6 @@ class VideoThread(QThread):
         Returns:
              Labels and Coordinates of objects detected by model in the frame.
         """
-        # a = torch.Tensor.cpu()
-        model.to(self.device)
         frame = [frame]
         results = model(frame)
         labels = results.pandas().xyxy[0]
@@ -64,12 +76,15 @@ class VideoThread(QThread):
         Returns:
             Frame with bouding boxes and labels ploted on it 
         """
-        # self.object_name = ''
         results = model(frame)
         # print(result)         
         df = results.pandas().xyxy[0]
         rects = []                              
-        detections = []
+        detections      = []
+        detections_2    = []
+        detections_3    = []
+        detections_4    = []
+        detections_5    = []
         # print(df)
         for ind in df.index:
             label = df['name'][ind]
@@ -78,18 +93,68 @@ class VideoThread(QThread):
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
                 text = label + ' ' + str(conf.round(decimals= 2))
-                detections.append([x1, y1, x2 - x1, y2 - y1])
+                # detections.append([x1, y1, x2 - x1, y2 - y1])
                 rects.append([x1, y1, x2, y2])
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
                 cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
                 # cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2)
-                # self.object_name = label
                 self.signal.emit(label)     
-        rects_ids = tracker.update(rects)
-        for objectID, centroid in rects_ids.items():
-            # print("str(objectID)", objectID) # 1 - số lượng object
-            # print("centroid", centroid)      # [X_center, Y_center] - tọa độ điểm giữa của object
-            cv2.putText(frame, str(objectID), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                self.object_name = label
+        
+        """Gau do
+        """
+        if self.object_name == 'gau do':
+            rects_ids = tracker.update(rects)
+            for objectID, centroid in rects_ids.items():
+                detections.append(objectID)
+                self.count_gaudo = get_lastest_value(detections)
+                self.count_gaudo += 1
+                cv2.putText(frame, str(self.count_gaudo), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                self.number.emit(str(self.count_gaudo))
+        """Cung dinh
+        """
+        if self.object_name == 'cung dinh':
+            rects_ids = tracker_2.update(rects)
+            for objectID_2, centroid in rects_ids.items():
+                detections_2.append(objectID_2)
+                self.count_cungdinh = get_lastest_value(detections_2)
+                self.count_cungdinh += 1
+                cv2.putText(frame, str(self.count_cungdinh), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                self.number2.emit(str(self.count_cungdinh))
+        
+        """Hao hao
+        """
+        if self.object_name == 'hao hao':
+            rects_ids = tracker_3.update(rects)
+            for objectID_3, centroid in rects_ids.items():
+                detections_3.append(objectID_3)
+                self.count_haohao = get_lastest_value(detections_3)
+                self.count_haohao += 1
+                cv2.putText(frame, str(self.count_haohao), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                self.number3.emit(str(self.count_haohao))
+        
+        """Omachi 102
+        """
+        if self.object_name == 'omachi 102':
+            rects_ids = tracker_4.update(rects)
+            for objectID_4, centroid in rects_ids.items():
+                detections_4.append(objectID_4)
+                self.count_omachi102 = get_lastest_value(detections_4)
+                self.count_omachi102 += 1
+                cv2.putText(frame, str(self.count_omachi102), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                self.number4.emit(str(self.count_omachi102))
+        
+        """Omachi Spagheti
+        """
+        if self.object_name == 'omachi spaghetti':
+            rects_ids = tracker_5.update(rects)
+            for objectID_5, centroid in rects_ids.items():
+                detections_5.append(objectID_5)
+                self.count_omachispa = get_lastest_value(detections_5)
+                self.count_omachispa += 1
+                cv2.putText(frame, str(self.count_omachispa), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
+                self.number5.emit(str(self.count_omachispa))
+                
         return frame
     
     def run_program(self):
@@ -114,3 +179,6 @@ class VideoThread(QThread):
         # shut down capture system
         cap.release()   
         self.change_pixmap_signal.emit(self.no_signal) 
+        
+def get_lastest_value(value):
+    return max(value)
