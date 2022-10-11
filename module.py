@@ -24,10 +24,6 @@ class VideoThread(QThread):
         # Live stream parameters
         self._run_flag = True
         self.no_signal = cv2.imread("no_signal.jpg")
-        
-        # Model parameters
-        self.device = None
-        self.classes = None
 
     def run(self):
         """
@@ -40,17 +36,6 @@ class VideoThread(QThread):
         """Sets run flag to False and waits for thread to finish"""
         self._run_flag = False
         self.wait()
-        
-    def load_model(self):
-        """Loads Yolov5 model and classes
-
-        Returns:
-            Trained Yolov5 model
-        """
-        model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
-        return model
     
     def score_frame(self, frame):
         """Takes a single frame as input and scores the frame using yolov5 model
@@ -68,14 +53,6 @@ class VideoThread(QThread):
         labels = results.pandas().xyxy[0]
         cord = results.pandas().xyxy[0]
         return labels, cord
-    
-    def class_to_label(self, x):
-        """
-        For a given label value, return corresponding string label.
-        :param x: numeric label
-        :return: corresponding string label
-        """
-        return self.classes[int(x)]
     
     def plot_boxes(self, results, frame):
         """Takes a frame and its results as input, and plots the bounding boxes and label on to the frame.
@@ -97,7 +74,7 @@ class VideoThread(QThread):
         for ind in df.index:
             label = df['name'][ind]
             conf = df['confidence'][ind]
-            if conf > 0.8:
+            if conf > 0.9:
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
                 text = label + ' ' + str(conf.round(decimals= 2))
