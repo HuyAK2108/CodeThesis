@@ -34,11 +34,11 @@ class VideoThread(QThread):
         
         # Object parameters
         self.object_name = ''
-        self.count_gaudo        = -1
-        self.count_haohao       = -1 
-        self.count_omachi102    = -1
-        self.count_cungdinh     = -1 
-        self.count_omachispa    = -1 
+        self.count_gaudo        = 0
+        self.count_haohao       = 0 
+        self.count_omachi102    = 0
+        self.count_cungdinh     = 0 
+        self.count_omachispa    = 0 
 
     def run(self):
         """
@@ -89,7 +89,7 @@ class VideoThread(QThread):
         for ind in df.index:
             label = df['name'][ind]
             conf = df['confidence'][ind]
-            if conf > 0.9:
+            if conf > 0.8:
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
                 text = label + ' ' + str(conf.round(decimals= 2))
@@ -107,10 +107,12 @@ class VideoThread(QThread):
             rects_ids = tracker.update(rects)
             for objectID, centroid in rects_ids.items():
                 detections.append(objectID)
+                print(detections)
                 self.count_gaudo = get_lastest_value(detections)
-                self.count_gaudo += 1
+                # self.count_gaudo += 1
                 cv2.putText(frame, str(self.count_gaudo), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-                self.number.emit(str(self.count_gaudo))
+        self.number.emit(str(self.count_gaudo))
+        
         """Cung dinh
         """
         if self.object_name == 'cung dinh':
@@ -118,9 +120,9 @@ class VideoThread(QThread):
             for objectID_2, centroid in rects_ids.items():
                 detections_2.append(objectID_2)
                 self.count_cungdinh = get_lastest_value(detections_2)
-                self.count_cungdinh += 1
+                # self.count_cungdinh += 1
                 cv2.putText(frame, str(self.count_cungdinh), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-                self.number2.emit(str(self.count_cungdinh))
+        self.number2.emit(str(self.count_cungdinh))
         
         """Hao hao
         """
@@ -129,9 +131,9 @@ class VideoThread(QThread):
             for objectID_3, centroid in rects_ids.items():
                 detections_3.append(objectID_3)
                 self.count_haohao = get_lastest_value(detections_3)
-                self.count_haohao += 1
+                # self.count_haohao += 1
                 cv2.putText(frame, str(self.count_haohao), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-                self.number3.emit(str(self.count_haohao))
+        self.number3.emit(str(self.count_haohao))
         
         """Omachi 102
         """
@@ -140,9 +142,9 @@ class VideoThread(QThread):
             for objectID_4, centroid in rects_ids.items():
                 detections_4.append(objectID_4)
                 self.count_omachi102 = get_lastest_value(detections_4)
-                self.count_omachi102 += 1
+                # self.count_omachi102 += 1
                 cv2.putText(frame, str(self.count_omachi102), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-                self.number4.emit(str(self.count_omachi102))
+        self.number4.emit(str(self.count_omachi102))
         
         """Omachi Spagheti
         """
@@ -151,9 +153,9 @@ class VideoThread(QThread):
             for objectID_5, centroid in rects_ids.items():
                 detections_5.append(objectID_5)
                 self.count_omachispa = get_lastest_value(detections_5)
-                self.count_omachispa += 1
+                # self.count_omachispa += 1
                 cv2.putText(frame, str(self.count_omachispa), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
-                self.number5.emit(str(self.count_omachispa))
+        self.number5.emit(str(self.count_omachispa))
                 
         return frame
     
