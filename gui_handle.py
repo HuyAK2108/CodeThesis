@@ -64,23 +64,23 @@ class MainWindow (QMainWindow):
     
     @pyqtSlot(str) 
     def show_info(self, name):
-        self.uic.text_name.setPlainText(name)
+        self.uic.text_name.setText(name)
     
     @pyqtSlot(str)
     def show_number(self, gaudo):
-        self.uic.num_gaudo.setPlainText(gaudo)
+        self.uic.num_gaudo.setText(gaudo)
     @pyqtSlot(str)
     def show_number2(self, cungdinh):
-        self.uic.num_cungdinh.setPlainText(cungdinh)
+        self.uic.num_cungdinh.setText(cungdinh)
     @pyqtSlot(str)
     def show_number3(self, haohao):
-        self.uic.num_haohao.setPlainText(haohao)
+        self.uic.num_haohao.setText(haohao)
     @pyqtSlot(str)
     def show_number4(self, omachi102):
-        self.uic.num_omachi102.setPlainText(omachi102)
+        self.uic.num_omachi102.setText(omachi102)
     @pyqtSlot(str)
     def show_number5(self, omachispa):
-        self.uic.num_omachispa.setPlainText(omachispa)
+        self.uic.num_omachispa.setText(omachispa)
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

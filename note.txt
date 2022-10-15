@@ -1,1 +1,6 @@
-"Tracking issue": Different classes but have same objectID
+Multithread
+
+gui_handle.py to control gui.py
+module.py to control main.py
+
+Run main.py to execute

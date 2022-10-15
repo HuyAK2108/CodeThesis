@@ -25,9 +25,9 @@ class VideoThread(QThread):
     number4 = pyqtSignal(str)
     number5 = pyqtSignal(str)
     
-    def __init__(self):
+    def __init__(self, index = 0):
         super(VideoThread, self).__init__()
-        
+        self.index = index
         # Live stream parameters
         self._run_flag = True
         self.no_signal = cv2.imread("no_signal.jpg")
@@ -107,7 +107,6 @@ class VideoThread(QThread):
             rects_ids = tracker.update(rects)
             for objectID, centroid in rects_ids.items():
                 detections.append(objectID)
-                print(detections)
                 self.count_gaudo = get_lastest_value(detections)
                 # self.count_gaudo += 1
                 cv2.putText(frame, str(self.count_gaudo), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
@@ -164,6 +163,7 @@ class VideoThread(QThread):
         """
         # Capture from web cam
         cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_FPS, 30)
         # Loop to read the video frame by frame
         while self._run_flag:
             start_time = time()            
