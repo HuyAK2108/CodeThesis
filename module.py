@@ -11,7 +11,7 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5m.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 clasess = model.names
 # classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
@@ -28,6 +28,7 @@ class VideoThread(QThread):
     def __init__(self, index = 0):
         super(VideoThread, self).__init__()
         self.index = index
+        print("Video thread start", self.index)
         # Live stream parameters
         self._run_flag = True
         self.no_signal = cv2.imread("no_signal.jpg")
@@ -89,7 +90,7 @@ class VideoThread(QThread):
         for ind in df.index:
             label = df['name'][ind]
             conf = df['confidence'][ind]
-            if conf > 0.8:
+            if conf > 0.7:
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
                 text = label + ' ' + str(conf.round(decimals= 2))
@@ -181,6 +182,7 @@ class VideoThread(QThread):
         # shut down capture system
         cap.release()   
         self.change_pixmap_signal.emit(self.no_signal) 
+        print("Video thread stop", self.index)
         
 def get_lastest_value(value):
     return max(value)

@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1145</width>
-    <height>753</height>
+    <width>1140</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>GUI for Object Detection</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabWidget">
@@ -24,11 +24,11 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Auto">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Auto</string>
      </attribute>
      <widget class="QGroupBox" name="SerialBox">
       <property name="geometry">
@@ -549,7 +549,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Omachi spaghetti</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="Name_3">
@@ -743,7 +743,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>160</y>
+        <y>90</y>
         <width>640</width>
         <height>480</height>
        </rect>
@@ -895,9 +895,9 @@ background-color:rgb(227,227,227);</string>
      <zorder>Frame</zorder>
      <zorder>JobBox</zorder>
     </widget>
-    <widget class="QWidget" name="tab_2">
+    <widget class="QWidget" name="Manual">
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Manual</string>
      </attribute>
      <widget class="QGroupBox" name="JoggingBox_2">
       <property name="geometry">
@@ -2680,7 +2680,7 @@ background-color:rgb(227,227,227);</string>
       <string>192.168.1.12 </string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_setconnnect_2">
+    <widget class="QPushButton" name="btn_servoON">
      <property name="geometry">
       <rect>
        <x>10</x>

@@ -2,5 +2,6 @@ Multithread
 
 gui_handle.py to control gui.py
 module.py to control main.py
+typedef.py: includes data frame
 
 Run main.py to execute
