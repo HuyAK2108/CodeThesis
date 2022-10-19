@@ -6,7 +6,7 @@ class Motomini:
     def __init__(self) -> None:
         self.sever_socket = socket.socket()
         # self.sever_socket = QUdpSocket()
-        self.connect_status: bool = False
+        self.connect_status = False
         self.servo_status: bool = False
         self.ip: str = ""
         # self.ip = QHostAddress()
@@ -21,6 +21,7 @@ class Motomini:
         self.ip = ip
         self.port = port
         self.sever_socket.connect((self.ip, self.port))
+        print("Connect Successfully")
         # self.sever_socket.bind(self.ip,self.port)
         self.connect_status = True
 

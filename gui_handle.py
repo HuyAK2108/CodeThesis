@@ -4,12 +4,13 @@ from PyQt5.QtSerialPort import QSerialPortInfo
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QPlainTextEdit
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import  pyqtSlot, Qt, pyqtSignal, QTimer
-import sys
-import cv2, serial
+import cv2, serial, sys
 import numpy as np
+import serial.tools.list_ports
 from gui import Ui_MainWindow
 from module import VideoThread
 from robot_controller import Robot, GetPosition
+from motomini import Motomini
 
 class MainWindow (QMainWindow):
     def __init__(self):
@@ -17,52 +18,87 @@ class MainWindow (QMainWindow):
         self.setWindowTitle("Qt live label demo")
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
+        # self.init_timer()
+        # self.init_variable()
+        self.status_thread_1 = False
+        self.status_thread_2 = False
+        
+        self.device = Motomini()
+        
+        # Get available serial ports
+        self.comlist = serial.tools.list_ports.comports()
+        self.connected = []
+        for element in self.comlist:
+            self.connected.append(element.device)
+        self.uic.COM.addItems(self.connected)
         
         self.thread = {}
         
         # Button ON - OFF camera
-        self.uic.btn_onCAM.clicked.connect(self.start_capture_video)
-        self.uic.btn_offCAM.clicked.connect(self.stop_capture_video)
+        self.uic.btn_onCAM.clicked.connect(self.START_CAPTURE_VIDEO)
+        self.uic.btn_offCAM.clicked.connect(self.STOP_CAPTURE_VIDEO)
         # Button OPEN - CLOSE uart
-        self.uic.btn_setuart.clicked.connect(self.connect_Serial)
-        self.uic.btn_closeuart.clicked.connect(self.disconnect_Serial)
+        self.uic.btn_setuart.clicked.connect(self.CONNECT_SERIAL)
+        self.uic.btn_closeuart.clicked.connect(self.DISCONNECT_SERIAL)
         # Button CONNECT - DISCONNECT robot
-        self.uic.btn_setconnnect.clicked.connect(self.connect_robot)
+        self.uic.btn_setconnnect.clicked.connect(self.CONNECT_ROBOT)
+        # Button ON - OFF servo
+        self.uic.btn_servoON.clicked.connect(self.SERVO_ON)
+        self.uic.btn_servoOFF.clicked.connect(self.SERVO_OFF)
+    
+    # def init_timer(self):
+    #     self.TIMER_UART = QtCore.QTimer()
+    #     self.TIMER_UART.setInterval(500)
+    #     # self.TIMER_UART.timeout.connect(self.get_data)
+    #     self.TIMER_UART.start()
         
-    def start_capture_video(self):
+    #     self.timer_update_gui = QtCore.QTimer()
+    #     self.timer_update_gui.setInterval(500)
+    #     self.timer_update_gui.timeout.connect(self.updateGUI)
+        
+    # def init_variable(self):
+    #     self.com_connect_status = False
+    #     self.read_data = False
+    #     self.ser = serial.Serial()
+        
+    def START_CAPTURE_VIDEO(self):
         """Start video object detection and turn on camera
         """
         self.uic.btn_onCAM.setEnabled(False)
         self.uic.btn_offCAM.setEnabled(True)
+        self.uic.btn_onCAM.setStyleSheet("QPushButton {color: green;}")
+        self.uic.btn_offCAM.setStyleSheet("QPushButton {color: black;}")
+        
+        self.status_thread_1 = True
         # create the video capture thread
         self.thread[1] = VideoThread(index=1)
         # connect its signal to the show_info slot to display object name
         self.thread[1].signal.connect(self.show_info)
-        # connect its signal to the show_number slot to display object number
         self.thread[1].number.connect(self.show_number)
-        self.thread[1].number2.connect(self.show_number2)
-        self.thread[1].number3.connect(self.show_number3)
-        self.thread[1].number4.connect(self.show_number4)
-        self.thread[1].number5.connect(self.show_number5)
         # connect its signal to the update_image slot to display webcam
         self.thread[1].change_pixmap_signal.connect(self.update_image)
         # start the thread
         self.thread[1].start()
         
-    def stop_capture_video(self):
+    def STOP_CAPTURE_VIDEO(self):
         """Stop capture video and turn off camera
         """
         self.uic.btn_onCAM.setEnabled(True)
         self.uic.btn_offCAM.setEnabled(False)
+        self.uic.btn_onCAM.setStyleSheet("QPushButton {color: black;}")
+        self.uic.btn_offCAM.setStyleSheet("QPushButton {color: red;}")
         self.thread[1].stop()
     
     def closeEvent(self, event):
-        """Close window
+        """Close Window
         """
-        self.thread[1].stop()
+        if self.status_thread_1 == True:
+            self.thread[1].stop()
+        if self.status_thread_2 == True:
+            self.thread[2].stop()
         event.accept()
         
-    def connect_Serial(self):
+    def CONNECT_SERIAL(self):
         """Open UART to send/receive data
         """
         self.com = self.uic.COM.currentText()
@@ -72,7 +108,7 @@ class MainWindow (QMainWindow):
         print("Connected to",self.com)    
         print("Baudrate",self.baudrate)  
         
-    def disconnect_Serial(self):
+    def DISCONNECT_SERIAL(self):
         """Close UART
         """
         self.com = self.uic.COM.currentText()        
@@ -80,14 +116,49 @@ class MainWindow (QMainWindow):
         self.uic.btn_setuart.setEnabled(True)
         print("Disconnected to",self.com)    
     
-    def connect_robot(self):
+    def SERVO_ON(self):
+        self.uic.btn_servoON.setEnabled(False)
+        self.uic.btn_servoOFF.setEnabled(True) 
+        self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
+        self.status_thread_2 = True
         self.thread[2] = Robot(index=2)
-        self.thread[2].start()
+        if (self.thread[2].checkConnect() == True):
+            self.thread[2].ctrlServoCallback()
+            # self.uic.btn_servoON.setText("SERVO OFF")
+            self.uic.lb_run_status.setText("Start")
+            # self.thread[2].init_timer()
+            self.thread[2].get_position.connect(self.show_position)
+            # self.thread[2].updateGUI()
+        # else:
             
+    def SERVO_OFF(self):
+        self.uic.btn_servoON.setEnabled(True)
+        self.uic.btn_servoOFF.setEnabled(False) 
+        self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
+        if (self.thread[2].checkConnect()):
+            self.thread[2].ctrlServoOff()
+            self.uic.lb_run_status.setText("Stop")
+        
+    def CONNECT_ROBOT(self):
+        if self.device.checkConnectStatus() == False:
+            
+            self.ip = self.uic.text_IP.text()
+            self.port = int(self.uic.text_Port.text())
+            # self.device.connectMotomini(ip = self.ip, port = self.port)
+            self.device.connectMotomini(ip = "192.168.1.12", port = 10040)
+            print("Connected to IP: " + self.ip + "- " + "Port: " + str(self.port))
+            
+            self.uic.btn_setconnnect.setText("DISCONNECT")
+            self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
+            # self.timer_update_gui.start()
+            
+        else:
+            print("Disconnected !")
+            self.device.disconnectMotomini()
+            self.uic.btn_setconnnect.setText("CONNECT")
+            self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
+            # self.timer_update_gui.stop()
     
-    
-        """Transmit data between classes
-        """
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
@@ -111,24 +182,23 @@ class MainWindow (QMainWindow):
         
     """Display number of object
     """
-    @pyqtSlot(str)
-    def show_number(self, gaudo):
+    @pyqtSlot(str,str,str,str,str)
+    def show_number(self, gaudo, cungdinh, haohao, omachi102, omachispa):
         self.uic.num_gaudo.setText(gaudo)
-    @pyqtSlot(str)
-    def show_number2(self, cungdinh):
         self.uic.num_cungdinh.setText(cungdinh)
-    @pyqtSlot(str)
-    def show_number3(self, haohao):
         self.uic.num_haohao.setText(haohao)
-    @pyqtSlot(str)
-    def show_number4(self, omachi102):
         self.uic.num_omachi102.setText(omachi102)
-    @pyqtSlot(str)
-    def show_number5(self, omachispa):
         self.uic.num_omachispa.setText(omachispa)
+
+    """Display current position
+    """  
+    @pyqtSlot(str,str,str,str,str,str)
+    def show_position(self, X, Y, Z, Roll, Pitch, Yaw):
+        print(X, Y, Z, Roll, Pitch, Yaw)
+        self.uic.txt_X.setText(X)
+        self.uic.txt_Y.setText(Y)
+        self.uic.txt_Z.setText(Z)
+        self.uic.txt_Roll.setText(Roll)
+        self.uic.txt_Pitch.setText(Pitch)
+        self.uic.txt_Yaw.setText(Yaw)
         
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     a = MainWindow()
-#     a.show()
-#     sys.exit(app.exec_())

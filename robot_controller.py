@@ -24,16 +24,19 @@ class GetPosition(QThread):
         print(constVariable.PulsePos)
         self.finished.emit()
 class Robot(QThread):
+    get_position = pyqtSignal(str, str, str, str, str, str)
     def __init__(self, index = 0):
         super(Robot, self).__init__()
-        self.init_variable()
-        self.init_timer()
-        self.init_callback()
         self.index = index
         print("Robot start thread ", self.index)
+        # self.init_variable()
+        # self.init_timer()
+        # self.updateGUI()
+        # self.ctrlServoCallback()
+        # self.init_callback()
         
         self.connection = device
-    
+
     def init_variable(self):
         self.com_connect_status = False
         self.read_data = False
@@ -43,138 +46,136 @@ class Robot(QThread):
         self.TIMER_UART = QtCore.QTimer()
         self.TIMER_UART.setInterval(500)
         # self.TIMER_UART.timeout.connect(self.get_data)
-        self.TIMER_UART.start()
+        # self.TIMER_UART.start()
         
         self.timer_update_gui = QtCore.QTimer()
         self.timer_update_gui.setInterval(500)
         self.timer_update_gui.timeout.connect(self.updateGUI)
-        
-    def init_callback(self):
-        print("callback")
+        self.timer_update_gui.start()
     
     def checkConnect(func):
         def check(self):
-            if self.connection.checkConnectStatus() == False:
-                self.error_msg("Warning ! No connection to robot")
+            if device.checkConnectStatus() == False:
+                print("Warning!!! NO connection with robot")
                 return
             return func(self)
+
         return check
     
     def checkServo(func):
         def check(self):
-            if self.connection.checkServoStatus() == False:
-                self.error_msg("Warning!!! Servo is off")
+            if device.checkServoStatus() == False:
+                print("Warning!!! Servo is off")
                 return
             return func(self)
 
         return check
-    
-    def connectCallback(self):
-        if self.connection.checkConnectStatus() == False:
-            self.connection.connectMotomini(ip = gui.text_IP.toPlainText(), port = int(gui.text_Port.toPlainText()))
-            gui.btn_setconnnect.setText("DISCONNECT")
-            gui.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
-            self.timer_update_gui.start()
+
+    # def connectCallback(self):
+    #     if device.checkConnectStatus() == False:
+    #         device.connectMotomini(ip = "192.168.1.12", port = 10040)
+    #         status = "DISCONNECT"
+    #         # self.uic.btn_setconnnect.setText("DISCONNECT")
+    #         # self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
+    #         # self.timer_update_gui.start()
             
-        else:
-            gui.btn_setconnnect.setText("CONNECT")
-            gui.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
-            self.timer_update_gui.stop()
-    
+    #     else:
+    #         status = "CONNECT"
+    #         # self.uic.btn_setconnnect.setText("CONNECT")
+    #         # self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
+    #         self.timer_update_gui.stop()
     @checkConnect
     def ctrlServoCallback(self):
-        if self.connection.checkConnectStatus() == False:
+        if self.connection.checkServoStatus() == False:
             if self.connection.onServo() == 0:
-                gui.btn_servoON.setText("SERVO OFF")
-                gui.btn_servoON.setStyleSheet("QPushButton {color: red;}")
-                gui.lb_run_status.setText("ON")
+                # gui.btn_servoON.setText("SERVO OFF")
+                # gui.btn_servoON.setStyleSheet("QPushButton {color: red;}")
+                # gui.lb_run_status.setText("ON")
                 print("Servo is ON")
             else:
-                print("Servo is OFF")
-        else:
+                print("Can not turn on servo")
+        # else:
+        #     if self.connection.offServo() == 0:
+        #         # gui.btn_servoON.setText("SERVO ON") 
+        #         # gui.btn_servoON.setStyleSheet("QPushButton {color: green;}")
+        #         # gui.lb_run_status.setText("OFF")
+        #         print("Servo is OFF")
+        #     else:
+        #         print("Can not turn off servo")
+                
+    def ctrlServoOff(self):
+        if self.connection.checkServoStatus() == True:
             if self.connection.offServo() == 0:
-                gui.btn_servoON.setText("SERVO ON") 
-                gui.btn_servoON.setStyleSheet("QPushButton {color: green;}")
-                gui.lb_run_status.setText("OFF")
-                print("Servo is OFF")
+                print("Servo is off")
             else:
-                print("Cannot turn off servo")
+                print("Can not turn off servo")
                 
-                
+    def stop(self):
+        """Sets waits for thread to finish"""
+        self.wait()
+                   
     def updateGUI(self):
-        gui.txt_X.setText(
-            str(round(float(constVariable.CartesianPos[0]) / 1000, 3))
-        )
-        gui.txt_Y.setText(
-            str(round(float(constVariable.CartesianPos[1]) / 1000, 3))
-        )
-        gui.txt_Z.setText(
-            str(round(float(constVariable.CartesianPos[2]) / 1000, 3))
-        )
-        gui.txt_Roll.setText(
-            str(round(float(constVariable.CartesianPos[3]) / 10000, 4))
-        )
-        gui.txt_Pitch.setText(
-            str(round(float(constVariable.CartesianPos[4]) / 10000, 4))
-        )
-        gui.txt_Yaw.setText(
-            str(round(float(constVariable.CartesianPos[5]) / 10000, 4))
-        )
-
-        # gui.S_pos_text.setText(
-            # str(
-                # round(
-                    # float(constVariable.PulsePos[0]) / constVariable.pulse_per_degree_S,
-                    # 4,
-                # )
-            # )
-        # )
-        # gui.L_pos_text.setText(
-            # str(
-                # round(
-                    # float(constVariable.PulsePos[1]) / constVariable.pulse_per_degree_L,
-                    # 4,
-                # )
-            # )
-        # )
-        # gui.U_pos_text.setText(
-            # str(
-                # round(
-                    # float(constVariable.PulsePos[2]) / constVariable.pulse_per_degree_U,
-                    # 4,
-                # )
-            # )
-        # )
-        # gui.R_pos_text.setText(
-            # str(
-                # round(
-                    # float(constVariable.PulsePos[3])
-                    # / constVariable.pulse_per_degree_RBT,
-                    # 4,
-                # )
-            # )
-        # )
-        # gui.B_pos_text.setText(
-            # str(
-                # round(
-                    # float(constVariable.PulsePos[4])
-                    # / constVariable.pulse_per_degree_RBT,
-                    # 4,
-                # )
-            # )
-        # )
-        # gui.T_pos_text.setText(
-            # str(
-                # round(
-                    # float(constVariable.PulsePos[5])
-                    # / constVariable.pulse_per_degree_RBT,
-                    # 4,
-                # )
-            # )
-        # )
-
-    
-    # def get_data(self):
+        txt_X     = (str (round (float(constVariable.CartesianPos[0]) / 1000, 3 ) ) )
+        txt_Y     = (str (round (float(constVariable.CartesianPos[1]) / 1000, 3 ) ) )
+        txt_Z     = (str (round (float(constVariable.CartesianPos[2]) / 1000, 3 ) ) )
+        txt_Roll  = (str (round (float(constVariable.CartesianPos[3]) / 10000, 4) ) )
+        txt_Pitch = (str (round (float(constVariable.CartesianPos[4]) / 10000, 4) ) )
+        txt_Yaw   = (str (round (float(constVariable.CartesianPos[5]) / 10000, 4) ) )
+        self.get_position.emit(txt_X, txt_Y, txt_Z, txt_Roll, txt_Pitch, txt_Yaw)
+#         gui.S_pos_text.setText(
+#             str(
+#                 round(
+#                     float(constVariable.PulsePos[0]) / constVariable.pulse_per_degree_S,
+#                     4,
+#                 )
+#             )
+#         )
+#         gui.L_pos_text.setText(
+#             str(
+#                 round(
+#                     float(constVariable.PulsePos[1]) / constVariable.pulse_per_degree_L,
+#                     4,
+#                 )
+#             )
+#         )
+#         gui.U_pos_text.setText(
+#             str(
+#                 round(
+#                     float(constVariable.PulsePos[2]) / constVariable.pulse_per_degree_U,
+#                     4,
+#                 )
+#             )
+#         )
+#         gui.R_pos_text.setText(
+#             str(
+#                 round(
+#                     float(constVariable.PulsePos[3])
+#                     / constVariable.pulse_per_degree_RBT,
+#                     4,
+#                 )
+#             )
+#         )
+#         gui.B_pos_text.setText(
+#             str(
+#                 round(
+#                     float(constVariable.PulsePos[4])
+#                     / constVariable.pulse_per_degree_RBT,
+#                     4,
+#                 )
+#             )
+#         )
+#         gui.T_pos_text.setText(
+#             str(
+#                 round(
+#                     float(constVariable.PulsePos[5])
+#                     / constVariable.pulse_per_degree_RBT,
+#                     4,
+#                 )
+#             )
+#         )
+# # 
+#     # 
+#     def get_data(self):
         
         
         

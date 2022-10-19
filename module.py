@@ -13,17 +13,14 @@ tracker_5 = CentroidTracker5()
 # Load model
 model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'D:/Python/Senior/yolov5/v5m.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model.to(device)
 clasess = model.names
-# classes = ['cung dinh', 'gau do', 'hao hao', 'omachi 102', 'omachi spaghetti']
+# clasess = {0: 'cung dinh', 1: 'gau do', 2: 'hao hao', 3: 'omachi 102', 4: 'omachi spaghetti'}
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     signal  = pyqtSignal(str)
-    number  = pyqtSignal(str)
-    number2 = pyqtSignal(str)
-    number3 = pyqtSignal(str)
-    number4 = pyqtSignal(str)
-    number5 = pyqtSignal(str)
+    number  = pyqtSignal(str, str, str, str, str)
     
     def __init__(self, index = 0):
         super(VideoThread, self).__init__()
@@ -109,9 +106,7 @@ class VideoThread(QThread):
             for objectID, centroid in rects_ids.items():
                 detections.append(objectID)
                 self.count_gaudo = get_lastest_value(detections)
-                # self.count_gaudo += 1
                 cv2.putText(frame, str(self.count_gaudo), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-        self.number.emit(str(self.count_gaudo))
         
         """Cung dinh
         """
@@ -120,9 +115,7 @@ class VideoThread(QThread):
             for objectID_2, centroid in rects_ids.items():
                 detections_2.append(objectID_2)
                 self.count_cungdinh = get_lastest_value(detections_2)
-                # self.count_cungdinh += 1
                 cv2.putText(frame, str(self.count_cungdinh), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-        self.number2.emit(str(self.count_cungdinh))
         
         """Hao hao
         """
@@ -131,9 +124,7 @@ class VideoThread(QThread):
             for objectID_3, centroid in rects_ids.items():
                 detections_3.append(objectID_3)
                 self.count_haohao = get_lastest_value(detections_3)
-                # self.count_haohao += 1
                 cv2.putText(frame, str(self.count_haohao), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-        self.number3.emit(str(self.count_haohao))
         
         """Omachi 102
         """
@@ -142,9 +133,7 @@ class VideoThread(QThread):
             for objectID_4, centroid in rects_ids.items():
                 detections_4.append(objectID_4)
                 self.count_omachi102 = get_lastest_value(detections_4)
-                # self.count_omachi102 += 1
                 cv2.putText(frame, str(self.count_omachi102), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-        self.number4.emit(str(self.count_omachi102))
         
         """Omachi Spagheti
         """
@@ -153,9 +142,9 @@ class VideoThread(QThread):
             for objectID_5, centroid in rects_ids.items():
                 detections_5.append(objectID_5)
                 self.count_omachispa = get_lastest_value(detections_5)
-                # self.count_omachispa += 1
                 cv2.putText(frame, str(self.count_omachispa), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
-        self.number5.emit(str(self.count_omachispa))
+        self.number.emit(str(self.count_gaudo), str(self.count_cungdinh), str(self.count_haohao), str(self.count_omachi102), str(self.count_omachispa))
+        
                 
         return frame
     
