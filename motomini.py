@@ -24,6 +24,7 @@ class Motomini:
         print("Connect Successfully")
         # self.sever_socket.bind(self.ip,self.port)
         self.connect_status = True
+        print("connect status True")
 
     def disconnectMotomini(self):
         self.sever_socket.close()

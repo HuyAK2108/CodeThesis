@@ -9,21 +9,23 @@ import numpy as np
 import serial.tools.list_ports
 from gui import Ui_MainWindow
 from module import VideoThread
-from robot_controller import Robot, GetPosition
+from robot_controller import Robot, GetPosition, UART
 from motomini import Motomini
 
+device = Motomini()
 class MainWindow (QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Qt live label demo")
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
-        # self.init_timer()
-        # self.init_variable()
+        
         self.status_thread_1 = False
         self.status_thread_2 = False
+        self.status_thread_3 = False
+        self.com_connect_status = False
         
-        self.device = Motomini()
+        self.connection = device
         
         # Get available serial ports
         self.comlist = serial.tools.list_ports.comports()
@@ -44,22 +46,10 @@ class MainWindow (QMainWindow):
         self.uic.btn_setconnnect.clicked.connect(self.CONNECT_ROBOT)
         # Button ON - OFF servo
         self.uic.btn_servoON.clicked.connect(self.SERVO_ON)
-        self.uic.btn_servoOFF.clicked.connect(self.SERVO_OFF)
-    
-    # def init_timer(self):
-    #     self.TIMER_UART = QtCore.QTimer()
-    #     self.TIMER_UART.setInterval(500)
-    #     # self.TIMER_UART.timeout.connect(self.get_data)
-    #     self.TIMER_UART.start()
+        self.uic.btn_home_pos.clicked.connect(self.HOME_POSITION)
         
-    #     self.timer_update_gui = QtCore.QTimer()
-    #     self.timer_update_gui.setInterval(500)
-    #     self.timer_update_gui.timeout.connect(self.updateGUI)
-        
-    # def init_variable(self):
-    #     self.com_connect_status = False
-    #     self.read_data = False
-    #     self.ser = serial.Serial()
+        self.uic.btn_load_job.clicked.connect(self.LOAD_JOB)
+        self.uic.btn_start_job.clicked.connect(self.START_JOB)
         
     def START_CAPTURE_VIDEO(self):
         """Start video object detection and turn on camera
@@ -96,6 +86,8 @@ class MainWindow (QMainWindow):
             self.thread[1].stop()
         if self.status_thread_2 == True:
             self.thread[2].stop()
+        if self.status_thread_3 == True:
+            self.thread[3].stop()
         event.accept()
         
     def CONNECT_SERIAL(self):
@@ -103,10 +95,14 @@ class MainWindow (QMainWindow):
         """
         self.com = self.uic.COM.currentText()
         self.baudrate = int(self.uic.Baudrate.currentText())
-        self.uic.btn_closeuart.setEnabled(True)
-        self.uic.btn_setuart.setEnabled(False)
-        print("Connected to",self.com)    
-        print("Baudrate",self.baudrate)  
+        if self.com_connect_status == False:
+            # self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
+            self.com_connect_status = True
+            self.uic.btn_closeuart.setEnabled(True)
+            self.uic.btn_setuart.setEnabled(False)
+            self.thread[3] = UART(index = 3, com = self.com, baudrate = self.baudrate)
+            self.thread[3].init_timer()
+            self.thread[3].get_speed.connect(self.show_speed)
         
     def DISCONNECT_SERIAL(self):
         """Close UART
@@ -114,51 +110,86 @@ class MainWindow (QMainWindow):
         self.com = self.uic.COM.currentText()        
         self.uic.btn_closeuart.setEnabled(False)
         self.uic.btn_setuart.setEnabled(True)
+        self.com_connect_status = False
+        self.thread[3].stop_timer()
         print("Disconnected to",self.com)    
     
+    def checkConnect(func):
+        def check(self):
+            if self.connection.checkConnectStatus() == False:
+                print("Warning!!! NO connection with robot")
+                return
+            return func(self)
+        return check
+
+    def checkServo(func):
+        def check(self):
+            if self.connection.checkServoStatus() == False:
+                self.print("Warning!!! Servo is off")
+                return
+            return func(self)
+        return check
+    
+    @checkConnect
+    @checkServo
+    def HOME_POSITION(self):
+        self.connection.homeServo()
+           
+    @checkConnect
     def SERVO_ON(self):
-        self.uic.btn_servoON.setEnabled(False)
-        self.uic.btn_servoOFF.setEnabled(True) 
-        self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
-        self.status_thread_2 = True
-        self.thread[2] = Robot(index=2)
-        if (self.thread[2].checkConnect() == True):
-            self.thread[2].ctrlServoCallback()
-            # self.uic.btn_servoON.setText("SERVO OFF")
-            self.uic.lb_run_status.setText("Start")
-            # self.thread[2].init_timer()
-            self.thread[2].get_position.connect(self.show_position)
-            # self.thread[2].updateGUI()
-        # else:
-            
-    def SERVO_OFF(self):
-        self.uic.btn_servoON.setEnabled(True)
-        self.uic.btn_servoOFF.setEnabled(False) 
-        self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
-        if (self.thread[2].checkConnect()):
-            self.thread[2].ctrlServoOff()
-            self.uic.lb_run_status.setText("Stop")
+        if self.connection.checkServoStatus() == False:
+            if self.connection.onServo() == 0:       
+                self.uic.btn_servoON.setText("SERVO OFF")
+                self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
+                self.uic.lb_run_status.setText("Start")
+                self.thread[2] = Robot(index = 2)
+                self.thread[2].start_receive_pos()
+                self.thread[2].get_position.connect(self.show_position)
+            else:
+                print("Can not on servo")
+        else:
+            if self.connection.offServo() == 0:
+                self.uic.btn_servoON.setText("SERVO ON")
+                self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
+                self.uic.lb_run_status.setText("Stop")
+                self.thread[2].stop_receive_pos()
+            else:
+                print("Can not off servo")
         
-    def CONNECT_ROBOT(self):
-        if self.device.checkConnectStatus() == False:
-            
+    def CONNECT_ROBOT(self):        
+        if self.connection.checkConnectStatus() == False:
             self.ip = self.uic.text_IP.text()
             self.port = int(self.uic.text_Port.text())
-            # self.device.connectMotomini(ip = self.ip, port = self.port)
-            self.device.connectMotomini(ip = "192.168.1.12", port = 10040)
-            print("Connected to IP: " + self.ip + "- " + "Port: " + str(self.port))
-            
+            print(self.ip, self.port)
+            # self.conn`ection.connectMotomini(ip = self.uic.text_IP.toPlainText(), port = int(self.uic.text_Port.toPlainText()))
+            self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_setconnnect.setText("DISCONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
-            # self.timer_update_gui.start()
-            
         else:
             print("Disconnected !")
-            self.device.disconnectMotomini()
+            self.connection.disconnectMotomini()
             self.uic.btn_setconnnect.setText("CONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
-            # self.timer_update_gui.stop()
     
+    @checkConnect
+    @checkServo
+    def LOAD_JOB(self):
+        # self.uic.btn_load_job.setEnabled(False)
+        job = self.uic.text_JOB.text()
+        line = 0
+        self.uic.btn_load_job.setStyleSheet("QPushButton {color: green;}")
+        # Start current Job at line 0
+        self.connection.selectJob(job_name= job, line_no= line)
+        print("Load OK !")
+        
+    @checkConnect
+    @checkServo
+    def START_JOB(self):
+        if self.connection.selectJob() == 0:
+            self.connection.startJob()
+        else:
+            print("Can not load job")
+        
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
@@ -201,4 +232,10 @@ class MainWindow (QMainWindow):
         self.uic.txt_Roll.setText(Roll)
         self.uic.txt_Pitch.setText(Pitch)
         self.uic.txt_Yaw.setText(Yaw)
+        
+    @pyqtSlot(float)
+    def show_speed(self, speed):
+        print(speed)
+        convoyer_speed = round(speed, 2)
+        self.uic.text_speed.setText(convoyer_speed)
         
