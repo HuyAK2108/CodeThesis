@@ -19,12 +19,21 @@ class MainWindow (QMainWindow):
         self.setWindowTitle("Qt live label demo")
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
+        self.init_variables()
+        self.init_button()
         
+    def init_variables(self):
+        self.thread = {}
+        # Thread Status
         self.status_thread_1 = False
         self.status_thread_2 = False
         self.status_thread_3 = False
+        
+        # Connection Status
+        self.job_status = False
         self.com_connect_status = False
         
+        # Call Motomini class
         self.connection = device
         
         # Get available serial ports
@@ -32,10 +41,9 @@ class MainWindow (QMainWindow):
         self.connected = []
         for element in self.comlist:
             self.connected.append(element.device)
-        self.uic.COM.addItems(self.connected)
-        
-        self.thread = {}
-        
+        self.uic.COM.addItems(self.connected)        
+    
+    def init_button(self):
         # Button ON - OFF camera
         self.uic.btn_onCAM.clicked.connect(self.START_CAPTURE_VIDEO)
         self.uic.btn_offCAM.clicked.connect(self.STOP_CAPTURE_VIDEO)
@@ -50,6 +58,7 @@ class MainWindow (QMainWindow):
         
         self.uic.btn_load_job.clicked.connect(self.LOAD_JOB)
         self.uic.btn_start_job.clicked.connect(self.START_JOB)
+        self.uic.btn_stop_job.clicked.connect(self.STOP_JOB)
         
     def START_CAPTURE_VIDEO(self):
         """Start video object detection and turn on camera
@@ -141,7 +150,7 @@ class MainWindow (QMainWindow):
             if self.connection.onServo() == 0:       
                 self.uic.btn_servoON.setText("SERVO OFF")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
-                self.uic.lb_run_status.setText("Start")
+                self.uic.lb_run_status.setText("Robot Status: ON")
                 self.thread[2] = Robot(index = 2)
                 self.thread[2].start_receive_pos()
                 self.thread[2].get_position.connect(self.show_position)
@@ -151,44 +160,53 @@ class MainWindow (QMainWindow):
             if self.connection.offServo() == 0:
                 self.uic.btn_servoON.setText("SERVO ON")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
-                self.uic.lb_run_status.setText("Stop")
+                self.uic.lb_run_status.setText("Robot Status: OFF")
                 self.thread[2].stop_receive_pos()
             else:
                 print("Can not off servo")
         
     def CONNECT_ROBOT(self):        
         if self.connection.checkConnectStatus() == False:
-            self.ip = self.uic.text_IP.text()
-            self.port = int(self.uic.text_Port.text())
-            print(self.ip, self.port)
-            # self.conn`ection.connectMotomini(ip = self.uic.text_IP.toPlainText(), port = int(self.uic.text_Port.toPlainText()))
+            # ip = self.uic.text_IP.text()
+            # port = int(self.uic.text_Port.text())
+            # print(ip, port)
+            # self.connection.connectMotomini(ip = ip, port = port)
             self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_setconnnect.setText("DISCONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
+            print("Connected to Robot")
         else:
-            print("Disconnected !")
             self.connection.disconnectMotomini()
             self.uic.btn_setconnnect.setText("CONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
+            print("Disconnected to Robot")
     
     @checkConnect
     @checkServo
     def LOAD_JOB(self):
-        # self.uic.btn_load_job.setEnabled(False)
+        self.uic.btn_load_job.setEnabled(False)
+        self.uic.btn_stop_job.setEnabled(True)
         job = self.uic.text_JOB.text()
         line = 0
         self.uic.btn_load_job.setStyleSheet("QPushButton {color: green;}")
         # Start current Job at line 0
         self.connection.selectJob(job_name= job, line_no= line)
-        print("Load OK !")
-        
+        self.job_status = True
+                
     @checkConnect
     @checkServo
     def START_JOB(self):
-        if self.connection.selectJob() == 0:
+        if self.job_status == True:
             self.connection.startJob()
+            self.job_status = False
         else:
             print("Can not load job")
+            
+    @checkConnect
+    @checkServo
+    def STOP_JOB(self):
+        self.uic.btn_load_job.setEnabled(True)
+        self.uic.btn_stop_job.setEnabled(False)
         
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):

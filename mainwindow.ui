@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>931</width>
-      <height>691</height>
+      <height>681</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -941,7 +941,7 @@
         <string>START</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="CloseMotoman">
+      <widget class="QPushButton" name="btn_stop_job">
        <property name="geometry">
         <rect>
          <x>70</x>
@@ -2845,7 +2845,7 @@ background-color:rgb(227,227,227);</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -2862,7 +2862,7 @@ background-color:rgb(227,227,227);</string>
       <rect>
        <x>20</x>
        <y>190</y>
-       <width>101</width>
+       <width>111</width>
        <height>21</height>
       </rect>
      </property>
@@ -2908,7 +2908,7 @@ background-color:rgb(227,227,227);</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -2920,6 +2920,25 @@ background-color:rgb(227,227,227);</string>
       <string>HOME POSITION</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QLabel" name="LOGO">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>270</y>
+      <width>221</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>logo_OISP.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

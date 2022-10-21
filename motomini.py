@@ -21,10 +21,8 @@ class Motomini:
         self.ip = ip
         self.port = port
         self.sever_socket.connect((self.ip, self.port))
-        print("Connect Successfully")
         # self.sever_socket.bind(self.ip,self.port)
         self.connect_status = True
-        print("connect status True")
 
     def disconnectMotomini(self):
         self.sever_socket.close()
@@ -287,11 +285,13 @@ class Motomini:
 
         data = convertNameJob
         data.job_name = job_name
+        job_encoded = data.returnByteArray()
         
         buffer = QByteArray()
         buffer = header.returnByteArray()
-        buffer.append(data.returnByteArray)
+        buffer.append(job_encoded)
         buffer.append(QByteArray(struct.pack("I", line_no)))
+        print("select job buffer:",buffer)
         self.sendData(buffer=buffer)
         self.receiveData()
         return 0
@@ -308,6 +308,7 @@ class Motomini:
         buffer = QByteArray()
         buffer = header.returnByteArray()
         buffer.append(QByteArray(struct.pack("I", 1)))
+        print("start job buffer:",buffer)
         self.sendData(buffer=buffer)
         self.receiveData()
         return 0
