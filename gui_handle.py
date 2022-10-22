@@ -55,7 +55,7 @@ class MainWindow (QMainWindow):
         # Button ON - OFF servo
         self.uic.btn_servoON.clicked.connect(self.SERVO_ON)
         self.uic.btn_home_pos.clicked.connect(self.HOME_POSITION)
-        
+        # Button LOAD - START - STOP job
         self.uic.btn_load_job.clicked.connect(self.LOAD_JOB)
         self.uic.btn_start_job.clicked.connect(self.START_JOB)
         self.uic.btn_stop_job.clicked.connect(self.STOP_JOB)
@@ -169,7 +169,6 @@ class MainWindow (QMainWindow):
         if self.connection.checkConnectStatus() == False:
             # ip = self.uic.text_IP.text()
             # port = int(self.uic.text_Port.text())
-            # print(ip, port)
             # self.connection.connectMotomini(ip = ip, port = port)
             self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_setconnnect.setText("DISCONNECT")
@@ -186,10 +185,11 @@ class MainWindow (QMainWindow):
     def LOAD_JOB(self):
         self.uic.btn_load_job.setEnabled(False)
         self.uic.btn_stop_job.setEnabled(True)
-        job = self.uic.text_JOB.text()
-        line = 0
+        self.uic.btn_start_job.setEnabled(True)
         self.uic.btn_load_job.setStyleSheet("QPushButton {color: green;}")
-        # Start current Job at line 0
+        job = self.uic.text_JOB.text()
+        line = 1
+        # Start current Job at line 1
         self.connection.selectJob(job_name= job, line_no= line)
         self.job_status = True
                 
@@ -198,15 +198,18 @@ class MainWindow (QMainWindow):
     def START_JOB(self):
         if self.job_status == True:
             self.connection.startJob()
-            self.job_status = False
         else:
             print("Can not load job")
             
     @checkConnect
     @checkServo
     def STOP_JOB(self):
+        self.job_status = False
         self.uic.btn_load_job.setEnabled(True)
         self.uic.btn_stop_job.setEnabled(False)
+        self.uic.btn_start_job.setEnabled(False)
+        self.uic.btn_load_job.setStyleSheet("QPushButton {color: black;}")
+        self.uic.btn_stop_job.setStyleSheet("QPushButton {color: red;}")
         
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
@@ -243,7 +246,7 @@ class MainWindow (QMainWindow):
     """  
     @pyqtSlot(str,str,str,str,str,str)
     def show_position(self, X, Y, Z, Roll, Pitch, Yaw):
-        print(X, Y, Z, Roll, Pitch, Yaw)
+        # print(X, Y, Z, Roll, Pitch, Yaw)
         self.uic.txt_X.setText(X)
         self.uic.txt_Y.setText(Y)
         self.uic.txt_Z.setText(Z)

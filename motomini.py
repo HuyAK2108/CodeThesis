@@ -279,7 +279,7 @@ class Motomini:
         header.id = receiveType.SELECT_JOB.value
         header.command_no = 0x87
         header.instance = 0x01
-        header.attribute = 0x02
+        header.attribute = 0x00
         header.service = 0x02
         header.data_size = 36
 
@@ -291,7 +291,6 @@ class Motomini:
         buffer = header.returnByteArray()
         buffer.append(job_encoded)
         buffer.append(QByteArray(struct.pack("I", line_no)))
-        print("select job buffer:",buffer)
         self.sendData(buffer=buffer)
         self.receiveData()
         return 0
@@ -308,7 +307,6 @@ class Motomini:
         buffer = QByteArray()
         buffer = header.returnByteArray()
         buffer.append(QByteArray(struct.pack("I", 1)))
-        print("start job buffer:",buffer)
         self.sendData(buffer=buffer)
         self.receiveData()
         return 0
