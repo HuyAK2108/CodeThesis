@@ -1,16 +1,17 @@
 # Use this file to control GUI
-from PyQt5 import QtGui, QtSerialPort, QtCore
-from PyQt5.QtSerialPort import QSerialPortInfo
-from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QPlainTextEdit
+import time
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMainWindow, QSlider
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import  pyqtSlot, Qt, pyqtSignal, QTimer
-import cv2, serial, sys
+from PyQt5.QtCore import  pyqtSlot, Qt, pyqtSignal, QTimer, QObject, QThread
+import cv2, serial
 import numpy as np
 import serial.tools.list_ports
 from gui import Ui_MainWindow
 from module import VideoThread
-from robot_controller import Robot, GetPosition, UART
+from robot_controller import Robot, UART
 from motomini import Motomini
+from typedef import *
 
 device = Motomini()
 class MainWindow (QMainWindow):
@@ -21,8 +22,14 @@ class MainWindow (QMainWindow):
         self.uic.setupUi(self)
         self.init_variables()
         self.init_button()
+    
+    def init_timer(self):
+        self.timer_move_pos = QTimer()
+        self.timer_move_pos.setInterval(300)
+        self.timer_move_pos.timeout.connect(self.moveRobot)
         
-    def init_variables(self):
+    def init_variables(self):        
+        # Init Thread
         self.thread = {}
         # Thread Status
         self.status_thread_1 = False
@@ -59,7 +66,87 @@ class MainWindow (QMainWindow):
         self.uic.btn_load_job.clicked.connect(self.LOAD_JOB)
         self.uic.btn_start_job.clicked.connect(self.START_JOB)
         self.uic.btn_stop_job.clicked.connect(self.STOP_JOB)
+        # Button MANUAL
+        self.uic.Cartesian_coor.clicked.connect(
+            lambda: self.coorRadBtnCallback(self.uic.Cartesian_coor.isChecked())
+        )
+        self.uic.pulse_coor.clicked.connect(
+            lambda: self.coorRadBtnCallback(self.uic.Cartesian_coor.isChecked())
+        )   
+        self.uic.Speed_Slider.valueChanged.connect(
+            lambda: self.Speed_slider_change_callback(self.uic.Speed_Slider)
+        )
+        # Button RUN
+        self.uic.move_butt.clicked.connect(self.RUN_ROBOT)
+        # Press button jogging
+        self.uic.DecX_butt.pressed.connect(lambda: self.btnJogPressCallback(1))
+        self.uic.IncX_butt.pressed.connect(lambda: self.btnJogPressCallback(2))
+        self.uic.DecY_butt.pressed.connect(lambda: self.btnJogPressCallback(3))
+        self.uic.IncY_butt.pressed.connect(lambda: self.btnJogPressCallback(4))
+        self.uic.DecZ_butt.pressed.connect(lambda: self.btnJogPressCallback(5))
+        self.uic.IncZ_butt.pressed.connect(lambda: self.btnJogPressCallback(6))
+        self.uic.DecR_butt.pressed.connect(lambda: self.btnJogPressCallback(7))
+        self.uic.IncR_butt.pressed.connect(lambda: self.btnJogPressCallback(8))
+        self.uic.DecP_butt.pressed.connect(lambda: self.btnJogPressCallback(9))
+        self.uic.IncP_butt.pressed.connect(lambda: self.btnJogPressCallback(10))
+        self.uic.DecYaw_butt.pressed.connect(lambda: self.btnJogPressCallback(11))
+        self.uic.IncYaw_butt.pressed.connect(lambda: self.btnJogPressCallback(12))
+        # Release button jogging
+        self.uic.DecX_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.IncX_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.DecY_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.IncY_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.DecZ_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.IncZ_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.DecR_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.IncR_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.DecP_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.IncP_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.DecYaw_butt.released.connect(self.btnJogReleaseCallback)
+        self.uic.IncYaw_butt.released.connect(self.btnJogReleaseCallback)
+            
+    def moveRobot(self):
+        if self.moveSel == 1:
+            self.decX()
+        elif self.moveSel == 2:
+            self.incX()
+        elif self.moveSel == 3:
+            self.decY()
+        elif self.moveSel == 4:
+            self.incY()
+        elif self.moveSel == 5:
+            self.decZ()
+        elif self.moveSel == 6:
+            self.incZ()
+        elif self.moveSel == 7:
+            self.decR()
+        elif self.moveSel == 8:
+            self.incR()
+        elif self.moveSel == 9:
+            self.decP()
+        elif self.moveSel == 10:
+            self.incP()
+        elif self.moveSel == 11:
+            self.decYaw()
+        elif self.moveSel == 12:
+            self.incYaw()
+        # self.getPos()
         
+    # def getPos(self):
+    #     self.thread[2] = Robot(index = 2)
+    #     self.worker = GetPosition()
+    #     self.worker.moveToThread(self.thread[2])
+    #     self.thread[2].started.connect(lambda: self.worker.run(self.connection))
+    #     self.worker.finished.connect(self.thread[2].quit)
+    #     self.worker.finished.connect(self.worker.deleteLater)
+    #     self.thread[2].finished.connect(self.thread[2].deleteLater)
+    #     # self.worker.progress.connect(self.updateGUI)
+    #     self.thread[2].start()
+        
+    #     self.thread[2] = ReadPosition(index = 2)
+    #     self.thread[2].finish.connect(self.updateGUI)
+    #     self.thread[2].start()      
+            
     def START_CAPTURE_VIDEO(self):
         """Start video object detection and turn on camera
         """
@@ -210,7 +297,330 @@ class MainWindow (QMainWindow):
         self.uic.btn_start_job.setEnabled(False)
         self.uic.btn_load_job.setStyleSheet("QPushButton {color: black;}")
         self.uic.btn_stop_job.setStyleSheet("QPushButton {color: red;}")
-        
+    
+    # MANUAL
+    def btnJogReleaseCallback(self):
+        self.timer_move_pos.stop()
+        self.moveSel = 0
+    
+    def btnJogPressCallback(self, n):
+        if self.connection.checkConnectStatus() == True:
+            if self.connection.checkServoStatus() == True:
+                self.timer_move_pos.start()
+                self.moveSel = n
+            else:
+                print("Warning!!! Servo is off")
+        else:
+            print("Warning!!! NO connection with robot")    
+    
+    def Speed_slider_change_callback(self, slider: QSlider):
+        self.uic.progressBar.setValue(slider.value())
+    
+    # Run by clicking RUN button
+    @checkConnect
+    @checkServo
+    def RUN_ROBOT(self):
+        pos: list = []
+        speed: int32 = int(self.uic.text_speed_2.text()) * 100
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = int(float(self.uic.S_move_text.toPlainText()) * 1000)
+            y_pos = int(float(self.uic.L_move_text.toPlainText()) * 1000)
+            z_pos = int(float(self.uic.U_move_text.toPlainText()) * 1000)
+            roll_pos = int(float(self.uic.R_move_text.toPlainText()) * 10000)
+            pitch_pos = int(float(self.uic.B_move_text.toPlainText()) * 10000)
+            yaw_pos = int(float(self.uic.T_move_text.toPlainText()) * 10000)
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = int(
+                float(self.uic.S_move_text.toPlainText()) * constVariable.pulse_per_degree_S
+            )
+            l_pos = int(
+                float(self.uic.L_move_text.toPlainText()) * constVariable.pulse_per_degree_L
+            )
+            u_pos = int(
+                float(self.uic.U_move_text.toPlainText()) * constVariable.pulse_per_degree_U
+            )
+            r_pos = int(
+                float(self.uic.R_move_text.toPlainText())
+                * constVariable.pulse_per_degree_RBT
+            )
+            b_pos = int(
+                float(self.uic.B_move_text.toPlainText())
+                * constVariable.pulse_per_degree_RBT
+            )
+            t_pos = int(
+                float(self.uic.T_move_text.toPlainText())
+                * constVariable.pulse_per_degree_RBT
+            )
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+    
+    # Run by pressing 
+    def decX(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0] - speed * 10
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0] - speed * 10
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def incX(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0] + speed * 10
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0] + speed * 10
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def decY(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1] - speed * 10
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1] - speed * 10
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def incY(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1] + speed * 10
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1] + speed * 10
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def decZ(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2] - speed * 10
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2] - speed * 10
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def incZ(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2] + speed * 10
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2] + speed * 10
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def decR(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3] - speed * 10
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3] - speed * 10
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def incR(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3] + speed * 10
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3] + speed * 10
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def decP(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4] - speed * 10
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4] - speed * 10
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def incP(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4] + speed * 10
+            yaw_pos = constVariable.CartesianPos[5]
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4] + speed * 10
+            t_pos = constVariable.PulsePos[5]
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def decYaw(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5] - speed * 10
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5] - speed * 10
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+
+    def incYaw(self):
+        pos: list = []
+        speed: int32 = self.uic.Speed_Slider.value() * 50
+        if self.uic.Cartesian_coor.isChecked() == True:
+            x_pos = constVariable.CartesianPos[0]
+            y_pos = constVariable.CartesianPos[1]
+            z_pos = constVariable.CartesianPos[2]
+            roll_pos = constVariable.CartesianPos[3]
+            pitch_pos = constVariable.CartesianPos[4]
+            yaw_pos = constVariable.CartesianPos[5] + speed * 10
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            self.connection.moveCartasianPos(speed, pos)
+        else:
+            s_pos = constVariable.PulsePos[0]
+            l_pos = constVariable.PulsePos[1]
+            u_pos = constVariable.PulsePos[2]
+            r_pos = constVariable.PulsePos[3]
+            b_pos = constVariable.PulsePos[4]
+            t_pos = constVariable.PulsePos[5] + speed * 10
+            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            self.connection.movePulsePos(speed, pos)
+       
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
@@ -231,21 +641,41 @@ class MainWindow (QMainWindow):
     @pyqtSlot(str) 
     def show_info(self, name):
         self.uic.text_name.setText(name)
-        
+        # if name == "Kokomi":
+            # print("write byte 1")
+            # device.writeByte(1,1)
+            # 
+        # if name == "Hao Hao":
+            # print("write byte 2")
+            # device.writeByte(2,2)
+            # 
+        # if name == "Cung dinh":
+            # print("write byte 3")
+            # device.writeByte(3,3)
+            # 
+        # if name == "Omachi":
+            # print("write byte 4")
+            # device.writeByte(4,4)
+            # 
+        # if name == "Miliket":
+            # print("write byte 5")
+            # device.writeByte(5,5)
+            
     """Display number of object
     """
     @pyqtSlot(str,str,str,str,str)
-    def show_number(self, gaudo, cungdinh, haohao, omachi102, omachispa):
-        self.uic.num_gaudo.setText(gaudo)
+    def show_number(self, kokomi, cungdinh, haohao, omachi, miliket):
+        self.uic.num_kokomi.setText(kokomi)
         self.uic.num_cungdinh.setText(cungdinh)
         self.uic.num_haohao.setText(haohao)
-        self.uic.num_omachi102.setText(omachi102)
-        self.uic.num_omachispa.setText(omachispa)
+        self.uic.num_omachi.setText(omachi)
+        self.uic.num_miliket.setText(miliket)
 
     """Display current position
     """  
     @pyqtSlot(str,str,str,str,str,str)
-    def show_position(self, X, Y, Z, Roll, Pitch, Yaw):
+    def show_position(self, X, Y, Z, Roll, Pitch, Yaw,
+                      S, L, U, R, B, T):
         # print(X, Y, Z, Roll, Pitch, Yaw)
         self.uic.txt_X.setText(X)
         self.uic.txt_Y.setText(Y)
@@ -254,9 +684,51 @@ class MainWindow (QMainWindow):
         self.uic.txt_Pitch.setText(Pitch)
         self.uic.txt_Yaw.setText(Yaw)
         
+        self.uic.X_pos_text.setText(X)
+        self.uic.Y_pos_text.setText(Y)
+        self.uic.Z_pos_text.setText(Z)
+        self.uic.Roll_pos_text.setText(Roll)
+        self.uic.Pitch_pos_text.setText(Pitch)
+        self.uic.Yaw_pos_text.setText(Yaw)
+        
+        self.uic.S_pos_text.setText(S)
+        self.uic.L_pos_text.setText(L)
+        self.uic.U_pos_text.setText(U)
+        self.uic.R_pos_text.setText(R)
+        self.uic.B_pos_text.setText(B)
+        self.uic.T_pos_text.setText(T)
+        
     @pyqtSlot(float)
     def show_speed(self, speed):
         print(speed)
         convoyer_speed = round(speed, 2)
         self.uic.text_speed.setText(convoyer_speed)
         
+class GetPosition(QObject):
+    finished = pyqtSignal()
+    # progress = pyqtSignal()
+
+    def run(self, device = Motomini()):
+        device.getCartasianPos()
+        time.sleep(0.005)
+        device.getPulsePos()
+        time.sleep(0.005)
+        device.convertPos()
+        # self.progress.emit()
+        print(constVariable.CartesianPos)
+        print(constVariable.PulsePos)
+        self.finished.emit()
+
+# backup read position       
+class ReadPosition(QThread):
+    finish = pyqtSignal()
+    
+    def run(self, device = Motomini()):
+        device.getCartasianPos()
+        time.sleep(0.0005)
+        device.getPulsePos()
+        time.sleep(0.0005)
+        device.convertPos()
+        print(constVariable.CartesianPos)
+        print(constVariable.PulsePos)
+        self.finish.emit()

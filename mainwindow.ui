@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1185</width>
-    <height>729</height>
+    <width>1177</width>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Auto">
      <attribute name="title">
@@ -707,7 +707,7 @@
         <rect>
          <x>10</x>
          <y>80</y>
-         <width>91</width>
+         <width>111</width>
          <height>28</height>
         </rect>
        </property>
@@ -717,7 +717,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Cung dinh</string>
+        <string>CUNG DINH</string>
        </property>
       </widget>
       <widget class="QLabel" name="Name_7">
@@ -735,7 +735,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Omachi 102</string>
+        <string>OMACHI</string>
        </property>
       </widget>
       <widget class="QLabel" name="Name_2">
@@ -743,7 +743,7 @@
         <rect>
          <x>10</x>
          <y>140</y>
-         <width>81</width>
+         <width>101</width>
          <height>28</height>
         </rect>
        </property>
@@ -753,7 +753,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Hao hao</string>
+        <string>HAO HAO</string>
        </property>
       </widget>
       <widget class="QLabel" name="Name_8">
@@ -771,7 +771,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Omachi spa</string>
+        <string>MILIKET</string>
        </property>
       </widget>
       <widget class="QLabel" name="Name_9">
@@ -779,7 +779,7 @@
         <rect>
          <x>10</x>
          <y>170</y>
-         <width>61</width>
+         <width>101</width>
          <height>28</height>
         </rect>
        </property>
@@ -789,7 +789,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Gau do</string>
+        <string>KOKOMI</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="num_haohao">
@@ -810,7 +810,7 @@
         </font>
        </property>
       </widget>
-      <widget class="QLineEdit" name="num_omachi102">
+      <widget class="QLineEdit" name="num_omachi">
        <property name="geometry">
         <rect>
          <x>130</x>
@@ -852,7 +852,7 @@
         <string/>
        </property>
       </widget>
-      <widget class="QLineEdit" name="num_omachispa">
+      <widget class="QLineEdit" name="num_miliket">
        <property name="geometry">
         <rect>
          <x>130</x>
@@ -870,7 +870,7 @@
         </font>
        </property>
       </widget>
-      <widget class="QLineEdit" name="num_gaudo">
+      <widget class="QLineEdit" name="num_kokomi">
        <property name="geometry">
         <rect>
          <x>130</x>
@@ -1040,6 +1040,29 @@ background-color:rgb(227,227,227);</string>
        <string/>
       </property>
      </widget>
+     <widget class="QPushButton" name="btn_autorun">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>90</y>
+        <width>201</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>AUTORUN</string>
+      </property>
+     </widget>
      <zorder>Khung_frame</zorder>
      <zorder>Khung_RB_connect</zorder>
      <zorder>SerialBox</zorder>
@@ -1048,6 +1071,7 @@ background-color:rgb(227,227,227);</string>
      <zorder>ObjectBox</zorder>
      <zorder>Frame</zorder>
      <zorder>JobBox</zorder>
+     <zorder>btn_autorun</zorder>
     </widget>
     <widget class="QWidget" name="Manual">
      <attribute name="title">
@@ -1077,7 +1101,7 @@ background-color:rgb(227,227,227);</string>
       <property name="title">
        <string>Jogging</string>
       </property>
-      <widget class="QPushButton" name="DecX_butt_2">
+      <widget class="QPushButton" name="DecX_butt">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1096,7 +1120,7 @@ background-color:rgb(227,227,227);</string>
         <string>S-</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="IncX_butt_2">
+      <widget class="QPushButton" name="IncX_butt">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -1115,7 +1139,7 @@ background-color:rgb(227,227,227);</string>
         <string>S+</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="DecY_butt_2">
+      <widget class="QPushButton" name="DecY_butt">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1134,7 +1158,7 @@ background-color:rgb(227,227,227);</string>
         <string>L-</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="IncY_butt_2">
+      <widget class="QPushButton" name="IncY_butt">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -1153,7 +1177,7 @@ background-color:rgb(227,227,227);</string>
         <string>L+</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="DecZ_butt_2">
+      <widget class="QPushButton" name="DecZ_butt">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1172,7 +1196,7 @@ background-color:rgb(227,227,227);</string>
         <string>U-</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="IncZ_butt_2">
+      <widget class="QPushButton" name="IncZ_butt">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -1191,7 +1215,7 @@ background-color:rgb(227,227,227);</string>
         <string>U+</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="DecP_butt_2">
+      <widget class="QPushButton" name="DecP_butt">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1210,7 +1234,7 @@ background-color:rgb(227,227,227);</string>
         <string>B-</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="IncP_butt_2">
+      <widget class="QPushButton" name="IncP_butt">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -1229,7 +1253,7 @@ background-color:rgb(227,227,227);</string>
         <string>B+</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="DecR_butt_2">
+      <widget class="QPushButton" name="DecR_butt">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1248,7 +1272,7 @@ background-color:rgb(227,227,227);</string>
         <string>R-</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="IncYaw_butt_2">
+      <widget class="QPushButton" name="IncYaw_butt">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -1267,7 +1291,7 @@ background-color:rgb(227,227,227);</string>
         <string>T+</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="DecYaw_butt_2">
+      <widget class="QPushButton" name="DecYaw_butt">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1286,7 +1310,7 @@ background-color:rgb(227,227,227);</string>
         <string>T-</string>
        </property>
       </widget>
-      <widget class="QProgressBar" name="progressBar_2">
+      <widget class="QProgressBar" name="progressBar">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1310,7 +1334,7 @@ background-color:rgb(227,227,227);</string>
         <number>0</number>
        </property>
       </widget>
-      <widget class="QSlider" name="Speed_Slider_2">
+      <widget class="QSlider" name="Speed_Slider">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1338,7 +1362,7 @@ background-color:rgb(227,227,227);</string>
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
-      <widget class="QPushButton" name="IncR_butt_2">
+      <widget class="QPushButton" name="IncR_butt">
        <property name="geometry">
         <rect>
          <x>110</x>
@@ -1401,7 +1425,7 @@ background-color:rgb(227,227,227);</string>
         <string>S</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="S_pos_text_2">
+      <widget class="QTextEdit" name="S_pos_text">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -1441,7 +1465,7 @@ background-color:rgb(227,227,227);</string>
         <string>L</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="L_pos_text_2">
+      <widget class="QTextEdit" name="L_pos_text">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -1462,7 +1486,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="U_pos_text_2">
+      <widget class="QTextEdit" name="U_pos_text">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -1521,7 +1545,7 @@ background-color:rgb(227,227,227);</string>
         <string>R</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="R_pos_text_2">
+      <widget class="QTextEdit" name="R_pos_text">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -1542,7 +1566,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="T_pos_text_2">
+      <widget class="QTextEdit" name="T_pos_text">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -1563,7 +1587,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="B_pos_text_2">
+      <widget class="QTextEdit" name="B_pos_text">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -1740,7 +1764,7 @@ background-color:rgb(227,227,227);</string>
      <widget class="QGroupBox" name="CurrentPosBox_2">
       <property name="geometry">
        <rect>
-        <x>365</x>
+        <x>730</x>
         <y>10</y>
         <width>186</width>
         <height>301</height>
@@ -1783,7 +1807,7 @@ background-color:rgb(227,227,227);</string>
         <string>X</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="X_pos_text_2">
+      <widget class="QTextEdit" name="X_pos_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -1817,7 +1841,7 @@ background-color:rgb(227,227,227);</string>
         <string>Y</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="Y_pos_text_2">
+      <widget class="QTextEdit" name="Y_pos_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -1832,7 +1856,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="Z_pos_text_2">
+      <widget class="QTextEdit" name="Z_pos_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -1885,7 +1909,7 @@ background-color:rgb(227,227,227);</string>
         <string>Roll</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="Roll_pos_text_2">
+      <widget class="QTextEdit" name="Roll_pos_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -1900,7 +1924,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="Yaw_pos_text_2">
+      <widget class="QTextEdit" name="Yaw_pos_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -1915,7 +1939,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="Pitch_pos_text_2">
+      <widget class="QTextEdit" name="Pitch_pos_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2086,7 +2110,7 @@ background-color:rgb(227,227,227);</string>
      <widget class="QGroupBox" name="MoveJointBox_2">
       <property name="geometry">
        <rect>
-        <x>730</x>
+        <x>210</x>
         <y>10</y>
         <width>181</width>
         <height>301</height>
@@ -2126,7 +2150,7 @@ background-color:rgb(227,227,227);</string>
         <string>S</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="S_move_text_2">
+      <widget class="QTextEdit" name="S_move_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2166,7 +2190,7 @@ background-color:rgb(227,227,227);</string>
         <string>L</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="L_move_text_2">
+      <widget class="QTextEdit" name="L_move_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2187,7 +2211,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="U_move_text_2">
+      <widget class="QTextEdit" name="U_move_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2246,7 +2270,7 @@ background-color:rgb(227,227,227);</string>
         <string>R</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="R_move_text_2">
+      <widget class="QTextEdit" name="R_move_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2267,7 +2291,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="T_move_text_2">
+      <widget class="QTextEdit" name="T_move_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2288,7 +2312,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QTextEdit" name="B_move_text_2">
+      <widget class="QTextEdit" name="B_move_text">
        <property name="geometry">
         <rect>
          <x>55</x>
@@ -2462,245 +2486,123 @@ background-color:rgb(227,227,227);</string>
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_4">
+     <widget class="QGroupBox" name="CoordinateBox">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>320</y>
-        <width>261</width>
-        <height>301</height>
+        <x>400</x>
+        <y>10</y>
+        <width>151</width>
+        <height>91</height>
        </rect>
       </property>
-      <property name="title">
-       <string>Current Position</string>
+      <property name="minimumSize">
+       <size>
+        <width>146</width>
+        <height>91</height>
+       </size>
       </property>
-      <widget class="QLineEdit" name="txt_getZ_2">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>110</y>
-         <width>151</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_106">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>150</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Roll</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_107">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>150</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>deg</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_108">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>110</y>
-         <width>16</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Z</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txt_getYaw_2">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>230</y>
-         <width>151</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txt_getRoll_2">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>150</y>
-         <width>151</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txt_getX_2">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>30</y>
-         <width>151</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txt_getY_2">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>70</y>
-         <width>151</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_109">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>30</y>
-         <width>16</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>X</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_110">
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Coordinate</string>
+      </property>
+      <widget class="QRadioButton" name="pulse_coor">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>190</y>
-         <width>32</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Pitch</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_111">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>70</y>
-         <width>16</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Y</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txt_getPitch_2">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>190</y>
-         <width>151</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_112">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>190</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>deg</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_113">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>110</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>mm</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_114">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>70</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>mm</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_115">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>230</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Yaw</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_116">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>230</y>
-         <width>26</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>deg</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_117">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
          <y>30</y>
-         <width>26</width>
-         <height>20</height>
+         <width>101</width>
+         <height>17</height>
         </rect>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>101</width>
+         <height>17</height>
+        </size>
+       </property>
        <property name="text">
-        <string>mm</string>
+        <string>Pulse</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QRadioButton" name="Cartesian_coor">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>260</y>
-         <width>236</width>
-         <height>29</height>
+         <y>60</y>
+         <width>101</width>
+         <height>17</height>
         </rect>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>101</width>
+         <height>17</height>
+        </size>
+       </property>
        <property name="text">
-        <string>Get Position</string>
+        <string>Cartesian</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="Speed_box">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>110</y>
+        <width>151</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>146</width>
+        <height>61</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Speed (%)</string>
+      </property>
+      <widget class="QPushButton" name="move_butt">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>30</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>51</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Run</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="text_speed_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
        </property>
       </widget>
      </widget>
@@ -2857,44 +2759,24 @@ background-color:rgb(227,227,227);</string>
       <string>SERVO ON</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_33">
+    <widget class="QLabel" name="lb_run_status">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>190</y>
-       <width>111</width>
+       <width>151</width>
        <height>21</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>12</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
      </property>
      <property name="text">
-      <string>Robot Status :</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="lb_run_status">
-     <property name="geometry">
-      <rect>
-       <x>130</x>
-       <y>190</y>
-       <width>41</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Stop</string>
+      <string>Robot Status: OFF</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_home_pos">

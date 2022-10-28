@@ -5,3 +5,9 @@ module.py to control main.py
 typedef.py: includes data frame
 
 Run main.py to execute
+
+- Omachi
+- Hảo hảo
+- Kokomi
+- Cung đình
+- Miliket
