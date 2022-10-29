@@ -907,7 +907,7 @@ class Ui_MainWindow(object):
         self.btn_servoON.setAutoFillBackground(False)
         self.btn_servoON.setObjectName("btn_servoON")
         self.lb_run_status = QtWidgets.QLabel(self.groupBox)
-        self.lb_run_status.setGeometry(QtCore.QRect(20, 190, 151, 21))
+        self.lb_run_status.setGeometry(QtCore.QRect(20, 190, 181, 21))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(False)

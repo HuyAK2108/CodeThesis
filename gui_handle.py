@@ -1,12 +1,10 @@
-# Use this file to control GUI
-import time
+import cv2, serial
+import numpy as np
+import serial.tools.list_ports
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QSlider
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import  pyqtSlot, Qt, pyqtSignal, QTimer, QObject, QThread
-import cv2, serial
-import numpy as np
-import serial.tools.list_ports
 from gui import Ui_MainWindow
 from module import VideoThread
 from robot_controller import Robot, UART
@@ -17,10 +15,10 @@ device = Motomini()
 class MainWindow (QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Qt live label demo")
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
         self.init_variables()
+        self.init_timer()
         self.init_button()
     
     def init_timer(self):
@@ -66,16 +64,6 @@ class MainWindow (QMainWindow):
         self.uic.btn_load_job.clicked.connect(self.LOAD_JOB)
         self.uic.btn_start_job.clicked.connect(self.START_JOB)
         self.uic.btn_stop_job.clicked.connect(self.STOP_JOB)
-        # Button MANUAL
-        self.uic.Cartesian_coor.clicked.connect(
-            lambda: self.coorRadBtnCallback(self.uic.Cartesian_coor.isChecked())
-        )
-        self.uic.pulse_coor.clicked.connect(
-            lambda: self.coorRadBtnCallback(self.uic.Cartesian_coor.isChecked())
-        )   
-        self.uic.Speed_Slider.valueChanged.connect(
-            lambda: self.Speed_slider_change_callback(self.uic.Speed_Slider)
-        )
         # Button RUN
         self.uic.move_butt.clicked.connect(self.RUN_ROBOT)
         # Press button jogging
@@ -104,6 +92,13 @@ class MainWindow (QMainWindow):
         self.uic.IncP_butt.released.connect(self.btnJogReleaseCallback)
         self.uic.DecYaw_butt.released.connect(self.btnJogReleaseCallback)
         self.uic.IncYaw_butt.released.connect(self.btnJogReleaseCallback)
+        # Button Coordinate
+        self.uic.Cartesian_coor.clicked.connect(
+            lambda: self.coorRadBtnCallback(self.uic.Cartesian_coor.isChecked()))
+        self.uic.pulse_coor.clicked.connect(
+            lambda: self.coorRadBtnCallback(self.uic.Cartesian_coor.isChecked()))   
+        self.uic.Speed_Slider.valueChanged.connect(
+            lambda: self.Speed_slider_change_callback(self.uic.Speed_Slider))
             
     def moveRobot(self):
         if self.moveSel == 1:
@@ -129,23 +124,7 @@ class MainWindow (QMainWindow):
         elif self.moveSel == 11:
             self.decYaw()
         elif self.moveSel == 12:
-            self.incYaw()
-        # self.getPos()
-        
-    # def getPos(self):
-    #     self.thread[2] = Robot(index = 2)
-    #     self.worker = GetPosition()
-    #     self.worker.moveToThread(self.thread[2])
-    #     self.thread[2].started.connect(lambda: self.worker.run(self.connection))
-    #     self.worker.finished.connect(self.thread[2].quit)
-    #     self.worker.finished.connect(self.worker.deleteLater)
-    #     self.thread[2].finished.connect(self.thread[2].deleteLater)
-    #     # self.worker.progress.connect(self.updateGUI)
-    #     self.thread[2].start()
-        
-    #     self.thread[2] = ReadPosition(index = 2)
-    #     self.thread[2].finish.connect(self.updateGUI)
-    #     self.thread[2].start()      
+            self.incYaw() 
             
     def START_CAPTURE_VIDEO(self):
         """Start video object detection and turn on camera
@@ -191,8 +170,12 @@ class MainWindow (QMainWindow):
         """
         self.com = self.uic.COM.currentText()
         self.baudrate = int(self.uic.Baudrate.currentText())
+        self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
+        
         if self.com_connect_status == False:
-            # self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
+            self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
+            print("UART connected")
+            self.status_thread_3 = True
             self.com_connect_status = True
             self.uic.btn_closeuart.setEnabled(True)
             self.uic.btn_setuart.setEnabled(False)
@@ -238,6 +221,7 @@ class MainWindow (QMainWindow):
                 self.uic.btn_servoON.setText("SERVO OFF")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
                 self.uic.lb_run_status.setText("Robot Status: ON")
+                self.status_thread_2 = True
                 self.thread[2] = Robot(index = 2)
                 self.thread[2].start_receive_pos()
                 self.thread[2].get_position.connect(self.show_position)
@@ -323,37 +307,27 @@ class MainWindow (QMainWindow):
         pos: list = []
         speed: int32 = int(self.uic.text_speed_2.text()) * 100
         if self.uic.Cartesian_coor.isChecked() == True:
-            x_pos = int(float(self.uic.S_move_text.toPlainText()) * 1000)
-            y_pos = int(float(self.uic.L_move_text.toPlainText()) * 1000)
-            z_pos = int(float(self.uic.U_move_text.toPlainText()) * 1000)
-            roll_pos = int(float(self.uic.R_move_text.toPlainText()) * 10000)
-            pitch_pos = int(float(self.uic.B_move_text.toPlainText()) * 10000)
-            yaw_pos = int(float(self.uic.T_move_text.toPlainText()) * 10000)
+            x_pos       = int( float (self.uic.S_move_text.toPlainText() ) * 1000)
+            y_pos       = int( float (self.uic.L_move_text.toPlainText() ) * 1000)
+            z_pos       = int( float (self.uic.U_move_text.toPlainText() ) * 1000)
+            roll_pos    = int( float (self.uic.R_move_text.toPlainText() ) * 10000)
+            pitch_pos   = int( float (self.uic.B_move_text.toPlainText() ) * 10000)
+            yaw_pos     = int( float (self.uic.T_move_text.toPlainText() ) * 10000)
+            
             pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            
             self.connection.moveCartasianPos(speed, pos)
+            
         else:
-            s_pos = int(
-                float(self.uic.S_move_text.toPlainText()) * constVariable.pulse_per_degree_S
-            )
-            l_pos = int(
-                float(self.uic.L_move_text.toPlainText()) * constVariable.pulse_per_degree_L
-            )
-            u_pos = int(
-                float(self.uic.U_move_text.toPlainText()) * constVariable.pulse_per_degree_U
-            )
-            r_pos = int(
-                float(self.uic.R_move_text.toPlainText())
-                * constVariable.pulse_per_degree_RBT
-            )
-            b_pos = int(
-                float(self.uic.B_move_text.toPlainText())
-                * constVariable.pulse_per_degree_RBT
-            )
-            t_pos = int(
-                float(self.uic.T_move_text.toPlainText())
-                * constVariable.pulse_per_degree_RBT
-            )
+            s_pos = int( float (self.uic.S_move_text.toPlainText() ) * constVariable.pulse_per_degree_S)
+            l_pos = int( float (self.uic.L_move_text.toPlainText() ) * constVariable.pulse_per_degree_L)
+            u_pos = int( float (self.uic.U_move_text.toPlainText() ) * constVariable.pulse_per_degree_U)
+            r_pos = int( float (self.uic.R_move_text.toPlainText() ) * constVariable.pulse_per_degree_RBT)
+            b_pos = int( float (self.uic.B_move_text.toPlainText() ) * constVariable.pulse_per_degree_RBT)
+            t_pos = int( float (self.uic.T_move_text.toPlainText() ) * constVariable.pulse_per_degree_RBT)
+            
             pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
+            
             self.connection.movePulsePos(speed, pos)
     
     # Run by pressing 
@@ -620,6 +594,56 @@ class MainWindow (QMainWindow):
             t_pos = constVariable.PulsePos[5] + speed * 10
             pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
             self.connection.movePulsePos(speed, pos)
+            
+    def coorRadBtnCallback(self, select: bool):
+        if select == True:
+            self.uic.DecX_butt.setText("X-")
+            self.uic.IncX_butt.setText("X+")
+            self.uic.DecY_butt.setText("Y-")
+            self.uic.IncY_butt.setText("Y+")
+            self.uic.DecZ_butt.setText("Z-")
+            self.uic.IncZ_butt.setText("Z+")
+            self.uic.DecR_butt.setText("Roll-")
+            self.uic.IncR_butt.setText("Roll+")
+            self.uic.DecP_butt.setText("Pitch-")
+            self.uic.IncP_butt.setText("Pitch+")
+            self.uic.DecYaw_butt.setText("Yaw-")
+            self.uic.IncYaw_butt.setText("Yaw+")
+
+            self.uic.label_82.setText("X")
+            self.uic.label_83.setText("Y")
+            self.uic.label_84.setText("Z")
+            self.uic.label_85.setText("Roll")
+            self.uic.label_86.setText("Pitch")
+            self.uic.label_87.setText("Yaw")
+
+            self.uic.label_88.setText("mm")
+            self.uic.label_89.setText("mm")
+            self.uic.label_90.setText("mm")
+        else:
+            self.uic.DecX_butt.setText("S-")
+            self.uic.IncX_butt.setText("S+")
+            self.uic.DecY_butt.setText("L-")
+            self.uic.IncY_butt.setText("L+")
+            self.uic.DecZ_butt.setText("U-")
+            self.uic.IncZ_butt.setText("U+")
+            self.uic.DecR_butt.setText("R-")
+            self.uic.IncR_butt.setText("R+")
+            self.uic.DecP_butt.setText("B-")
+            self.uic.IncP_butt.setText("B+")
+            self.uic.DecYaw_butt.setText("T-")
+            self.uic.IncYaw_butt.setText("T+")
+
+            self.uic.label_82.setText("S")
+            self.uic.label_83.setText("L")
+            self.uic.label_84.setText("U")
+            self.uic.label_85.setText("R")
+            self.uic.label_86.setText("B")
+            self.uic.label_87.setText("T")
+            
+            self.uic.label_88.setText("deg")
+            self.uic.label_89.setText("deg")
+            self.uic.label_90.setText("deg")
        
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
@@ -641,29 +665,29 @@ class MainWindow (QMainWindow):
     @pyqtSlot(str) 
     def show_info(self, name):
         self.uic.text_name.setText(name)
-        # if name == "Kokomi":
-            # print("write byte 1")
-            # device.writeByte(1,1)
-            # 
-        # if name == "Hao Hao":
-            # print("write byte 2")
-            # device.writeByte(2,2)
-            # 
-        # if name == "Cung dinh":
-            # print("write byte 3")
-            # device.writeByte(3,3)
-            # 
-        # if name == "Omachi":
-            # print("write byte 4")
-            # device.writeByte(4,4)
-            # 
-        # if name == "Miliket":
-            # print("write byte 5")
-            # device.writeByte(5,5)
+        if name == "Kokomi":
+            print("write byte 1")
+            device.writeByte(21,1)
+            
+        if name == "Hao Hao":
+            print("write byte 2")
+            device.writeByte(21,2)
+            
+        if name == "Cung dinh":
+            print("write byte 3")
+            device.writeByte(21,3)
+            
+        if name == "Omachi":
+            print("write byte 4")
+            device.writeByte(21,4)
+            
+        if name == "Miliket":
+            print("write byte 5")
+            device.writeByte(21,5)
             
     """Display number of object
     """
-    @pyqtSlot(str,str,str,str,str)
+    @pyqtSlot(str, str, str, str, str)
     def show_number(self, kokomi, cungdinh, haohao, omachi, miliket):
         self.uic.num_kokomi.setText(kokomi)
         self.uic.num_cungdinh.setText(cungdinh)
@@ -673,9 +697,8 @@ class MainWindow (QMainWindow):
 
     """Display current position
     """  
-    @pyqtSlot(str,str,str,str,str,str)
-    def show_position(self, X, Y, Z, Roll, Pitch, Yaw,
-                      S, L, U, R, B, T):
+    @pyqtSlot(str, str, str, str, str, str, str, str, str, str, str, str)
+    def show_position(self, X, Y, Z, Roll, Pitch, Yaw, S, L, U, R, B, T):
         # print(X, Y, Z, Roll, Pitch, Yaw)
         self.uic.txt_X.setText(X)
         self.uic.txt_Y.setText(Y)
@@ -704,31 +727,3 @@ class MainWindow (QMainWindow):
         convoyer_speed = round(speed, 2)
         self.uic.text_speed.setText(convoyer_speed)
         
-class GetPosition(QObject):
-    finished = pyqtSignal()
-    # progress = pyqtSignal()
-
-    def run(self, device = Motomini()):
-        device.getCartasianPos()
-        time.sleep(0.005)
-        device.getPulsePos()
-        time.sleep(0.005)
-        device.convertPos()
-        # self.progress.emit()
-        print(constVariable.CartesianPos)
-        print(constVariable.PulsePos)
-        self.finished.emit()
-
-# backup read position       
-class ReadPosition(QThread):
-    finish = pyqtSignal()
-    
-    def run(self, device = Motomini()):
-        device.getCartasianPos()
-        time.sleep(0.0005)
-        device.getPulsePos()
-        time.sleep(0.0005)
-        device.convertPos()
-        print(constVariable.CartesianPos)
-        print(constVariable.PulsePos)
-        self.finish.emit()

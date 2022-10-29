@@ -11,10 +11,9 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = '28_10.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'best.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)
-print(model.conf)
 clasess = model.names
 print(clasess)
 class VideoThread(QThread):
@@ -143,16 +142,16 @@ class VideoThread(QThread):
                 detections_5.append(objectID_5)
                 self.count_miliket = get_lastest_value(detections_5)
                 cv2.putText(frame, str(self.count_miliket), centroid, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
-        self.number.emit(str(self.count_kokomi), str(self.count_cungdinh), str(self.count_haohao), str(self.count_omachi), str(self.count_miliket))
         
-                
+        self.number.emit(str(self.count_kokomi), str(self.count_cungdinh), str(self.count_haohao), str(self.count_omachi), str(self.count_miliket))         
+        
         return frame
     
     def run_program(self):
         """This function runs the loop to read the video frame by frame 
         """
         # Capture from web cam
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FPS, 30)
         # Loop to read the video frame by frame
         while self._run_flag:
