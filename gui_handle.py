@@ -34,6 +34,18 @@ class MainWindow (QMainWindow):
         self.status_thread_2 = False
         self.status_thread_3 = False
         
+        # Init Button Status
+        self.uic.btn_servoON.setEnabled(False)
+        self.uic.btn_home_pos.setEnabled(False)
+        self.uic.btn_start_job.setEnabled(False)
+        self.uic.btn_stop_job.setEnabled(False)
+        self.uic.btn_offCAM.setEnabled(False)
+        self.uic.btn_closeuart.setEnabled(False)
+        # self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
+        # self.uic.btn_onCAM.setStyleSheet("QPushButton {color: green;}")
+        # self.uic.btn_setuart.setStyleSheet("QPushButton {color: green;}")
+        
+        
         # Connection Status
         self.job_status = False
         self.com_connect_status = False
@@ -170,10 +182,7 @@ class MainWindow (QMainWindow):
         """
         self.com = self.uic.COM.currentText()
         self.baudrate = int(self.uic.Baudrate.currentText())
-        self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
-        
         if self.com_connect_status == False:
-            self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
             print("UART connected")
             self.status_thread_3 = True
             self.com_connect_status = True
@@ -186,7 +195,8 @@ class MainWindow (QMainWindow):
     def DISCONNECT_SERIAL(self):
         """Close UART
         """
-        self.com = self.uic.COM.currentText()        
+        self.com = self.uic.COM.currentText()   
+        self.uic.text_speed.setText('0')     
         self.uic.btn_closeuart.setEnabled(False)
         self.uic.btn_setuart.setEnabled(True)
         self.com_connect_status = False
@@ -241,6 +251,8 @@ class MainWindow (QMainWindow):
             # ip = self.uic.text_IP.text()
             # port = int(self.uic.text_Port.text())
             # self.connection.connectMotomini(ip = ip, port = port)
+            self.uic.btn_servoON.setEnabled(True)
+            self.uic.btn_home_pos.setEnabled(True)
             self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_setconnnect.setText("DISCONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
@@ -721,9 +733,7 @@ class MainWindow (QMainWindow):
         self.uic.B_pos_text.setText(B)
         self.uic.T_pos_text.setText(T)
         
-    @pyqtSlot(float)
+    @pyqtSlot(int)
     def show_speed(self, speed):
-        print(speed)
-        convoyer_speed = round(speed, 2)
-        self.uic.text_speed.setText(convoyer_speed)
+        self.uic.text_speed.setText(str(speed))
         

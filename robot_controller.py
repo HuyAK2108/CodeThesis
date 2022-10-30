@@ -1,3 +1,4 @@
+from turtle import speed
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.QtWidgets import *
@@ -64,27 +65,30 @@ class Robot(QThread):
                                txt_S, txt_L, txt_U, txt_R, txt_B, txt_T)
          
 class UART(QThread):
-    get_speed = pyqtSignal(float)
+    get_speed = pyqtSignal(int)
     def __init__(self, index = 0, com = '', baudrate = 0):
         super(UART, self).__init__()
         self.index = index
         self.com = com
         self.baudrate = baudrate
         self.connection = device
-        print("UART start thread ", self.index) 
-        print(self.com)
-        print(self.baudrate)        
-        # self.init_timer()
+        self.ready_to_read = False
+        self.start_receive = 'S'
+        self.stop_receive = 'T'
+        print("UART start thread ", self.index)
         
     def init_timer(self):
         self.ready_to_read = True
         self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
+        self.ser.write(self.start_receive.encode())
         self.TIMER_UART = QtCore.QTimer()
         self.TIMER_UART.setInterval(500)
         self.TIMER_UART.timeout.connect(self.get_data)
         self.TIMER_UART.start()
+        print("Connected")
     
     def stop_timer(self):
+        self.ser.write(self.stop_receive.encode())
         self.TIMER_UART.stop()
         self.ser.close()
         
@@ -98,10 +102,9 @@ class UART(QThread):
             bytetoread = self.ser.inWaiting()
             if bytetoread > 0:
                 RXData = self.ser.readline(bytetoread)
-                self.ready_to_read = False
-                RXData = str(RXData, "UTF-8")
-                RXData = RXData.split("\n")
+                # RXData = str(RXData, 'UTF-8')
+                # RXData = RXData.split("\n")
                 speed = RXData[0]
                 self.get_speed.emit(speed)
-                self.ready_to_read = True
+           
                 

@@ -94,6 +94,12 @@ class Ui_MainWindow(object):
         self.btn_closeuart.setObjectName("btn_closeuart")
         self.text_speed = QtWidgets.QLineEdit(self.SerialBox)
         self.text_speed.setGeometry(QtCore.QRect(90, 90, 101, 21))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
+        self.text_speed.setFont(font)
+        self.text_speed.setText("")
         self.text_speed.setObjectName("text_speed")
         self.groupBox_2 = QtWidgets.QGroupBox(self.Auto)
         self.groupBox_2.setGeometry(QtCore.QRect(690, 400, 211, 221))
@@ -939,7 +945,7 @@ class Ui_MainWindow(object):
         self.actionhand.setObjectName("actionhand")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

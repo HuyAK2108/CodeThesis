@@ -11,3 +11,6 @@ Run main.py to execute
 - Kokomi
 - Cung đình
 - Miliket
+
+v1.pt : train only lab images
+best.pt: lab + web
