@@ -85,7 +85,6 @@ class UART(QThread):
         self.TIMER_UART.setInterval(500)
         self.TIMER_UART.timeout.connect(self.get_data)
         self.TIMER_UART.start()
-        print("Connected")
     
     def stop_timer(self):
         self.ser.write(self.stop_receive.encode())
@@ -93,7 +92,9 @@ class UART(QThread):
         self.ser.close()
         
     def stop(self):
-        """Sets waits for thread to finish"""    
+        """Sets waits for thread to finish"""
+        print("UART stop thread ", self.index)
+            
         self.wait()
        
     def get_data(self):    

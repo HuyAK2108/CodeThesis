@@ -183,7 +183,6 @@ class MainWindow (QMainWindow):
         self.com = self.uic.COM.currentText()
         self.baudrate = int(self.uic.Baudrate.currentText())
         if self.com_connect_status == False:
-            print("UART connected")
             self.status_thread_3 = True
             self.com_connect_status = True
             self.uic.btn_closeuart.setEnabled(True)
@@ -201,7 +200,7 @@ class MainWindow (QMainWindow):
         self.uic.btn_setuart.setEnabled(True)
         self.com_connect_status = False
         self.thread[3].stop_timer()
-        print("Disconnected to",self.com)    
+        self.thread[3].stop()
     
     def checkConnect(func):
         def check(self):
