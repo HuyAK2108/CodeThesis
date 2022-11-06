@@ -272,3 +272,26 @@ class convertNameJob:
         for i in range(size(list_name),32):
             buffer.append(QByteArray(struct.pack("B",0)))
         return buffer
+# Use to check current flag to pick object
+class flag:
+    flag_kokomi   = 0       # flag_kokomi 
+    flag_cungdinh = 0       # flag_cungdinh
+    flag_haohao   = 0       # flag_haohao
+    flag_omachi   = 0       # flag_omachi
+    flag_miliket  = 0       # flag_miliket
+    
+class location:
+    # Cartesian    x,y,z,R,P,Y
+    kokomi      = [0,0,0,0,0,0]
+    cungdinh    = [0,0,0,0,0,0]
+    haohao      = [0,0,0,0,0,0]
+    omachi      = [0,0,0,0,0,0]
+    miliket     = [0,0,0,0,0,0]
+    
+class init_pos:
+    P101 = [0,0,0,0,0,0]
+    P102 = [0,0,0,0,0,0]
+    P103 = [0,0,0,0,0,0]
+    P104 = [0,0,0,0,0,0]
+    P105 = [0,0,0,0,0,0]
+    

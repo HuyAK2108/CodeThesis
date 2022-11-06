@@ -14,3 +14,13 @@ Run main.py to execute
 
 v1.pt : train only lab images
 best.pt: lab + web
+
+Method 1:
+cX = int((startX + endX) / 2.0) - 10
+cY = int((startY + endY) / 2.0)
+
+Method 2:
+cX = float((startX + endX) / 2.0)
+cY = float((startY + endY) / 2.0)
+
+ObjectID : type int

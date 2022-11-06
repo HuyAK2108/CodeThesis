@@ -17,7 +17,7 @@ class Robot(QThread):
         self.index = index
         self.connection = device
         self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
-        print("Robot thread start ", self.index)
+        print("Robot thread start", self.index)
 
     def run(self):
         self.start_receive_pos()
@@ -34,7 +34,7 @@ class Robot(QThread):
 
     def stop(self):
         """Sets waits for thread to finish"""
-        print("Robot thread stop ", self.index)
+        print("Robot thread stop", self.index)
         self.wait()
         
     def updateGUI(self):
@@ -43,8 +43,6 @@ class Robot(QThread):
         device.getPulsePos()
         time.sleep(0.0005)
         device.convertPos()
-        # print(constVariable.CartesianPos)
-        # print(constVariable.PulsePos)
           
         txt_X     = (str (round (float(constVariable.CartesianPos[0]) / 1000 , 3 ) ) )
         txt_Y     = (str (round (float(constVariable.CartesianPos[1]) / 1000 , 3 ) ) )
@@ -75,7 +73,7 @@ class UART(QThread):
         self.ready_to_read = False
         self.start_receive = 'S'
         self.stop_receive = 'T'
-        print("UART start thread ", self.index)
+        print("UART start thread", self.index)
         
     def init_timer(self):
         self.ready_to_read = True
@@ -93,7 +91,7 @@ class UART(QThread):
         
     def stop(self):
         """Sets waits for thread to finish"""
-        print("UART stop thread ", self.index)
+        print("UART stop thread", self.index)
             
         self.wait()
        

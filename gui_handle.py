@@ -4,7 +4,7 @@ import serial.tools.list_ports
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QSlider
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import  pyqtSlot, Qt, pyqtSignal, QTimer, QObject, QThread
+from PyQt5.QtCore import  pyqtSlot, Qt, QTimer
 from gui import Ui_MainWindow
 from module import VideoThread
 from robot_controller import Robot, UART
@@ -17,6 +17,9 @@ class MainWindow (QMainWindow):
         super().__init__()
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
+        self.uic.lb_on_cam.hide()
+        self.uic.lb_on_robot.hide()
+        self.uic.lb_wait_robot.hide()
         self.init_variables()
         self.init_timer()
         self.init_button()
@@ -41,15 +44,12 @@ class MainWindow (QMainWindow):
         self.uic.btn_stop_job.setEnabled(False)
         self.uic.btn_offCAM.setEnabled(False)
         self.uic.btn_closeuart.setEnabled(False)
-        # self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
-        # self.uic.btn_onCAM.setStyleSheet("QPushButton {color: green;}")
-        # self.uic.btn_setuart.setStyleSheet("QPushButton {color: green;}")
-        
         
         # Connection Status
         self.job_status = False
         self.com_connect_status = False
         
+        self.object_name = ''
         # Call Motomini class
         self.connection = device
         
@@ -76,6 +76,10 @@ class MainWindow (QMainWindow):
         self.uic.btn_load_job.clicked.connect(self.LOAD_JOB)
         self.uic.btn_start_job.clicked.connect(self.START_JOB)
         self.uic.btn_stop_job.clicked.connect(self.STOP_JOB)
+        # Button store P101 - 105
+        self.uic.btn_backup_data.clicked.connect(self.BACKUP_POSITION)
+        self.uic.btn_reload_data.clicked.connect(self.RELOAD_POSITION)
+        
         # Button RUN
         self.uic.move_butt.clicked.connect(self.RUN_ROBOT)
         # Press button jogging
@@ -145,7 +149,9 @@ class MainWindow (QMainWindow):
         self.uic.btn_offCAM.setEnabled(True)
         self.uic.btn_onCAM.setStyleSheet("QPushButton {color: green;}")
         self.uic.btn_offCAM.setStyleSheet("QPushButton {color: black;}")
-        
+        self.uic.lb_on_cam.show()
+        self.uic.lb_off_cam.hide()
+        self.uic.lb_camera_status.setText("Camera Status: ON")
         self.status_thread_1 = True
         # create the video capture thread
         self.thread[1] = VideoThread(index=1)
@@ -154,8 +160,10 @@ class MainWindow (QMainWindow):
         self.thread[1].number.connect(self.show_number)
         # connect its signal to the update_image slot to display webcam
         self.thread[1].change_pixmap_signal.connect(self.update_image)
+        self.thread[1].position.connect(self.get_object_position)
         # start the thread
         self.thread[1].start()
+        
         
     def STOP_CAPTURE_VIDEO(self):
         """Stop capture video and turn off camera
@@ -164,6 +172,9 @@ class MainWindow (QMainWindow):
         self.uic.btn_offCAM.setEnabled(False)
         self.uic.btn_onCAM.setStyleSheet("QPushButton {color: black;}")
         self.uic.btn_offCAM.setStyleSheet("QPushButton {color: red;}")
+        self.uic.lb_camera_status.setText("Camera Status: OFF")
+        self.uic.lb_on_cam.hide()
+        self.uic.lb_off_cam.show()
         self.thread[1].stop()
     
     def closeEvent(self, event):
@@ -213,7 +224,7 @@ class MainWindow (QMainWindow):
     def checkServo(func):
         def check(self):
             if self.connection.checkServoStatus() == False:
-                self.print("Warning!!! Servo is off")
+                print("Warning!!! Servo is off")
                 return
             return func(self)
         return check
@@ -230,6 +241,8 @@ class MainWindow (QMainWindow):
                 self.uic.btn_servoON.setText("SERVO OFF")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
                 self.uic.lb_run_status.setText("Robot Status: ON")
+                self.uic.lb_on_robot.show()
+                self.uic.lb_wait_robot.hide()
                 self.status_thread_2 = True
                 self.thread[2] = Robot(index = 2)
                 self.thread[2].start_receive_pos()
@@ -241,6 +254,8 @@ class MainWindow (QMainWindow):
                 self.uic.btn_servoON.setText("SERVO ON")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
                 self.uic.lb_run_status.setText("Robot Status: OFF")
+                self.uic.lb_wait_robot.show()
+                self.uic.lb_on_robot.hide()
                 self.thread[2].stop_receive_pos()
             else:
                 print("Can not off servo")
@@ -252,12 +267,17 @@ class MainWindow (QMainWindow):
             # self.connection.connectMotomini(ip = ip, port = port)
             self.uic.btn_servoON.setEnabled(True)
             self.uic.btn_home_pos.setEnabled(True)
+            self.uic.lb_wait_robot.show()
+            self.uic.lb_off_robot.hide()
             self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_setconnnect.setText("DISCONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
             print("Connected to Robot")
         else:
             self.connection.disconnectMotomini()
+            self.uic.lb_off_robot.show()
+            self.uic.lb_wait_robot.hide()
+            self.uic.lb_on_robot.hide()
             self.uic.btn_setconnnect.setText("CONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
             print("Disconnected to Robot")
@@ -292,7 +312,7 @@ class MainWindow (QMainWindow):
         self.uic.btn_start_job.setEnabled(False)
         self.uic.btn_load_job.setStyleSheet("QPushButton {color: black;}")
         self.uic.btn_stop_job.setStyleSheet("QPushButton {color: red;}")
-    
+        device.writeByte(21, 6)
     # MANUAL
     def btnJogReleaseCallback(self):
         self.timer_move_pos.stop()
@@ -676,25 +696,7 @@ class MainWindow (QMainWindow):
     @pyqtSlot(str) 
     def show_info(self, name):
         self.uic.text_name.setText(name)
-        if name == "Kokomi":
-            print("write byte 1")
-            device.writeByte(21,1)
-            
-        if name == "Hao Hao":
-            print("write byte 2")
-            device.writeByte(21,2)
-            
-        if name == "Cung dinh":
-            print("write byte 3")
-            device.writeByte(21,3)
-            
-        if name == "Omachi":
-            print("write byte 4")
-            device.writeByte(21,4)
-            
-        if name == "Miliket":
-            print("write byte 5")
-            device.writeByte(21,5)
+        self.object_name = name
             
     """Display number of object
     """
@@ -736,3 +738,161 @@ class MainWindow (QMainWindow):
     def show_speed(self, speed):
         self.uic.text_speed.setText(str(speed))
         
+    @pyqtSlot(int, int, int, int, int)
+    def get_object_position(self, flag_kokomi, flag_cungdinh, flag_haohao, flag_omachi, flag_miliket):
+        flag.flag_kokomi   = flag_kokomi
+        flag.flag_cungdinh = flag_cungdinh
+        flag.flag_haohao   = flag_haohao
+        flag.flag_omachi   = flag_omachi
+        flag.flag_miliket  = flag_miliket
+    
+        x_pos       =  250  * 1000
+        y_pos       = -100  * 1000
+        z_pos       = -120  * 1000
+        roll_pos    = -180  * 10000
+        pitch_pos   =  0    * 10000
+        yaw_pos     =  0    * 1000
+        pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+        # device.writeVariablePos(121, pos)
+
+        # if self.object_name == "Cung dinh":
+        #     if flag.flag_cungdinh == 1:
+        #         print("write byte 1")
+        #         device.writeByte(21,1)
+        
+        # if self.object_name == "Hao Hao":
+        #     if flag.flag_haohao == 1:
+        #         print("write byte 2")
+        #         device.writeByte(21,2)
+        
+        # if self.object_name == "Kokomi":
+        #     if flag.flag_kokomi == 1:
+        #         print("write byte 3")
+        #         device.writeByte(21,3)
+        
+        # if self.object_name == "Miliket":
+        #     if flag.flag_miliket == 1:
+        #         print("write byte 4")
+        #         device.writeByte(21,4)
+        
+        # if self.object_name == "Omachi":
+        #     if flag.flag_omachi == 1:
+        #         print("write byte 5")
+        #         device.writeByte(21,5)
+                
+        # if self.object_name == "Cung dinh":
+        #     if flag.flag_cungdinh == 1:
+        #         print("write byte 1")
+            
+        #         x_pos       =  250  * 1000
+        #         y_pos       = -100  * 1000
+        #         z_pos       = -120  * 1000
+        #         roll_pos    = -180  * 10000
+        #         pitch_pos   =  0    * 10000
+        #         yaw_pos     =  0    * 10000
+
+        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+                
+        #         # location.cungdinh = device.getVariablePos(101)
+        #         # location.cungdinh[2] = location.cungdinh[2] + 6*1000
+        #         # device.writeVariablePos(101, location.cungdinh)
+        #         device.writeVariablePos(121, pos)
+        #         device.writeByte(21,1)
+                
+        # if self.object_name == "Hao Hao":
+        #     if flag.flag_haohao == 1:
+        #         print(flag.flag_haohao)
+        #         print("write byte 2")
+
+        #         x_pos       =  250  * 1000
+        #         y_pos       = -100  * 1000
+        #         z_pos       = -120  * 1000
+        #         roll_pos    = -180  * 10000
+        #         pitch_pos   =  0    * 10000
+        #         yaw_pos     =  0    * 10000
+
+        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            
+        #         # location.haohao = device.getVariablePos(102)
+        #         # location.haohao[2] = location.haohao[2] + 6*1000
+        #         # device.writeVariablePos(102, location.haohao)
+        #         device.writeVariablePos(121, pos)
+        #         device.writeByte(21,2)
+            
+        # if self.object_name == "Kokomi":
+        #     if flag.flag_kokomi == 1:
+        #         print("write byte 3")
+
+        #         x_pos       =  250  * 1000
+        #         y_pos       = -100  * 1000
+        #         z_pos       = -120  * 1000
+        #         roll_pos    = -180  * 10000
+        #         pitch_pos   =  0    * 10000
+        #         yaw_pos     =  0    * 10000
+
+        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+
+        #         # location.kokomi = device.getVariablePos(103)
+        #         # location.kokomi[2] = location.kokomi[2] + 6*1000
+        #         # device.writeVariablePos(103, location.kokomi)
+        #         device.writeVariablePos(121, pos)
+        #         device.writeByte(21,3)
+            
+        # if self.object_name == "Miliket":
+        #     if flag.flag_miliket == 1:
+        #         print("write byte 4")
+
+        #         x_pos       =  250  * 1000
+        #         y_pos       = -100  * 1000
+        #         z_pos       = -120  * 1000
+        #         roll_pos    = -180  * 10000
+        #         pitch_pos   =  0    * 10000
+        #         yaw_pos     =  0    * 10000
+
+        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+                
+        #         # location.miliket = device.getVariablePos(104)
+        #         # location.miliket[2] = location.miliket[2] + 6*1000
+        #         # device.writeVariablePos(104, location.miliket)
+        #         device.writeVariablePos(121, pos)
+        #         device.writeByte(21,4)
+            
+        # if self.object_name == "Omachi":
+        #     if flag.flag_omachi == 1:
+        #         print("write byte 5")
+
+        #         x_pos       =  250  * 1000
+        #         y_pos       = -100  * 1000
+        #         z_pos       = -120  * 1000
+        #         roll_pos    = -180  * 10000
+        #         pitch_pos   =  0    * 10000
+        #         yaw_pos     =  0    * 10000
+
+        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+                
+        #         # location.omachi = device.getVariablePos(105)
+        #         # location.omachi[2] = location.omachi[2] + 6*1000
+        #         # device.writeVariablePos(105, location.omachi)
+        #         device.writeVariablePos(121, pos)
+        #         device.writeByte(21,5)
+    
+    def BACKUP_POSITION(self):
+        # Store initial value of P101 - 105 (BACKUP)
+        init_pos.P101 = device.getVariablePos(0)
+        init_pos.P102 = device.getVariablePos(102)
+        init_pos.P103 = device.getVariablePos(103)
+        init_pos.P104 = device.getVariablePos(104)
+        init_pos.P105 = device.getVariablePos(110)
+        print(init_pos.P101)
+        print(init_pos.P102)
+        print(init_pos.P103)
+        print(init_pos.P104)
+        print(init_pos.P105)
+        
+    def RELOAD_POSITION(self):
+        # Load initial value of P101 - 105
+        device.writeVariablePos(101,init_pos.P101)
+        device.writeVariablePos(102,init_pos.P102)
+        device.writeVariablePos(103,init_pos.P103)
+        device.writeVariablePos(104,init_pos.P104)
+        device.writeVariablePos(105,init_pos.P105)

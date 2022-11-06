@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>931</width>
-      <height>681</height>
+      <width>930</width>
+      <height>680</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -1008,7 +1008,7 @@
         </font>
        </property>
        <property name="text">
-        <string>TESTIRON</string>
+        <string>HV</string>
        </property>
       </widget>
      </widget>
@@ -1050,18 +1050,18 @@ background-color:rgb(227,227,227);</string>
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_autorun">
+     <widget class="QPushButton" name="btn_backup_data">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>30</x>
         <y>90</y>
-        <width>201</width>
-        <height>31</height>
+        <width>101</width>
+        <height>30</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -1070,7 +1070,30 @@ background-color:rgb(227,227,227);</string>
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>AUTORUN</string>
+       <string>GET DATA</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_reload_data">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>90</y>
+        <width>101</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>LOAD DATA</string>
       </property>
      </widget>
      <zorder>Khung_frame</zorder>
@@ -1081,7 +1104,8 @@ background-color:rgb(227,227,227);</string>
      <zorder>ObjectBox</zorder>
      <zorder>Frame</zorder>
      <zorder>JobBox</zorder>
-     <zorder>btn_autorun</zorder>
+     <zorder>btn_backup_data</zorder>
+     <zorder>btn_reload_data</zorder>
     </widget>
     <widget class="QWidget" name="Manual">
      <attribute name="title">
@@ -2624,7 +2648,7 @@ background-color:rgb(227,227,227);</string>
       <x>940</x>
       <y>30</y>
       <width>221</width>
-      <height>231</height>
+      <height>261</height>
      </rect>
     </property>
     <property name="font">
@@ -2772,17 +2796,17 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_run_status">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>190</y>
-       <width>181</width>
+       <width>191</width>
        <height>21</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -2812,12 +2836,127 @@ background-color:rgb(227,227,227);</string>
       <string>HOME POSITION</string>
      </property>
     </widget>
+    <widget class="QLabel" name="lb_camera_status">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>171</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Camera Status: OFF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_on_robot">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>190</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/on.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_off_robot">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>190</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/off.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_on_cam">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>220</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/on.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_off_cam">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>220</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/off.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_wait_robot">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>190</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/wait.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="LOGO">
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>270</y>
+      <y>300</y>
       <width>221</width>
       <height>121</height>
      </rect>
@@ -2826,10 +2965,30 @@ background-color:rgb(227,227,227);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>logo_OISP.png</pixmap>
+     <pixmap>pictures/logo_OISP.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>430</y>
+      <width>221</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#0055ff;&quot;&gt;Instructor:&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt; Assoc. Prof Huynh Thai Hoang&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#0055ff;&quot;&gt;Students:&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt;Vu Gia Huy       - 1851074&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt;Pham Phu Vinh - 1851123&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
   </widget>
