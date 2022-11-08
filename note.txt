@@ -24,3 +24,7 @@ cX = float((startX + endX) / 2.0)
 cY = float((startY + endY) / 2.0)
 
 ObjectID : type int
+
+B021: Write Byte to move robot
+B022: Get Byte from robot 
+P121: Where to pick object

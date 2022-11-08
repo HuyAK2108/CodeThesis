@@ -48,6 +48,7 @@ class MainWindow (QMainWindow):
         # Connection Status
         self.job_status = False
         self.com_connect_status = False
+        self.robot_status = False
         
         self.object_name = ''
         # Call Motomini class
@@ -163,8 +164,7 @@ class MainWindow (QMainWindow):
         self.thread[1].position.connect(self.get_object_position)
         # start the thread
         self.thread[1].start()
-        
-        
+                
     def STOP_CAPTURE_VIDEO(self):
         """Stop capture video and turn off camera
         """
@@ -265,11 +265,12 @@ class MainWindow (QMainWindow):
             # ip = self.uic.text_IP.text()
             # port = int(self.uic.text_Port.text())
             # self.connection.connectMotomini(ip = ip, port = port)
+            self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_servoON.setEnabled(True)
             self.uic.btn_home_pos.setEnabled(True)
             self.uic.lb_wait_robot.show()
             self.uic.lb_off_robot.hide()
-            self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
+            self.robot_status = True
             self.uic.btn_setconnnect.setText("DISCONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
             print("Connected to Robot")
@@ -278,6 +279,7 @@ class MainWindow (QMainWindow):
             self.uic.lb_off_robot.show()
             self.uic.lb_wait_robot.hide()
             self.uic.lb_on_robot.hide()
+            self.robot_status = False
             self.uic.btn_setconnnect.setText("CONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
             print("Disconnected to Robot")
@@ -746,39 +748,44 @@ class MainWindow (QMainWindow):
         flag.flag_omachi   = flag_omachi
         flag.flag_miliket  = flag_miliket
     
-        x_pos       =  250  * 1000
-        y_pos       = -100  * 1000
-        z_pos       = -120  * 1000
-        roll_pos    = -180  * 10000
-        pitch_pos   =  0    * 10000
-        yaw_pos     =  0    * 1000
-        pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-        # device.writeVariablePos(121, pos)
+        if self.robot_status == True:
+            
+            x_pos       =  250  * 1000
+            y_pos       = -100  * 1000
+            z_pos       = -120  * 1000
+            roll_pos    = -180  * 10000
+            pitch_pos   =  0    * 10000
+            yaw_pos     =  0    * 1000
+            
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+        
+            device.writeVariablePos(121, pos)
 
-        # if self.object_name == "Cung dinh":
-        #     if flag.flag_cungdinh == 1:
-        #         print("write byte 1")
-        #         device.writeByte(21,1)
+            if self.object_name == "Cung dinh":
+                if flag.flag_cungdinh == 1:
+                    print("write byte 1")
+                    device.writeByte(21,1)
+
+            if self.object_name == "Hao Hao":
+                if flag.flag_haohao == 1:
+                    print("write byte 2")
+                    device.writeByte(21,2)
+
+            if self.object_name == "Kokomi":
+                if flag.flag_kokomi == 1:
+                    print("write byte 3")
+                    device.writeByte(21,3)
+
+            if self.object_name == "Miliket":
+                if flag.flag_miliket == 1:
+                    print("write byte 4")
+                    device.writeByte(21,4)
+
+            if self.object_name == "Omachi":
+                if flag.flag_omachi == 1:
+                    print("write byte 5")
+                    device.writeByte(21,5)
         
-        # if self.object_name == "Hao Hao":
-        #     if flag.flag_haohao == 1:
-        #         print("write byte 2")
-        #         device.writeByte(21,2)
-        
-        # if self.object_name == "Kokomi":
-        #     if flag.flag_kokomi == 1:
-        #         print("write byte 3")
-        #         device.writeByte(21,3)
-        
-        # if self.object_name == "Miliket":
-        #     if flag.flag_miliket == 1:
-        #         print("write byte 4")
-        #         device.writeByte(21,4)
-        
-        # if self.object_name == "Omachi":
-        #     if flag.flag_omachi == 1:
-        #         print("write byte 5")
-        #         device.writeByte(21,5)
                 
         # if self.object_name == "Cung dinh":
         #     if flag.flag_cungdinh == 1:
