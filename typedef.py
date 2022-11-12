@@ -53,6 +53,15 @@ class tableColumn(Enum):
     R_col = 4
     B_col = 5
     T_col = 6
+class tableColumn_2(Enum):
+    NA = -1
+    STT = 0
+    X_col = 1
+    Y_col = 2
+    Z_col = 3
+    Roll_col = 4
+    Pitch_col = 5
+    Yaw_col = 6
 
 
 class txHeader:
@@ -295,3 +304,10 @@ class init_pos:
     P104 = [0,0,0,0,0,0]
     P105 = [0,0,0,0,0,0]
     
+class conveyor:
+    speed = 0
+    
+class Timer:
+    start = 0
+    stop  = 0
+    t     = 0

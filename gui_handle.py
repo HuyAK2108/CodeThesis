@@ -1,8 +1,8 @@
-import cv2, serial
+import cv2, serial, time
 import numpy as np
 import serial.tools.list_ports
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QSlider
+from PyQt5.QtWidgets import QMainWindow, QSlider, QAbstractItemView, QHeaderView, QTableWidgetItem
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import  pyqtSlot, Qt, QTimer
 from gui import Ui_MainWindow
@@ -20,9 +20,12 @@ class MainWindow (QMainWindow):
         self.uic.lb_on_cam.hide()
         self.uic.lb_on_robot.hide()
         self.uic.lb_wait_robot.hide()
+        self.uic.lb_on_conveyor.hide()
+        self.uic.lb_on_serial.hide()
         self.init_variables()
         self.init_timer()
         self.init_button()
+        self.init_point_table()
     
     def init_timer(self):
         self.timer_move_pos = QTimer()
@@ -46,14 +49,21 @@ class MainWindow (QMainWindow):
         self.uic.btn_closeuart.setEnabled(False)
         
         # Connection Status
-        self.job_status = False
-        self.com_connect_status = False
-        self.robot_status = False
-        
+        self.job_status             = False
+        self.com_connect_status     = False
+        self.robot_status           = False
+        self.conveyor_status        = False
+        self.base_object            = False
         self.object_name = ''
         # Call Motomini class
         self.connection = device
-        
+        # Table
+        self.STT_count_1 = 1
+        self.STT_count_2 = 1
+        self.point_count_1 = 0
+        self.point_count_2 = 0
+        self.row_init_1 = 5
+        self.row_init_2 = 5
         # Get available serial ports
         self.comlist = serial.tools.list_ports.comports()
         self.connected = []
@@ -61,6 +71,41 @@ class MainWindow (QMainWindow):
             self.connected.append(element.device)
         self.uic.COM.addItems(self.connected)        
     
+    def init_point_table(self) -> None:
+        self.uic.Point_teach_1.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.uic.Point_teach_1.setSelectionMode(QAbstractItemView.NoSelection)
+        self.uic.Point_teach_1.setColumnWidth(0, 40)
+        self.uic.Point_teach_1.setColumnWidth(1, 70)
+        self.uic.Point_teach_1.setColumnWidth(2, 70)
+        self.uic.Point_teach_1.setColumnWidth(3, 70)
+        self.uic.Point_teach_1.setColumnWidth(4, 70)
+        self.uic.Point_teach_1.setColumnWidth(5, 70)
+        self.uic.Point_teach_1.setColumnWidth(6, 70)
+        self.uic.Point_teach_1.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        # Add row
+        self.uic.Point_teach_1.verticalHeader().setSectionsClickable(False)
+        self.uic.Point_teach_1.verticalHeader().setDefaultSectionSize(15)
+        self.uic.Point_teach_1.verticalHeader().setVisible(False)
+        for x in range(self.row_init_1):
+            self.uic.Point_teach_1.insertRow(x)
+            
+        self.uic.Point_teach_2.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.uic.Point_teach_2.setSelectionMode(QAbstractItemView.NoSelection)
+        self.uic.Point_teach_2.setColumnWidth(0, 40)
+        self.uic.Point_teach_2.setColumnWidth(1, 70)
+        self.uic.Point_teach_2.setColumnWidth(2, 70)
+        self.uic.Point_teach_2.setColumnWidth(3, 70)
+        self.uic.Point_teach_2.setColumnWidth(4, 70)
+        self.uic.Point_teach_2.setColumnWidth(5, 70)
+        self.uic.Point_teach_2.setColumnWidth(6, 70)
+        self.uic.Point_teach_2.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        # Add row
+        self.uic.Point_teach_2.verticalHeader().setSectionsClickable(False)
+        self.uic.Point_teach_2.verticalHeader().setDefaultSectionSize(15)
+        self.uic.Point_teach_2.verticalHeader().setVisible(False)
+        for y in range(self.row_init_2):
+            self.uic.Point_teach_2.insertRow(y)
+            
     def init_button(self):
         # Button ON - OFF camera
         self.uic.btn_onCAM.clicked.connect(self.START_CAPTURE_VIDEO)
@@ -80,7 +125,11 @@ class MainWindow (QMainWindow):
         # Button store P101 - 105
         self.uic.btn_backup_data.clicked.connect(self.BACKUP_POSITION)
         self.uic.btn_reload_data.clicked.connect(self.RELOAD_POSITION)
-        
+        # Button Teaching point
+        self.uic.btn_teach.clicked.connect(self.TEACH_POINT)
+        self.uic.DelRow_butt.clicked.connect(self.delete_allrow_table)
+        # Button ON - OFF conveyor
+        self.uic.btn_conveyor.clicked.connect(self.CONVEYOR)
         # Button RUN
         self.uic.move_butt.clicked.connect(self.RUN_ROBOT)
         # Press button jogging
@@ -152,7 +201,7 @@ class MainWindow (QMainWindow):
         self.uic.btn_offCAM.setStyleSheet("QPushButton {color: black;}")
         self.uic.lb_on_cam.show()
         self.uic.lb_off_cam.hide()
-        self.uic.lb_camera_status.setText("Camera Status: ON")
+        self.uic.lb_camera_status.setText("ON")
         self.status_thread_1 = True
         # create the video capture thread
         self.thread[1] = VideoThread(index=1)
@@ -172,7 +221,7 @@ class MainWindow (QMainWindow):
         self.uic.btn_offCAM.setEnabled(False)
         self.uic.btn_onCAM.setStyleSheet("QPushButton {color: black;}")
         self.uic.btn_offCAM.setStyleSheet("QPushButton {color: red;}")
-        self.uic.lb_camera_status.setText("Camera Status: OFF")
+        self.uic.lb_camera_status.setText("OFF")
         self.uic.lb_on_cam.hide()
         self.uic.lb_off_cam.show()
         self.thread[1].stop()
@@ -198,6 +247,9 @@ class MainWindow (QMainWindow):
             self.com_connect_status = True
             self.uic.btn_closeuart.setEnabled(True)
             self.uic.btn_setuart.setEnabled(False)
+            self.uic.lb_serial_status.setText("ON")
+            self.uic.lb_on_serial.show()
+            self.uic.lb_off_serial.hide()
             self.thread[3] = UART(index = 3, com = self.com, baudrate = self.baudrate)
             self.thread[3].init_timer()
             self.thread[3].get_speed.connect(self.show_speed)
@@ -209,6 +261,9 @@ class MainWindow (QMainWindow):
         self.uic.text_speed.setText('0')     
         self.uic.btn_closeuart.setEnabled(False)
         self.uic.btn_setuart.setEnabled(True)
+        self.uic.lb_serial_status.setText("OFF")
+        self.uic.lb_off_serial.show()
+        self.uic.lb_on_serial.hide()
         self.com_connect_status = False
         self.thread[3].stop_timer()
         self.thread[3].stop()
@@ -240,7 +295,7 @@ class MainWindow (QMainWindow):
             if self.connection.onServo() == 0:       
                 self.uic.btn_servoON.setText("SERVO OFF")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
-                self.uic.lb_run_status.setText("Robot Status: ON")
+                self.uic.lb_run_status.setText("ON")
                 self.uic.lb_on_robot.show()
                 self.uic.lb_wait_robot.hide()
                 self.status_thread_2 = True
@@ -253,7 +308,7 @@ class MainWindow (QMainWindow):
             if self.connection.offServo() == 0:
                 self.uic.btn_servoON.setText("SERVO ON")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
-                self.uic.lb_run_status.setText("Robot Status: OFF")
+                self.uic.lb_run_status.setText("OFF")
                 self.uic.lb_wait_robot.show()
                 self.uic.lb_on_robot.hide()
                 self.thread[2].stop_receive_pos()
@@ -316,6 +371,24 @@ class MainWindow (QMainWindow):
         self.uic.btn_stop_job.setStyleSheet("QPushButton {color: red;}")
         device.writeByte(21, 6)
     # MANUAL
+    def CONVEYOR(self):
+        if self.conveyor_status == False:
+            device.writeByte(9, 1)
+            self.uic.btn_conveyor.setText("OFF")
+            self.uic.btn_conveyor.setStyleSheet("QPushButton {color: red;}")
+            self.uic.lb_conveyor_status.setText("ON")
+            self.uic.lb_on_conveyor.show()
+            self.uic.lb_off_conveyor.hide()
+            self.conveyor_status = True
+        else:
+            device.writeByte(9, 0)
+            self.uic.btn_conveyor.setText("ON")
+            self.uic.btn_conveyor.setStyleSheet("QPushButton {color: green;}")
+            self.uic.lb_conveyor_status.setText("OFF")
+            self.uic.lb_off_conveyor.show()
+            self.uic.lb_on_conveyor.hide()
+            self.conveyor_status = False
+            
     def btnJogReleaseCallback(self):
         self.timer_move_pos.stop()
         self.moveSel = 0
@@ -333,6 +406,74 @@ class MainWindow (QMainWindow):
     def Speed_slider_change_callback(self, slider: QSlider):
         self.uic.progressBar.setValue(slider.value())
     
+    def AUTO_SYSTEM(self):
+        list = [flag.flag_cungdinh, flag.flag_haohao, flag.flag_kokomi, flag.flag_miliket, flag.flag_omachi]
+        print("flag", list)
+        print("conveyor speed:", conveyor.speed)
+        if self.robot_status == True:
+            
+            # If not base object -> vị trí "Động"
+            if self.base_object == True:
+                if list == [0,0,0,0,0]:
+                    print("No object detected !")
+                else:
+                    Timer.start = time.time()
+
+                if device.getByte(23) == 1:
+                    Timer.stop = time.time()
+
+                    Timer.t = Timer.stop - Timer.start
+                print(Timer.t)
+                # Quá 10s chưa có object mới sẽ pick vật ở vị trí "tĩnh"
+                if (abs(Timer.t) > 10):
+                    self.base_object = False
+                
+            # Base object -> vị trí "Tĩnh"
+            if device.getByte(22) == 0:
+                if self.base_object == False:
+                    x_pos       =  250  * 1000
+                    y_pos       = -100  * 1000
+                    z_pos       = -120  * 1000
+                    roll_pos    = -180  * 10000
+                    pitch_pos   =  0    * 10000
+                    yaw_pos     =  0    * 1000
+                    
+                    self.base_object = True
+                    
+            # If not base object -> vị trí "Động"
+                else:                    
+                    x_pos       =  250  * 1000
+                    y_pos       =  int((-100 + conveyor.speed * (Timer.t+0.5)) *1000)
+                    z_pos       = -120  * 1000
+                    roll_pos    = -180  * 10000
+                    pitch_pos   =  0    * 10000
+                    yaw_pos     =  0    * 1000
+                
+                pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+                
+                device.writeVariablePos(121, pos)
+                    
+                if self.object_name == "Cung dinh":
+                    if flag.flag_cungdinh == 1:
+                        print("write byte 1")
+                        device.writeByte(21,1)
+                if self.object_name == "Hao Hao":
+                    if flag.flag_haohao == 1:
+                        print("write byte 2")
+                        device.writeByte(21,2)
+                if self.object_name == "Kokomi":
+                    if flag.flag_kokomi == 1:
+                        print("write byte 3")
+                        device.writeByte(21,3)
+                if self.object_name == "Miliket":
+                    if flag.flag_miliket == 1:
+                        print("write byte 4")
+                        device.writeByte(21,4)
+                if self.object_name == "Omachi":
+                    if flag.flag_omachi == 1:
+                        print("write byte 5")
+                        device.writeByte(21,5)
+            
     # Run by clicking RUN button
     @checkConnect
     @checkServo
@@ -739,6 +880,7 @@ class MainWindow (QMainWindow):
     @pyqtSlot(int)
     def show_speed(self, speed):
         self.uic.text_speed.setText(str(speed))
+        conveyor.speed = speed
         
     @pyqtSlot(int, int, int, int, int)
     def get_object_position(self, flag_kokomi, flag_cungdinh, flag_haohao, flag_omachi, flag_miliket):
@@ -747,145 +889,11 @@ class MainWindow (QMainWindow):
         flag.flag_haohao   = flag_haohao
         flag.flag_omachi   = flag_omachi
         flag.flag_miliket  = flag_miliket
-    
-        if self.robot_status == True:
-            
-            x_pos       =  250  * 1000
-            y_pos       = -100  * 1000
-            z_pos       = -120  * 1000
-            roll_pos    = -180  * 10000
-            pitch_pos   =  0    * 10000
-            yaw_pos     =  0    * 1000
-            
-            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+        self.AUTO_SYSTEM()
         
-            device.writeVariablePos(121, pos)
-
-            if self.object_name == "Cung dinh":
-                if flag.flag_cungdinh == 1:
-                    print("write byte 1")
-                    device.writeByte(21,1)
-
-            if self.object_name == "Hao Hao":
-                if flag.flag_haohao == 1:
-                    print("write byte 2")
-                    device.writeByte(21,2)
-
-            if self.object_name == "Kokomi":
-                if flag.flag_kokomi == 1:
-                    print("write byte 3")
-                    device.writeByte(21,3)
-
-            if self.object_name == "Miliket":
-                if flag.flag_miliket == 1:
-                    print("write byte 4")
-                    device.writeByte(21,4)
-
-            if self.object_name == "Omachi":
-                if flag.flag_omachi == 1:
-                    print("write byte 5")
-                    device.writeByte(21,5)
-        
-                
-        # if self.object_name == "Cung dinh":
-        #     if flag.flag_cungdinh == 1:
-        #         print("write byte 1")
-            
-        #         x_pos       =  250  * 1000
-        #         y_pos       = -100  * 1000
-        #         z_pos       = -120  * 1000
-        #         roll_pos    = -180  * 10000
-        #         pitch_pos   =  0    * 10000
-        #         yaw_pos     =  0    * 10000
-
-        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-                
-        #         # location.cungdinh = device.getVariablePos(101)
-        #         # location.cungdinh[2] = location.cungdinh[2] + 6*1000
-        #         # device.writeVariablePos(101, location.cungdinh)
-        #         device.writeVariablePos(121, pos)
-        #         device.writeByte(21,1)
-                
-        # if self.object_name == "Hao Hao":
-        #     if flag.flag_haohao == 1:
-        #         print(flag.flag_haohao)
-        #         print("write byte 2")
-
-        #         x_pos       =  250  * 1000
-        #         y_pos       = -100  * 1000
-        #         z_pos       = -120  * 1000
-        #         roll_pos    = -180  * 10000
-        #         pitch_pos   =  0    * 10000
-        #         yaw_pos     =  0    * 10000
-
-        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-            
-        #         # location.haohao = device.getVariablePos(102)
-        #         # location.haohao[2] = location.haohao[2] + 6*1000
-        #         # device.writeVariablePos(102, location.haohao)
-        #         device.writeVariablePos(121, pos)
-        #         device.writeByte(21,2)
-            
-        # if self.object_name == "Kokomi":
-        #     if flag.flag_kokomi == 1:
-        #         print("write byte 3")
-
-        #         x_pos       =  250  * 1000
-        #         y_pos       = -100  * 1000
-        #         z_pos       = -120  * 1000
-        #         roll_pos    = -180  * 10000
-        #         pitch_pos   =  0    * 10000
-        #         yaw_pos     =  0    * 10000
-
-        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-
-        #         # location.kokomi = device.getVariablePos(103)
-        #         # location.kokomi[2] = location.kokomi[2] + 6*1000
-        #         # device.writeVariablePos(103, location.kokomi)
-        #         device.writeVariablePos(121, pos)
-        #         device.writeByte(21,3)
-            
-        # if self.object_name == "Miliket":
-        #     if flag.flag_miliket == 1:
-        #         print("write byte 4")
-
-        #         x_pos       =  250  * 1000
-        #         y_pos       = -100  * 1000
-        #         z_pos       = -120  * 1000
-        #         roll_pos    = -180  * 10000
-        #         pitch_pos   =  0    * 10000
-        #         yaw_pos     =  0    * 10000
-
-        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-                
-        #         # location.miliket = device.getVariablePos(104)
-        #         # location.miliket[2] = location.miliket[2] + 6*1000
-        #         # device.writeVariablePos(104, location.miliket)
-        #         device.writeVariablePos(121, pos)
-        #         device.writeByte(21,4)
-            
-        # if self.object_name == "Omachi":
-        #     if flag.flag_omachi == 1:
-        #         print("write byte 5")
-
-        #         x_pos       =  250  * 1000
-        #         y_pos       = -100  * 1000
-        #         z_pos       = -120  * 1000
-        #         roll_pos    = -180  * 10000
-        #         pitch_pos   =  0    * 10000
-        #         yaw_pos     =  0    * 10000
-
-        #         pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-                
-        #         # location.omachi = device.getVariablePos(105)
-        #         # location.omachi[2] = location.omachi[2] + 6*1000
-        #         # device.writeVariablePos(105, location.omachi)
-        #         device.writeVariablePos(121, pos)
-        #         device.writeByte(21,5)
-    
     def BACKUP_POSITION(self):
         # Store initial value of P101 - 105 (BACKUP)
-        init_pos.P101 = device.getVariablePos(0)
+        init_pos.P101 = device.getVariablePos(121)
         init_pos.P102 = device.getVariablePos(102)
         init_pos.P103 = device.getVariablePos(103)
         init_pos.P104 = device.getVariablePos(104)
@@ -903,3 +911,114 @@ class MainWindow (QMainWindow):
         device.writeVariablePos(103,init_pos.P103)
         device.writeVariablePos(104,init_pos.P104)
         device.writeVariablePos(105,init_pos.P105)
+    
+    def add_row_table_1(self) -> None:
+        row_count_1 = self.uic.Point_teach_1.rowCount()
+        self.uic.Point_teach_1.insertRow(row_count_1)
+        
+    def add_row_table_2(self) -> None:
+        row_count_2 = self.uic.Point_teach_2.rowCount()
+        self.uic.Point_teach_2.insertRow(row_count_2)
+
+    def delete_allrow_table(self) -> None:
+        self.uic.Point_teach_1.setRowCount(0)
+        self.uic.Point_teach_2.setRowCount(0)
+        self.init_point_table()
+        self.STT_count_1 = 1
+        self.STT_count_2 = 1
+        self.point_count_1 = 0
+        self.point_count_2 = 0
+     
+    def TEACH_POINT(self):
+        if self.point_count_1 >= self.uic.Point_teach_1.rowCount():
+            self.add_row_table_1()
+        if self.point_count_2 >= self.uic.Point_teach_2.rowCount():
+            self.add_row_table_2()
+        
+        if self.uic.Cartesian_coor.isChecked() == True:  
+            item = QTableWidgetItem()
+            item.setText(str(self.STT_count_2))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.STT.value, item)
+            
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.S_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.X_col.value, item)
+            item = QTableWidgetItem()
+            
+            item.setText(str(self.uic.L_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Y_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.U_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Z_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.R_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Roll_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.B_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Pitch_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.T_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Yaw_col.value, item)
+            self.point_count_2 += 1
+            self.STT_count_2 += 1
+            
+            x_pos       =  250  * 1000
+            y_pos       = -100  * 1000
+            z_pos       = -120  * 1000
+            roll_pos    = -180  * 10000
+            pitch_pos   =  0    * 10000
+            yaw_pos     =  0    * 1000
+            
+            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+        
+            device.writeVariablePos(self.uic.txt_pos.text(), pos)
+        
+        else:         
+            item = QTableWidgetItem()
+            item.setText(str(self.STT_count_1))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.STT.value, item)
+            
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.S_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.S_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.L_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.L_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.U_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.U_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.R_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.R_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.B_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.B_col.value, item)
+
+            item = QTableWidgetItem()
+            item.setText(str(self.uic.T_move_text.text()))
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.T_col.value, item)
+
+            self.point_count_1 += 1
+            self.STT_count_1 += 1

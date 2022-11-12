@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Auto">
      <attribute name="title">
@@ -1415,6 +1415,16 @@ background-color:rgb(227,227,227);</string>
         <string>R+</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>-220</x>
+         <y>310</y>
+         <width>113</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="CurrentJointsBox_2">
       <property name="geometry">
@@ -1459,27 +1469,6 @@ background-color:rgb(227,227,227);</string>
         <string>S</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="S_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>35</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_24">
        <property name="geometry">
         <rect>
@@ -1497,48 +1486,6 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>L</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="L_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>80</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="U_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>125</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
        </property>
       </widget>
       <widget class="QLabel" name="label_25">
@@ -1577,69 +1524,6 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>R</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="R_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>170</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="T_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>260</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="B_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>215</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
        </property>
       </widget>
       <widget class="QLabel" name="label_55">
@@ -1794,6 +1678,66 @@ background-color:rgb(227,227,227);</string>
         <string>deg</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="S_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>35</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="T_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>260</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="R_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>170</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="L_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>80</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="U_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>125</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="B_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>215</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="CurrentPosBox_2">
       <property name="geometry">
@@ -1841,21 +1785,6 @@ background-color:rgb(227,227,227);</string>
         <string>X</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="X_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>35</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_65">
        <property name="geometry">
         <rect>
@@ -1873,36 +1802,6 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>Y</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="Y_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>80</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="Z_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>125</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
        </property>
       </widget>
       <widget class="QLabel" name="label_72">
@@ -1941,51 +1840,6 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>Roll</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="Roll_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>170</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="Yaw_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>260</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="Pitch_pos_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>215</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
        </property>
       </widget>
       <widget class="QLabel" name="label_74">
@@ -2140,6 +1994,66 @@ background-color:rgb(227,227,227);</string>
         <string>deg</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="Yaw_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>260</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="X_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>35</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="Y_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>80</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="Roll_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>170</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="Z_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>125</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="Pitch_pos_text">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>215</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="MoveJointBox_2">
       <property name="geometry">
@@ -2184,27 +2098,6 @@ background-color:rgb(227,227,227);</string>
         <string>S</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="S_move_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>35</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_83">
        <property name="geometry">
         <rect>
@@ -2222,48 +2115,6 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>L</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="L_move_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>80</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="U_move_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>125</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
        </property>
       </widget>
       <widget class="QLabel" name="label_84">
@@ -2302,69 +2153,6 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>R</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="R_move_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>170</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="T_move_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>260</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="B_move_text">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>215</y>
-         <width>85</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
        </property>
       </widget>
       <widget class="QLabel" name="label_86">
@@ -2519,6 +2307,66 @@ background-color:rgb(227,227,227);</string>
         <string>deg</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="S_move_text">
+       <property name="geometry">
+        <rect>
+         <x>55</x>
+         <y>35</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="L_move_text">
+       <property name="geometry">
+        <rect>
+         <x>55</x>
+         <y>80</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="U_move_text">
+       <property name="geometry">
+        <rect>
+         <x>55</x>
+         <y>125</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="R_move_text">
+       <property name="geometry">
+        <rect>
+         <x>55</x>
+         <y>170</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="B_move_text">
+       <property name="geometry">
+        <rect>
+         <x>55</x>
+         <y>215</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="T_move_text">
+       <property name="geometry">
+        <rect>
+         <x>55</x>
+         <y>260</y>
+         <width>85</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="CoordinateBox">
       <property name="geometry">
@@ -2640,6 +2488,231 @@ background-color:rgb(227,227,227);</string>
        </property>
       </widget>
      </widget>
+     <widget class="QGroupBox" name="PointTableBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>310</y>
+        <width>901</width>
+        <height>326</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>391</width>
+        <height>326</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Point Table</string>
+      </property>
+      <widget class="QTableWidget" name="Point_teach_1">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>60</y>
+         <width>441</width>
+         <height>251</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>381</width>
+         <height>221</height>
+        </size>
+       </property>
+       <column>
+        <property name="text">
+         <string>STT</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>S</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>L</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>U</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>R</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>B</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>T</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="btn_teach">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>30</y>
+         <width>131</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>121</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Teaching</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="DelRow_butt">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>30</y>
+         <width>126</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>126</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Delete row</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="Point_teach_2">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>60</y>
+         <width>441</width>
+         <height>251</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>381</width>
+         <height>221</height>
+        </size>
+       </property>
+       <column>
+        <property name="text">
+         <string>STT</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>X</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Y</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Z</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Roll</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Pitch</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Yaw</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QLineEdit" name="txt_pos">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>30</y>
+         <width>85</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>35</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Position</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>190</y>
+        <width>151</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Conveyor</string>
+      </property>
+      <widget class="QPushButton" name="btn_conveyor">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>131</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>ON</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -2648,7 +2721,7 @@ background-color:rgb(227,227,227);</string>
       <x>940</x>
       <y>30</y>
       <width>221</width>
-      <height>261</height>
+      <height>321</height>
      </rect>
     </property>
     <property name="font">
@@ -2796,10 +2869,10 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_run_status">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>140</x>
        <y>190</y>
-       <width>191</width>
-       <height>21</height>
+       <width>40</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="font">
@@ -2810,7 +2883,7 @@ background-color:rgb(227,227,227);</string>
       </font>
      </property>
      <property name="text">
-      <string>Robot Status: OFF</string>
+      <string>OFF</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_home_pos">
@@ -2834,26 +2907,6 @@ background-color:rgb(227,227,227);</string>
      </property>
      <property name="text">
       <string>HOME POSITION</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="lb_camera_status">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>220</y>
-       <width>171</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Camera Status: OFF</string>
      </property>
     </widget>
     <widget class="QLabel" name="lb_on_robot">
@@ -2951,12 +3004,224 @@ background-color:rgb(227,227,227);</string>
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="lb_camera_status">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>220</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>190</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Robot status</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Camera status</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>250</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Conveyor status</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_conveyor_status">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>250</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>280</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Serial status</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_off_conveyor">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>250</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/off.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_serial_status">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>280</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_off_serial">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>280</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/off.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_on_conveyor">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>250</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/on.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_on_serial">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>280</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/on.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="LOGO">
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>300</y>
+      <y>370</y>
       <width>221</width>
       <height>121</height>
      </rect>
@@ -2975,7 +3240,7 @@ background-color:rgb(227,227,227);</string>
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>430</y>
+      <y>510</y>
       <width>221</width>
       <height>121</height>
      </rect>

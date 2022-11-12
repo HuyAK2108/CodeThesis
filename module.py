@@ -12,7 +12,7 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/best.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/v1.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.conf = 0.7
 model.iou = 0.7
@@ -103,7 +103,7 @@ class VideoThread(QThread):
         for ind in df.index:
             label = df['name'][ind]
             conf = df['confidence'][ind]
-            if conf > 0.8:
+            if conf > 0.7:
                 x1, y1 = int(df['xmin'][ind]), int(df['ymin'][ind])
                 x2, y2 = int(df['xmax'][ind]), int(df['ymax'][ind])
                 text = label + ' ' + str(conf.round(decimals= 2))
@@ -123,7 +123,7 @@ class VideoThread(QThread):
             for objectID, centroid_1 in rects_ids.items():
                 detections.append(objectID)
                 self.count_kokomi = get_lastest_value(detections)
-                cv2.putText(frame, str(self.count_kokomi), centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                # cv2.putText(frame, str(self.count_kokomi), centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
             print("center point:",centroid_1[0])
 
@@ -147,7 +147,6 @@ class VideoThread(QThread):
                 self.count_haohao = get_lastest_value(detections_3)
                 # cv2.putText(frame, str(self.count_haohao), centroid_3, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_3, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-                # print("detection:",detections_3)
             print("center point:",centroid_3[0])
 
         """Omachi
@@ -160,6 +159,7 @@ class VideoThread(QThread):
                 # cv2.putText(frame, str(self.count_omachi), centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
             print("center point:",centroid_4[0])
+        
         """Miliket
         """
         if self.object_name == 'Miliket':

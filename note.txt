@@ -28,3 +28,7 @@ ObjectID : type int
 B021: Write Byte to move robot
 B022: Get Byte from robot 
 P121: Where to pick object
+
+vị trí chờ gần băng tải: P110
+
+y_next = y_max - v*t + y_prev
