@@ -305,7 +305,7 @@ class conveyor:
     speed = 0
 
 class Byte:
-    B022 = 1
+    B022 = 0
     B023 = 0
 class CountObject:
     cung_dinh = 0

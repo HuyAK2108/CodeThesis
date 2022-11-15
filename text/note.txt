@@ -34,3 +34,21 @@ vị trí chờ gần băng tải: P110
 y_next = y_max - v*t + y_prev
 
 DI_24: I/O Box -> I0
+
+Thread 1: Video
+Thread 2: Robot
+Thread 3: UART
+Thread 4: AUTO_SYSTEM
+
+tọa độ khung hình - tọa độ robot
+500               : -195
+600               : -125
+
+520               : -180
+550               : -160
+
+100 pixel = 70 mm
+1   pixel = 0.7mm
+500 pixel = -195
+501       = -195 + 0.7
+502       = -195 + 0.7 * 2

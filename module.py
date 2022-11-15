@@ -12,7 +12,7 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/best.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/v1.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.conf = 0.7
 model.iou = 0.7
