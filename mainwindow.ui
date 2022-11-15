@@ -690,7 +690,7 @@
        </font>
       </property>
       <property name="title">
-       <string>OBJECT NAME</string>
+       <string>OBJECT DETAILS</string>
       </property>
       <widget class="QLineEdit" name="text_name">
        <property name="geometry">
@@ -2574,7 +2574,7 @@ background-color:rgb(227,227,227);</string>
         </size>
        </property>
        <property name="text">
-        <string>Delete row</string>
+        <string>Clear</string>
        </property>
       </widget>
       <widget class="QTableWidget" name="Point_teach_2">

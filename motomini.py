@@ -15,6 +15,7 @@ class Motomini:
         self.rx_buffer: QByteArray = QByteArray()
         self.rx_buffer_pulse: QByteArray = QByteArray()
         self.rx_buffer_cartesian: QByteArray = QByteArray()
+        self.rx_buffer_byte: QByteArray = QByteArray()
 
     def connectMotomini(self, ip: str, port: int):
         self.sever_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -318,4 +319,8 @@ class Motomini:
         if self.rx_buffer_pulse != b"":
             for i in range(6):
                 constVariable.PulsePos[i] = int.from_bytes(self.rx_buffer_pulse[52 + i*4:56 + i*4],"little",signed=True)
-
+        if self.rx_buffer_byte != b"":
+            Byte.B023 = int.from_bytes(self.rx_buffer_byte[52 + i*4:56 + i*4],"little",signed=True)
+            for i in range(6):
+                constVariable.test_B023[i] =  int.from_bytes(self.rx_buffer_byte[52 + i*4:56 + i*4],"little",signed=True)
+            print(constVariable.test_B023)

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QMainWindow, QSlider, QAbstractItemView, QHeaderView
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import  pyqtSlot, Qt, QTimer
 from gui import Ui_MainWindow
-from module import VideoThread
+from module import VideoThread, get_lastest_value
 from robot_controller import Robot, UART, Auto_system
 from motomini import Motomini
 from typedef import *
@@ -411,6 +411,11 @@ class MainWindow (QMainWindow):
         self.uic.num_haohao.setText(haohao)
         self.uic.num_omachi.setText(omachi)
         self.uic.num_miliket.setText(miliket)
+        CountObject.cung_dinh   = cungdinh
+        CountObject.hao_hao     = haohao
+        CountObject.omachi      = omachi
+        CountObject.miliket     = miliket
+        CountObject.kokomi      = kokomi
 
     """Display current position
     """  
@@ -454,6 +459,7 @@ class MainWindow (QMainWindow):
         flag.flag_omachi   = flag_omachi
         flag.flag_miliket  = flag_miliket
         flag.flag_setName = [flag_cungdinh, flag_haohao, flag_kokomi, flag_miliket, flag_omachi]
+        
     def AUTO_SYSTEM(self):
         if self.status_thread_4 == False:
             self.thread[4] = Auto_system(index = 4)
@@ -479,7 +485,14 @@ class MainWindow (QMainWindow):
     @pyqtSlot(float)
     def counter(self, count):
         counter = round(count,2)
-        self.uic.lb_count.setText(str(counter)) 
+        self.uic.lb_count.setText(str(counter))
+        delta_y = conveyor.speed * int(counter)
+        delta_y = 38 * int(counter) # Cover missing STM32 and UART
+        print("Time:",counter)
+        init_pos.P121[1] += delta_y   
+        device.writeVariablePos(121, init_pos.P121)
+        
+        print("Location Y to pick:", init_pos.P121[1])
         
     def RELOAD_POSITION(self):
         # Load initial value of P101 - 105 and P110
@@ -561,7 +574,7 @@ class MainWindow (QMainWindow):
             pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
             position_reg = int(self.uic.txt_pos.text())
             print('P' + str(position_reg) +': '+ str(pos))
-            # device.writeVariablePos(position_reg, pos)
+            device.writeVariablePos(position_reg, pos)
         
         else:         
             item = QTableWidgetItem()
@@ -610,8 +623,8 @@ class MainWindow (QMainWindow):
             t_pos = int( float (self.uic.T_move_text.text()) * constVariable.pulse_per_degree_RBT)
             pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
             position_reg = int(self.uic.txt_pos.text())
-            # device.writeVariablePos(position_reg, pos)
             print('P' + str(position_reg) +': '+ str(pos))
+            device.writeVariablePos(position_reg, pos)
             
     # MANUAL
     def CONVEYOR(self):

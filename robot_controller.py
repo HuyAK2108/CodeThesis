@@ -8,6 +8,9 @@ from motomini import Motomini
 import sys, time, serial
 
 device = Motomini()
+
+def get_lastest_value(value):
+    return max(value)
 class Robot(QThread):
     get_position = pyqtSignal(str, str, str, str, str, str,
                               str, str, str, str, str, str,
@@ -43,9 +46,9 @@ class Robot(QThread):
         time.sleep(0.0005)
         device.getPulsePos()
         time.sleep(0.0005)
-        device.convertPos()
         value_byte_22 = device.getByte(22)
         value_byte_23 = device.getByte(23)
+        device.convertPos()
           
         txt_X     = (str (round (float(constVariable.CartesianPos[0]) / 1000 , 3 ) ) )
         txt_Y     = (str (round (float(constVariable.CartesianPos[1]) / 1000 , 3 ) ) )
@@ -70,11 +73,9 @@ class Auto_system(QThread):
     def __init__(self, index = 0, robot_status = False):
         super(Auto_system, self).__init__()
         self.index = index
-        # self.robot_connection = robot_status
-        self.robot_connection = True
+        self.robot_connection = robot_status
         self.count = 0
         self.run_flag = False
-        # self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
         print("Auto thread start", self.index)
           
     def start_program(self):
@@ -99,7 +100,6 @@ class Auto_system(QThread):
         """ Method 1: Pick at one place
         """
         # if self.robot_connection == True:
-        # # if Motomini.connect_status == True:
         #     x_pos       =  250  * 1000
         #     y_pos       = -100  * 1000
         #     z_pos       = -120  * 1000
@@ -108,44 +108,65 @@ class Auto_system(QThread):
         #     yaw_pos     =  0    * 1000
 
         #     pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-        #     Motomini.writeVariablePos(121, pos)
+        #     device.writeVariablePos(121, pos)
             
         #     if flag.name == "Cung dinh":
         #         if flag.flag_cungdinh == 1:
         #             print("write byte 1")
-        #             Motomini.writeByte(21,1)
-
+        #             pos = init_pos.P101
+        #             pos[2] += 6000 * CountObject.cung_dinh
+        #             device.writeVariablePos(101, pos)
+        #             device.writeByte(21,1)
+                    
         #     if flag.name == "Hao Hao":
         #         if flag.flag_haohao == 1:
         #             print("write byte 2")
-        #             Motomini.writeByte(21,2)
+        #             pos = init_pos.P102
+        #             pos[2] += 6000 * CountObject.hao_hao
+        #             device.writeVariablePos(102, pos)
+        #             device.writeByte(21,2)
 
         #     if flag.name == "Kokomi":
         #         if flag.flag_kokomi == 1:
         #             print("write byte 3")
-        #             Motomini.writeByte(21,3)
+        #             pos = init_pos.P103
+        #             pos[2] += 6000 * CountObject.kokomi
+        #             device.writeVariablePos(103, pos)
+        #             device.writeByte(21,3)
 
         #     if flag.name == "Miliket":
         #         if flag.flag_miliket == 1:
         #             print("write byte 4")
-        #             Motomini.writeByte(21,4)
+        #             pos = init_pos.P104
+        #             pos[2] += 6000 * CountObject.miliket
+        #             device.writeVariablePos(104, pos)
+        #             device.writeByte(21,4)
 
         #     if flag.name == "Omachi":
         #         if flag.flag_omachi == 1:
         #             print("write byte 5")
-        #             Motomini.writeByte(21,5)
+        #             pos = init_pos.P105
+        #             pos[2] += 6000 * CountObject.omachi
+        #             device.writeVariablePos(105, pos)
+        #             device.writeByte(21,5)
                     
+        """ Method 2: Pick at multiple places
+        """        
+        if flag.flag_setName != [0,0,0,0,0]:
+            self.run_flag= True
+              
         if self.robot_connection == True and self.run_flag == True:
             if Byte.B022 == 1:
                 self.count += 0.1
-                print("sec: {:.2f}".format(self.count))
-                if self.count > 1:
-                    Byte.B023 = 1
-                if Byte.B023 == 1 or self.count > 7:
-                    self.run_flag = False 
-                self.timer_count.emit(self.count)  
-                 
-        
+                # print("sec: {:.2f}".format(self.count))
+            
+                if Byte.B023 == 1 or self.count > 10:
+                    self.run_flag = False
+   
+                if Byte.B022 ==0:
+                    self.timer_count.emit(self.count)  
+                    self.count = 0
+            print("sec: {:.2f}".format(self.count))     
         
 class UART(QThread):
     get_speed = pyqtSignal(int)
