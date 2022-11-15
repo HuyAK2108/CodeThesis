@@ -12,7 +12,7 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/v1.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/best.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.conf = 0.7
 model.iou = 0.7
@@ -40,8 +40,8 @@ class VideoThread(QThread):
         self.count_omachi       = 0
         self.count_cungdinh     = 0 
         self.count_miliket      = 0 
-        self.start_point = [500, 0]
-        self.end_point   = [500, 480]
+        self.start_point = [400, 0]
+        self.end_point   = [400, 480]
         self.flag_1 = 0
         self.flag_2 = 0
         self.flag_3 = 0
@@ -125,7 +125,6 @@ class VideoThread(QThread):
                 self.count_kokomi = get_lastest_value(detections)
                 # cv2.putText(frame, str(self.count_kokomi), centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-            print("center point:",centroid_1[0])
 
         """Cung dinh
         """
@@ -136,7 +135,6 @@ class VideoThread(QThread):
                 self.count_cungdinh = get_lastest_value(detections_2)
                 # cv2.putText(frame, str(self.count_cungdinh), centroid_2, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_2, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-            print("center point:",centroid_2[0])
         
         """Hao hao
         """
@@ -147,7 +145,6 @@ class VideoThread(QThread):
                 self.count_haohao = get_lastest_value(detections_3)
                 # cv2.putText(frame, str(self.count_haohao), centroid_3, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_3, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-            print("center point:",centroid_3[0])
 
         """Omachi
         """
@@ -158,7 +155,6 @@ class VideoThread(QThread):
                 self.count_omachi = get_lastest_value(detections_4)
                 # cv2.putText(frame, str(self.count_omachi), centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-            print("center point:",centroid_4[0])
         
         """Miliket
         """
@@ -169,30 +165,29 @@ class VideoThread(QThread):
                 self.count_miliket = get_lastest_value(detections_5)
                 # cv2.putText(frame, str(self.count_miliket), centroid_5, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
                 cv2.putText(frame, ".", centroid_5, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-            print("center point:",centroid_5[0])
             
         self.number.emit(str(self.count_kokomi), str(self.count_cungdinh), str(self.count_haohao), str(self.count_omachi), str(self.count_miliket))         
-        if centroid_1[0] >= self.start_point[0]-10 and centroid_1[0]<=self.start_point[0]+10:
+        if centroid_1[0] >= self.start_point[0]-5 and centroid_1[0]<=self.start_point[0]+5:
             self.flag_1 = 1
         else:
             self.flag_1 = 0
             
-        if centroid_2[0] >= self.start_point[0]-10 and centroid_2[0]<=self.start_point[0]+10:
+        if centroid_2[0] >= self.start_point[0]-5 and centroid_2[0]<=self.start_point[0]+5:
             self.flag_2 = 1
         else:
             self.flag_2 = 0
             
-        if centroid_3[0] >= self.start_point[0]-10 and centroid_3[0]<=self.start_point[0]+10:
+        if centroid_3[0] >= self.start_point[0]-5 and centroid_3[0]<=self.start_point[0]+5:
             self.flag_3 = 1
         else:
             self.flag_3 = 0
             
-        if centroid_4[0] >= self.start_point[0]-10 and centroid_4[0]<=self.start_point[0]+10:
+        if centroid_4[0] >= self.start_point[0]-5 and centroid_4[0]<=self.start_point[0]+5:
             self.flag_4 = 1
         else:
             self.flag_4 = 0
         
-        if centroid_5[0] >= self.start_point[0]-10 and centroid_5[0]<=self.start_point[0]+10:
+        if centroid_5[0] >= self.start_point[0]-5 and centroid_5[0]<=self.start_point[0]+5:
             self.flag_5 = 1
         else:
             self.flag_5 = 0    
@@ -215,7 +210,7 @@ class VideoThread(QThread):
             self.fps = 1 / (np.round(end_time - start_time, 3))
             text = round(self.fps,2)
             cv2.putText(cv_img,"FPS: {}".format(str(text)), (10, 40), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2) # write FPS on bbox
-            cv2.line(cv_img, self.start_point, self.end_point, (171, 97, 193), 2)
+            cv2.line(cv_img, self.start_point, self.end_point, (0, 255, 0), 2)
             
             if ret:
                 self.change_pixmap_signal.emit(cv_img)

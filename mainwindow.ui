@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1177</width>
-    <height>706</height>
+    <width>1181</width>
+    <height>704</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Auto">
      <attribute name="title">
@@ -690,7 +690,7 @@
        </font>
       </property>
       <property name="title">
-       <string>OBJECT DETAILS</string>
+       <string>OBJECT NAME</string>
       </property>
       <widget class="QLineEdit" name="text_name">
        <property name="geometry">
@@ -1008,7 +1008,7 @@
         </font>
        </property>
        <property name="text">
-        <string>HV</string>
+        <string>MAIN_JOB_HV</string>
        </property>
       </widget>
      </widget>
@@ -1050,50 +1050,27 @@ background-color:rgb(227,227,227);</string>
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_backup_data">
+     <widget class="QPushButton" name="btn_auto_system">
       <property name="geometry">
        <rect>
         <x>30</x>
         <y>90</y>
-        <width>101</width>
-        <height>30</height>
+        <width>231</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>8</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
        </font>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>GET DATA</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btn_reload_data">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>90</y>
-        <width>101</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>8</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>LOAD DATA</string>
+       <string>START</string>
       </property>
      </widget>
      <zorder>Khung_frame</zorder>
@@ -1104,8 +1081,7 @@ background-color:rgb(227,227,227);</string>
      <zorder>ObjectBox</zorder>
      <zorder>Frame</zorder>
      <zorder>JobBox</zorder>
-     <zorder>btn_backup_data</zorder>
-     <zorder>btn_reload_data</zorder>
+     <zorder>btn_auto_system</zorder>
     </widget>
     <widget class="QWidget" name="Manual">
      <attribute name="title">
@@ -2529,7 +2505,7 @@ background-color:rgb(227,227,227);</string>
        </property>
        <column>
         <property name="text">
-         <string>STT</string>
+         <string>Position</string>
         </property>
        </column>
        <column>
@@ -2618,7 +2594,7 @@ background-color:rgb(227,227,227);</string>
        </property>
        <column>
         <property name="text">
-         <string>STT</string>
+         <string>Position</string>
         </property>
        </column>
        <column>
@@ -2713,6 +2689,29 @@ background-color:rgb(227,227,227);</string>
        </property>
       </widget>
      </widget>
+     <widget class="QPushButton" name="btn_reload_data">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>270</y>
+        <width>131</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>LOAD DATA</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -2720,8 +2719,8 @@ background-color:rgb(227,227,227);</string>
      <rect>
       <x>940</x>
       <y>30</y>
-      <width>221</width>
-      <height>321</height>
+      <width>231</width>
+      <height>341</height>
      </rect>
     </property>
     <property name="font">
@@ -2785,15 +2784,15 @@ background-color:rgb(227,227,227);</string>
       <rect>
        <x>10</x>
        <y>110</y>
-       <width>201</width>
+       <width>211</width>
        <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="autoFillBackground">
@@ -2828,7 +2827,7 @@ background-color:rgb(227,227,227);</string>
       <rect>
        <x>60</x>
        <y>30</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -2848,7 +2847,7 @@ background-color:rgb(227,227,227);</string>
       <rect>
        <x>10</x>
        <y>150</y>
-       <width>81</width>
+       <width>91</width>
        <height>30</height>
       </rect>
      </property>
@@ -2869,7 +2868,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_run_status">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>160</x>
        <y>190</y>
        <width>40</width>
        <height>20</height>
@@ -2889,7 +2888,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QPushButton" name="btn_home_pos">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>110</x>
        <y>150</y>
        <width>111</width>
        <height>30</height>
@@ -2912,7 +2911,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_on_robot">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>190</y>
        <width>20</width>
        <height>20</height>
@@ -2931,7 +2930,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_off_robot">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>190</y>
        <width>20</width>
        <height>20</height>
@@ -2950,7 +2949,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_on_cam">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>220</y>
        <width>20</width>
        <height>20</height>
@@ -2969,7 +2968,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_off_cam">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>220</y>
        <width>20</width>
        <height>20</height>
@@ -2988,7 +2987,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_wait_robot">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>190</y>
        <width>20</width>
        <height>20</height>
@@ -3007,7 +3006,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_camera_status">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>160</x>
        <y>220</y>
        <width>40</width>
        <height>20</height>
@@ -3067,7 +3066,7 @@ background-color:rgb(227,227,227);</string>
       <rect>
        <x>10</x>
        <y>250</y>
-       <width>121</width>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
@@ -3084,7 +3083,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_conveyor_status">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>160</x>
        <y>250</y>
        <width>40</width>
        <height>20</height>
@@ -3123,7 +3122,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_off_conveyor">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>250</y>
        <width>20</width>
        <height>20</height>
@@ -3142,7 +3141,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_serial_status">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>160</x>
        <y>280</y>
        <width>40</width>
        <height>20</height>
@@ -3162,7 +3161,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_off_serial">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>280</y>
        <width>20</width>
        <height>20</height>
@@ -3181,7 +3180,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_on_conveyor">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>250</y>
        <width>20</width>
        <height>20</height>
@@ -3200,7 +3199,7 @@ background-color:rgb(227,227,227);</string>
     <widget class="QLabel" name="lb_on_serial">
      <property name="geometry">
       <rect>
-       <x>185</x>
+       <x>200</x>
        <y>280</y>
        <width>20</width>
        <height>20</height>
@@ -3216,12 +3215,89 @@ background-color:rgb(227,227,227);</string>
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Auto program</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_auto_status">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>310</y>
+       <width>41</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_on_auto">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>310</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/on.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_off_auto">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>310</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>pictures/off.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="LOGO">
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>370</y>
+      <y>380</y>
       <width>221</width>
       <height>121</height>
      </rect>
@@ -3254,6 +3330,32 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#0055ff;&quot;&gt;Students:&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt;Vu Gia Huy       - 1851074&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt;Pham Phu Vinh - 1851123&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_getByte">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>640</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>GET BYTE</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_count">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>640</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

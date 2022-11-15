@@ -283,31 +283,31 @@ class convertNameJob:
         return buffer
 # Use to check current flag to pick object
 class flag:
-    flag_kokomi   = 0       # flag_kokomi 
-    flag_cungdinh = 0       # flag_cungdinh
-    flag_haohao   = 0       # flag_haohao
-    flag_omachi   = 0       # flag_omachi
-    flag_miliket  = 0       # flag_miliket
+    flag_kokomi   = 0       # Flag_kokomi 
+    flag_cungdinh = 0       # Flag_cungdinh
+    flag_haohao   = 0       # Flag_haohao
+    flag_omachi   = 0       # Flag_omachi
+    flag_miliket  = 0       # Flag_miliket
+    name          = ''      # Object name
+    flag_setName  = []      # Show object name
     
-class location:
-    # Cartesian    x,y,z,R,P,Y
-    kokomi      = [0,0,0,0,0,0]
-    cungdinh    = [0,0,0,0,0,0]
-    haohao      = [0,0,0,0,0,0]
-    omachi      = [0,0,0,0,0,0]
-    miliket     = [0,0,0,0,0,0]
-    
-class init_pos:
-    P101 = [0,0,0,0,0,0]
-    P102 = [0,0,0,0,0,0]
-    P103 = [0,0,0,0,0,0]
-    P104 = [0,0,0,0,0,0]
-    P105 = [0,0,0,0,0,0]
+class init_pos:    
+    P101 = [-125*1000, -220*1000, -120*1000, -180*10000,0, 0]
+    P102 = [-40 *1000, -220*1000, -120*1000, -180*10000,0, 0]
+    P103 = [ 40 *1000, -220*1000, -120*1000, -180*10000,0, 0]
+    P104 = [-10 *1000, -315*1000, -120*1000, -180*10000,0, 0]
+    P105 = [-90 *1000, -315*1000, -120*1000, -180*10000,0, 0]
+    P110 = [180 *1000, -130*1000,  10 *1000, -180*10000,0, 0]
     
 class conveyor:
     speed = 0
-    
-class Timer:
-    start = 0
-    stop  = 0
-    t     = 0
+
+class Byte:
+    B022 = 1
+    B023 = 0
+class CountObject:
+    cung_dinh = 0
+    hao_hao   = 0
+    kokomi    = 0
+    miliket   = 0
+    omachi    = 0

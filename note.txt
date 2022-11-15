@@ -32,3 +32,5 @@ P121: Where to pick object
 vị trí chờ gần băng tải: P110
 
 y_next = y_max - v*t + y_prev
+
+DI_24: I/O Box -> I0
