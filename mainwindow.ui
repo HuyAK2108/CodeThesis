@@ -230,11 +230,11 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QGroupBox" name="Box_RobotPos">
       <property name="geometry">
        <rect>
         <x>690</x>
-        <y>400</y>
+        <y>420</y>
         <width>211</width>
         <height>221</height>
        </rect>
@@ -679,18 +679,18 @@
         <x>690</x>
         <y>150</y>
         <width>211</width>
-        <height>231</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
       </property>
       <property name="title">
-       <string>OBJECT DETAILS</string>
+       <string>NAME</string>
       </property>
       <widget class="QLineEdit" name="text_name">
        <property name="geometry">
@@ -710,192 +710,6 @@
        </property>
        <property name="text">
         <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Name_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>111</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>CUNG DINH</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Name_7">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>110</y>
-         <width>111</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>OMACHI</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Name_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>101</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>HAO HAO</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Name_8">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>200</y>
-         <width>121</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>MILIKET</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Name_9">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>170</y>
-         <width>101</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>KOKOMI</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="num_haohao">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>140</y>
-         <width>71</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="num_omachi">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>110</y>
-         <width>71</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="num_cungdinh">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>80</y>
-         <width>71</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="num_miliket">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>200</y>
-         <width>71</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="num_kokomi">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>170</y>
-         <width>71</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
        </property>
       </widget>
      </widget>
@@ -1073,15 +887,232 @@ background-color:rgb(227,227,227);</string>
        <string>START</string>
       </property>
      </widget>
+     <widget class="QGroupBox" name="Box_ObjectCount">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>230</y>
+        <width>211</width>
+        <height>181</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>OBJECT COUNT</string>
+      </property>
+      <widget class="QLabel" name="Name_7">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>111</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>OMACHI</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Name_9">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>120</y>
+         <width>101</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>KOKOMI</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="num_kokomi">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>120</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="num_cungdinh">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>30</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Name_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
+         <width>101</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>HAO HAO</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Name_8">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>121</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>MILIKET</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="num_omachi">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>60</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Name_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>111</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>CUNG DINH</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="num_haohao">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>90</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="num_miliket">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>150</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+      </widget>
+     </widget>
      <zorder>Khung_frame</zorder>
      <zorder>Khung_RB_connect</zorder>
      <zorder>SerialBox</zorder>
-     <zorder>groupBox_2</zorder>
+     <zorder>Box_RobotPos</zorder>
      <zorder>groupBox_3</zorder>
      <zorder>ObjectBox</zorder>
      <zorder>Frame</zorder>
      <zorder>JobBox</zorder>
      <zorder>btn_auto_system</zorder>
+     <zorder>Box_ObjectCount</zorder>
     </widget>
     <widget class="QWidget" name="Manual">
      <attribute name="title">
@@ -2689,29 +2720,6 @@ background-color:rgb(227,227,227);</string>
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="btn_reload_data">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>270</y>
-        <width>131</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>LOAD DATA</string>
-      </property>
-     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -3330,32 +3338,6 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#0055ff;&quot;&gt;Students:&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt;Vu Gia Huy       - 1851074&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#0055ff;&quot;&gt;Pham Phu Vinh - 1851123&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_getByte">
-    <property name="geometry">
-     <rect>
-      <x>940</x>
-      <y>640</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>GET BYTE</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lb_count">
-    <property name="geometry">
-     <rect>
-      <x>1050</x>
-      <y>640</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
     </property>
    </widget>
   </widget>

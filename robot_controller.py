@@ -8,13 +8,10 @@ from motomini import Motomini
 import sys, time, serial
 
 device = Motomini()
-
-def get_lastest_value(value):
-    return max(value)
 class Robot(QThread):
     get_position = pyqtSignal(str, str, str, str, str, str,
                               str, str, str, str, str, str,
-                              int, int)
+                              int)
     
     def __init__(self, index = 0):
         super(Robot, self).__init__()
@@ -46,8 +43,7 @@ class Robot(QThread):
         time.sleep(0.0005)
         device.getPulsePos()
         time.sleep(0.0005)
-        value_byte_22 = device.getByte(22)
-        value_byte_23 = device.getByte(23)
+        device.getByte(22)
         device.convertPos()
           
         txt_X     = (str (round (float(constVariable.CartesianPos[0]) / 1000 , 3 ) ) )
@@ -64,9 +60,10 @@ class Robot(QThread):
         txt_B     = (str (round (float(constVariable.PulsePos[4]) / constVariable.pulse_per_degree_RBT ,3 ) ) )
         txt_T     = (str (round (float(constVariable.PulsePos[5]) / constVariable.pulse_per_degree_RBT ,3 ) ) )
         
+        Byte_22   = int(constVariable.B022)
+        
         self.get_position.emit(txt_X, txt_Y, txt_Z, txt_Roll, txt_Pitch, txt_Yaw,
-                               txt_S, txt_L, txt_U, txt_R, txt_B, txt_T,
-                               value_byte_22, value_byte_23)
+                               txt_S, txt_L, txt_U, txt_R, txt_B, txt_T, Byte_22)
 class Auto_system(QThread):
     timer_count = pyqtSignal(float) 
     
@@ -101,14 +98,13 @@ class Auto_system(QThread):
         """
         # if self.robot_connection == True:
         #     x_pos       =  250  * 1000
-        #     y_pos       = -100  * 1000
+        #     y_pos       = -150  * 1000
         #     z_pos       = -120  * 1000
         #     roll_pos    = -180  * 10000
         #     pitch_pos   =  0    * 10000
         #     yaw_pos     =  0    * 1000
-
-        #     pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-        #     device.writeVariablePos(121, pos)
+            
+        #     pos_pick = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
             
         #     if flag.name == "Cung dinh":
         #         if flag.flag_cungdinh == 1:
@@ -116,6 +112,7 @@ class Auto_system(QThread):
         #             pos = init_pos.P101
         #             pos[2] += 6000 * CountObject.cung_dinh
         #             device.writeVariablePos(101, pos)
+        #             device.writeVariablePos(121, pos_pick)
         #             device.writeByte(21,1)
                     
         #     if flag.name == "Hao Hao":
@@ -124,6 +121,7 @@ class Auto_system(QThread):
         #             pos = init_pos.P102
         #             pos[2] += 6000 * CountObject.hao_hao
         #             device.writeVariablePos(102, pos)
+        #             device.writeVariablePos(121, pos_pick)
         #             device.writeByte(21,2)
 
         #     if flag.name == "Kokomi":
@@ -132,6 +130,7 @@ class Auto_system(QThread):
         #             pos = init_pos.P103
         #             pos[2] += 6000 * CountObject.kokomi
         #             device.writeVariablePos(103, pos)
+        #             device.writeVariablePos(121, pos_pick)
         #             device.writeByte(21,3)
 
         #     if flag.name == "Miliket":
@@ -140,6 +139,7 @@ class Auto_system(QThread):
         #             pos = init_pos.P104
         #             pos[2] += 6000 * CountObject.miliket
         #             device.writeVariablePos(104, pos)
+        #             device.writeVariablePos(121, pos_pick)
         #             device.writeByte(21,4)
 
         #     if flag.name == "Omachi":
@@ -148,6 +148,7 @@ class Auto_system(QThread):
         #             pos = init_pos.P105
         #             pos[2] += 6000 * CountObject.omachi
         #             device.writeVariablePos(105, pos)
+        #             device.writeVariablePos(121, pos_pick)
         #             device.writeByte(21,5)
                     
         """ Method 2: Pick at multiple places
@@ -158,12 +159,12 @@ class Auto_system(QThread):
         if self.robot_connection == True and self.run_flag == True:
             if Byte.B022 == 1:
                 self.count += 0.1
-                # print("sec: {:.2f}".format(self.count))
+                print("sec: {:.2f}".format(self.count))
             
-                if Byte.B023 == 1 or self.count > 10:
+                if Byte.B022 == 2 or self.count > 10:
                     self.run_flag = False
    
-                if Byte.B022 ==0:
+                if Byte.B022 == 0:
                     self.timer_count.emit(self.count)  
                     self.count = 0
             print("sec: {:.2f}".format(self.count))     

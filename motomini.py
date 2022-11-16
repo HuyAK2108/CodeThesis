@@ -49,15 +49,10 @@ class Motomini:
                 self.rx_buffer_cartesian = self.rx_buffer
             elif self.rx_buffer[11] == 3:
                 self.rx_buffer_pulse = self.rx_buffer
+            elif self.rx_buffer[11] == 14:
+                self.rx_buffer_byte = self.rx_buffer
         except socket.timeout:
             pass
-        # while self.sever_socket.hasPendingDatagrams():
-        #     self.rx_buffer,size,addr = self.sever_socket.readDatagram(520)
-        #     print(self.rx_buffer)
-        #     if self.rx_buffer[11] == 2:
-        #         self.rx_buffer_cartesian = self.rx_buffer
-        #     elif self.rx_buffer[11] == 3:
-        #         self.rx_buffer_pulse = self.rx_buffer
 
     def onServo(self):
         header = txHeader
@@ -320,7 +315,5 @@ class Motomini:
             for i in range(6):
                 constVariable.PulsePos[i] = int.from_bytes(self.rx_buffer_pulse[52 + i*4:56 + i*4],"little",signed=True)
         if self.rx_buffer_byte != b"":
-            Byte.B023 = int.from_bytes(self.rx_buffer_byte[52 + i*4:56 + i*4],"little",signed=True)
-            for i in range(6):
-                constVariable.test_B023[i] =  int.from_bytes(self.rx_buffer_byte[52 + i*4:56 + i*4],"little",signed=True)
-            print(constVariable.test_B023)
+            constVariable.B022 = self.rx_buffer_byte[32]
+            

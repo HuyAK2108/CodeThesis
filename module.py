@@ -14,8 +14,6 @@ tracker_5 = CentroidTracker5()
 # Load model
 model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/v1.pt', source= 'local')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model.conf = 0.7
-model.iou = 0.7
 model.to(device)
 clasess = model.names
 print(clasess)
@@ -40,8 +38,8 @@ class VideoThread(QThread):
         self.count_omachi       = 0
         self.count_cungdinh     = 0 
         self.count_miliket      = 0 
-        self.start_point = [400, 0]
-        self.end_point   = [400, 480]
+        self.start_point = [500, 0]
+        self.end_point   = [500, 480]
         self.flag_1 = 0
         self.flag_2 = 0
         self.flag_3 = 0
@@ -123,6 +121,7 @@ class VideoThread(QThread):
             for objectID, centroid_1 in rects_ids.items():
                 detections.append(objectID)
                 self.count_kokomi = get_lastest_value(detections)
+                print('center:', centroid_1[0])
                 # cv2.putText(frame, str(self.count_kokomi), centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
 

@@ -1,4 +1,4 @@
-import cv2, serial, time
+import cv2, serial
 import numpy as np
 import serial.tools.list_ports
 from PyQt5 import QtGui
@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QMainWindow, QSlider, QAbstractItemView, QHeaderView
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import  pyqtSlot, Qt, QTimer
 from gui import Ui_MainWindow
-from module import VideoThread, get_lastest_value
+from module import VideoThread
 from robot_controller import Robot, UART, Auto_system
 from motomini import Motomini
 from typedef import *
@@ -17,22 +17,12 @@ class MainWindow (QMainWindow):
         super().__init__()
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
-        self.uic.lb_on_cam.hide()
-        self.uic.lb_on_robot.hide()
-        self.uic.lb_wait_robot.hide()
-        self.uic.lb_on_conveyor.hide()
-        self.uic.lb_on_serial.hide()
+        
         self.init_variables()
         self.init_timer()
         self.init_button()
         self.init_point_table()
         self.uic.btn_auto_system.setStyleSheet("QPushButton {color: green;}")
-        self.uic.btn_getByte.clicked.connect(self.getbyte)
-    
-    def getbyte(self):
-        a = device.getByte(22)    
-        b = device.getByte(23)
-        print(a,b)    
         
     def init_timer(self):
         self.timer_move_pos = QTimer()
@@ -55,7 +45,13 @@ class MainWindow (QMainWindow):
         self.uic.btn_stop_job.setEnabled(False)
         self.uic.btn_offCAM.setEnabled(False)
         self.uic.btn_closeuart.setEnabled(False)
-        
+        # Init Light status
+        self.uic.lb_on_cam.hide()
+        self.uic.lb_on_robot.hide()
+        self.uic.lb_wait_robot.hide()
+        self.uic.lb_on_conveyor.hide()
+        self.uic.lb_on_serial.hide()
+        self.uic.lb_auto_status.hide()
         # Connection Status
         self.job_status             = False
         self.com_connect_status     = False
@@ -131,7 +127,6 @@ class MainWindow (QMainWindow):
         self.uic.btn_stop_job.clicked.connect(self.STOP_JOB)
         # Button reload P101 - 105
         self.uic.btn_auto_system.clicked.connect(self.AUTO_SYSTEM)
-        self.uic.btn_reload_data.clicked.connect(self.RELOAD_POSITION)
         # Button Teaching point
         self.uic.btn_teach.clicked.connect(self.TEACH_POINT)
         self.uic.DelRow_butt.clicked.connect(self.delete_allrow_table)
@@ -402,6 +397,7 @@ class MainWindow (QMainWindow):
         flag.name = name
         if flag.flag_setName != [0,0,0,0,0]:   
             self.uic.text_name.setText(name)
+            
     """Display number of object
     """
     @pyqtSlot(str, str, str, str, str)
@@ -419,8 +415,8 @@ class MainWindow (QMainWindow):
 
     """Display current position
     """  
-    @pyqtSlot(str, str, str, str, str, str, str, str, str, str, str, str, int, int)
-    def show_position(self, X, Y, Z, Roll, Pitch, Yaw, S, L, U, R, B, T, B022, B023):
+    @pyqtSlot(str, str, str, str, str, str, str, str, str, str, str, str, int)
+    def show_position(self, X, Y, Z, Roll, Pitch, Yaw, S, L, U, R, B, T, B022):
         self.uic.txt_X.setText(X)
         self.uic.txt_Y.setText(Y)
         self.uic.txt_Z.setText(Z)
@@ -443,8 +439,6 @@ class MainWindow (QMainWindow):
         self.uic.T_pos_text.setText(T)
         
         Byte.B022 = B022
-        Byte.B023 = B023
-        print('B022: ' + str(Byte.B022) + ' B023:' + str(Byte.B023))
         
     @pyqtSlot(int)
     def show_speed(self, speed):
@@ -460,9 +454,66 @@ class MainWindow (QMainWindow):
         flag.flag_miliket  = flag_miliket
         flag.flag_setName = [flag_cungdinh, flag_haohao, flag_kokomi, flag_miliket, flag_omachi]
         
+        # if self.robot_status == True:
+        #     x_pos       =  250  * 1000
+        #     y_pos       = -150  * 1000
+        #     z_pos       = -120  * 1000
+        #     roll_pos    = -180  * 10000
+        #     pitch_pos   =  0    * 10000
+        #     yaw_pos     =  0    * 1000
+
+        #     pos_pick = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+            
+        #     if flag.name == "Cung dinh":
+        #         if flag.flag_cungdinh == 1:
+        #             print("write byte 1")
+        #             pos = init_pos.P101
+        #             # pos[2] += 6000 * int(CountObject.cung_dinh)
+        #             device.writeVariablePos(101, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,1)
+                    
+        #     elif flag.name == "Hao Hao":
+        #         if flag.flag_haohao == 1:
+        #             print("write byte 2")
+        #             pos = init_pos.P102
+        #             # pos[2] += 6000 * int(CountObject.hao_hao)
+        #             device.writeVariablePos(102, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,2)
+
+        #     elif flag.name == "Kokomi":
+        #         if flag.flag_kokomi == 1:
+        #             print("write byte 3")
+        #             pos = init_pos.P103
+        #             # pos[2] += 6000 * int(CountObject.kokomi)
+        #             device.writeVariablePos(103, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,3)
+
+        #     elif flag.name == "Miliket":
+        #         if flag.flag_miliket == 1:
+        #             print("write byte 4")
+        #             pos = init_pos.P104
+        #             # pos[2] += 6000 * int(CountObject.miliket)
+        #             device.writeVariablePos(104, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,4)
+
+        #     elif flag.name == "Omachi":
+        #         if flag.flag_omachi == 1:
+        #             print("write byte 5")
+        #             pos = init_pos.P105
+        #             # pos[2] += 6000 * int(CountObject.omachi)
+        #             device.writeVariablePos(105, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,5)
+        #     else:
+        #         print("No object detected !")
+                    
     def AUTO_SYSTEM(self):
         if self.status_thread_4 == False:
-            self.thread[4] = Auto_system(index = 4)
+            self.thread[4] = Auto_system(index = 4, robot_status= self.robot_status)
             self.thread[4].start_program()
             self.thread[4].timer_count.connect(self.counter)
             self.status_thread_4 = True
@@ -485,14 +536,57 @@ class MainWindow (QMainWindow):
     @pyqtSlot(float)
     def counter(self, count):
         counter = round(count,2)
-        self.uic.lb_count.setText(str(counter))
         delta_y = conveyor.speed * int(counter)
         delta_y = 38 * int(counter) # Cover missing STM32 and UART
         print("Time:",counter)
         init_pos.P121[1] += delta_y   
-        device.writeVariablePos(121, init_pos.P121)
-        
         print("Location Y to pick:", init_pos.P121[1])
+        pos_pick = init_pos.P121
+        
+        if flag.name == "Cung dinh":
+            if flag.flag_cungdinh == 1:
+                print("write byte 1")
+                pos = init_pos.P101
+                # pos[2] += 6000 * int(CountObject.cung_dinh)
+                device.writeVariablePos(101, pos)
+                device.writeVariablePos(121, pos_pick)
+                device.writeByte(21,1)
+                
+        elif flag.name == "Hao Hao":
+            if flag.flag_haohao == 1:
+                print("write byte 2")
+                pos = init_pos.P102
+                # pos[2] += 6000 * int(CountObject.hao_hao)
+                device.writeVariablePos(102, pos)
+                device.writeVariablePos(121, pos_pick)
+                device.writeByte(21,2)
+                
+        elif flag.name == "Kokomi":
+            if flag.flag_kokomi == 1:
+                print("write byte 3")
+                pos = init_pos.P103
+                # pos[2] += 6000 * int(CountObject.kokomi)
+                device.writeVariablePos(103, pos)
+                device.writeVariablePos(121, pos_pick)
+                device.writeByte(21,3)
+                
+        elif flag.name == "Miliket":
+            if flag.flag_miliket == 1:
+                print("write byte 4")
+                pos = init_pos.P104
+                # pos[2] += 6000 * int(CountObject.miliket)
+                device.writeVariablePos(104, pos)
+                device.writeVariablePos(121, pos_pick)
+                device.writeByte(21,4)
+                
+        elif flag.name == "Omachi":
+            if flag.flag_omachi == 1:
+                print("write byte 5")
+                pos = init_pos.P105
+                # pos[2] += 6000 * int(CountObject.omachi)
+                device.writeVariablePos(105, pos)
+                device.writeVariablePos(121, pos_pick)
+                device.writeByte(21,5)
         
     def RELOAD_POSITION(self):
         # Load initial value of P101 - 105 and P110
