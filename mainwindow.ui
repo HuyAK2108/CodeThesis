@@ -1022,7 +1022,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
        <property name="text">
-        <string>MILIKET</string>
+        <string>BISTRO</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="num_omachi">
@@ -1084,7 +1084,7 @@ background-color:rgb(227,227,227);</string>
         </font>
        </property>
       </widget>
-      <widget class="QLineEdit" name="num_miliket">
+      <widget class="QLineEdit" name="num_bistro">
        <property name="geometry">
         <rect>
          <x>130</x>

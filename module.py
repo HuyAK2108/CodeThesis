@@ -12,9 +12,9 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/v1.pt', source= 'local')
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model.to(device)
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/Trained_Nov18.pt', source= 'local')
+# device = 'cuda' if torch.cuda.is_available() else 'cpu'
+# model.to(device)
 clasess = model.names
 print(clasess)
 class VideoThread(QThread):
@@ -33,11 +33,11 @@ class VideoThread(QThread):
         
         # Object parameters
         self.object_name = ''
-        self.count_kokomi       = 0
-        self.count_haohao       = 0 
-        self.count_omachi       = 0
+        self.count_bistro       = 0 
         self.count_cungdinh     = 0 
-        self.count_miliket      = 0 
+        self.count_haohao       = 0 
+        self.count_kokomi       = 0
+        self.count_omachi       = 0
         self.start_point = [500, 0]
         self.end_point   = [500, 480]
         self.flag_1 = 0
@@ -110,24 +110,22 @@ class VideoThread(QThread):
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
                 cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
                 # cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2)
-                
                 self.signal.emit(label)  
                 self.object_name = label
         
-        """Kokomi
+        """Bistro
         """
-        if self.object_name == 'Kokomi':
+        if self.object_name == 'BISTRO':
             rects_ids = tracker.update(rects)
-            for objectID, centroid_1 in rects_ids.items():
-                detections.append(objectID)
-                self.count_kokomi = get_lastest_value(detections)
-                print('center:', centroid_1[0])
-                # cv2.putText(frame, str(self.count_kokomi), centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-                cv2.putText(frame, ".", centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-
+            for objectID_1, centroid_1 in rects_ids.items():
+                detections.append(objectID_1)
+                self.count_bistro = get_lastest_value(detections)
+                # cv2.putText(frame, str(self.count_bistro), centroid_5, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
+                cv2.putText(frame, ".", centroid_5, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+        
         """Cung dinh
         """
-        if self.object_name == 'Cung dinh':
+        if self.object_name == 'CUNG DINH':
             rects_ids = tracker_2.update(rects)
             for objectID_2, centroid_2 in rects_ids.items():
                 detections_2.append(objectID_2)
@@ -137,7 +135,7 @@ class VideoThread(QThread):
         
         """Hao hao
         """
-        if self.object_name == 'Hao Hao':
+        if self.object_name == 'HAO HAO':
             rects_ids = tracker_3.update(rects)
             for objectID_3, centroid_3 in rects_ids.items():
                 detections_3.append(objectID_3)
@@ -145,27 +143,28 @@ class VideoThread(QThread):
                 # cv2.putText(frame, str(self.count_haohao), centroid_3, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_3, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
 
-        """Omachi
+        """Kokomi
         """
-        if self.object_name == 'Omachi':
+        if self.object_name == 'KOKOMI':
             rects_ids = tracker_4.update(rects)
             for objectID_4, centroid_4 in rects_ids.items():
                 detections_4.append(objectID_4)
-                self.count_omachi = get_lastest_value(detections_4)
-                # cv2.putText(frame, str(self.count_omachi), centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
+                self.count_kokomi = get_lastest_value(detections)
+                print('center:', centroid_4[0])
+                # cv2.putText(frame, str(self.count_kokomi), centroid_1, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-        
-        """Miliket
+                
+        """Omachi
         """
-        if self.object_name == 'Miliket':
+        if self.object_name == 'OMACHI':
             rects_ids = tracker_5.update(rects)
             for objectID_5, centroid_5 in rects_ids.items():
                 detections_5.append(objectID_5)
-                self.count_miliket = get_lastest_value(detections_5)
-                # cv2.putText(frame, str(self.count_miliket), centroid_5, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)          
+                self.count_omachi = get_lastest_value(detections_5)
+                # cv2.putText(frame, str(self.count_omachi), centroid_4, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
                 cv2.putText(frame, ".", centroid_5, cv2.FONT_HERSHEY_SIMPLEX, 3, (128,255,255), 2)
-            
-        self.number.emit(str(self.count_kokomi), str(self.count_cungdinh), str(self.count_haohao), str(self.count_omachi), str(self.count_miliket))         
+        
+        self.number.emit(str(self.count_kokomi), str(self.count_cungdinh), str(self.count_haohao), str(self.count_omachi), str(self.count_bistro))         
         if centroid_1[0] >= self.start_point[0]-5 and centroid_1[0]<=self.start_point[0]+5:
             self.flag_1 = 1
         else:

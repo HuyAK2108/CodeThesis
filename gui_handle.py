@@ -51,7 +51,7 @@ class MainWindow (QMainWindow):
         self.uic.lb_wait_robot.hide()
         self.uic.lb_on_conveyor.hide()
         self.uic.lb_on_serial.hide()
-        self.uic.lb_auto_status.hide()
+        self.uic.lb_on_auto.hide()
         # Connection Status
         self.job_status             = False
         self.com_connect_status     = False
@@ -401,16 +401,16 @@ class MainWindow (QMainWindow):
     """Display number of object
     """
     @pyqtSlot(str, str, str, str, str)
-    def show_number(self, kokomi, cungdinh, haohao, omachi, miliket):
+    def show_number(self, kokomi, cungdinh, haohao, omachi, bistro):
         self.uic.num_kokomi.setText(kokomi)
         self.uic.num_cungdinh.setText(cungdinh)
         self.uic.num_haohao.setText(haohao)
         self.uic.num_omachi.setText(omachi)
-        self.uic.num_miliket.setText(miliket)
+        self.uic.num_bistro.setText(bistro)
         CountObject.cung_dinh   = cungdinh
         CountObject.hao_hao     = haohao
         CountObject.omachi      = omachi
-        CountObject.miliket     = miliket
+        CountObject.bistro      = bistro
         CountObject.kokomi      = kokomi
 
     """Display current position
@@ -446,70 +446,70 @@ class MainWindow (QMainWindow):
         conveyor.speed = speed
            
     @pyqtSlot(int, int, int, int, int)
-    def get_object_position(self, flag_kokomi, flag_cungdinh, flag_haohao, flag_omachi, flag_miliket):
+    def get_object_position(self, flag_kokomi, flag_cungdinh, flag_haohao, flag_omachi, flag_bistro):
         flag.flag_kokomi   = flag_kokomi
         flag.flag_cungdinh = flag_cungdinh
         flag.flag_haohao   = flag_haohao
         flag.flag_omachi   = flag_omachi
-        flag.flag_miliket  = flag_miliket
-        flag.flag_setName = [flag_cungdinh, flag_haohao, flag_kokomi, flag_miliket, flag_omachi]
-        
-        if self.robot_status == True:
-            x_pos       =  250  * 1000
-            y_pos       = -150  * 1000
-            z_pos       = -120  * 1000
-            roll_pos    = -180  * 10000
-            pitch_pos   =  0    * 10000
-            yaw_pos     =  0    * 1000
+        flag.flag_bistro  = flag_bistro
+        flag.flag_setName = [flag_cungdinh, flag_haohao, flag_kokomi, flag_bistro, flag_omachi]
+        print(flag.flag_setName)
+        # if self.robot_status == True:
+        #     x_pos       =  250  * 1000
+        #     y_pos       = -150  * 1000
+        #     z_pos       = -120  * 1000
+        #     roll_pos    = -180  * 10000
+        #     pitch_pos   =  0    * 10000
+        #     yaw_pos     =  0    * 1000
 
-            pos_pick = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+        #     pos_pick = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
             
-            if flag.name == "Cung dinh":
-                if flag.flag_cungdinh == 1:
-                    print("write byte 1")
-                    pos = init_pos.P101
-                    # pos[2] += 6000 * int(CountObject.cung_dinh)
-                    device.writeVariablePos(101, pos)
-                    device.writeVariablePos(121, pos_pick)
-                    device.writeByte(21,1)
+        #     if flag.name == "Cung dinh":
+        #         if flag.flag_cungdinh == 1:
+        #             print("write byte 1")
+        #             pos = init_pos.P101
+        #             # pos[2] += 6000 * int(CountObject.cung_dinh)
+        #             device.writeVariablePos(101, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,1)
                     
-            elif flag.name == "Hao Hao":
-                if flag.flag_haohao == 1:
-                    print("write byte 2")
-                    pos = init_pos.P102
-                    # pos[2] += 6000 * int(CountObject.hao_hao)
-                    device.writeVariablePos(102, pos)
-                    device.writeVariablePos(121, pos_pick)
-                    device.writeByte(21,2)
+        #     elif flag.name == "Hao Hao":
+        #         if flag.flag_haohao == 1:
+        #             print("write byte 2")
+        #             pos = init_pos.P102
+        #             # pos[2] += 6000 * int(CountObject.hao_hao)
+        #             device.writeVariablePos(102, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,2)
 
-            elif flag.name == "Kokomi":
-                if flag.flag_kokomi == 1:
-                    print("write byte 3")
-                    pos = init_pos.P103
-                    # pos[2] += 6000 * int(CountObject.kokomi)
-                    device.writeVariablePos(103, pos)
-                    device.writeVariablePos(121, pos_pick)
-                    device.writeByte(21,3)
+        #     elif flag.name == "Kokomi":
+        #         if flag.flag_kokomi == 1:
+        #             print("write byte 3")
+        #             pos = init_pos.P103
+        #             # pos[2] += 6000 * int(CountObject.kokomi)
+        #             device.writeVariablePos(103, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,3)
 
-            elif flag.name == "Miliket":
-                if flag.flag_miliket == 1:
-                    print("write byte 4")
-                    pos = init_pos.P104
-                    # pos[2] += 6000 * int(CountObject.miliket)
-                    device.writeVariablePos(104, pos)
-                    device.writeVariablePos(121, pos_pick)
-                    device.writeByte(21,4)
+        #     elif flag.name == "BISTRO":
+        #         if flag.flag_bistro == 1:
+        #             print("write byte 4")
+        #             pos = init_pos.P104
+        #             # pos[2] += 6000 * int(CountObject.bistro)
+        #             device.writeVariablePos(104, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,4)
 
-            elif flag.name == "Omachi":
-                if flag.flag_omachi == 1:
-                    print("write byte 5")
-                    pos = init_pos.P105
-                    # pos[2] += 6000 * int(CountObject.omachi)
-                    device.writeVariablePos(105, pos)
-                    device.writeVariablePos(121, pos_pick)
-                    device.writeByte(21,5)
-            else:
-                print("No object detected !")
+        #     elif flag.name == "Omachi":
+        #         if flag.flag_omachi == 1:
+        #             print("write byte 5")
+        #             pos = init_pos.P105
+        #             # pos[2] += 6000 * int(CountObject.omachi)
+        #             device.writeVariablePos(105, pos)
+        #             device.writeVariablePos(121, pos_pick)
+        #             device.writeByte(21,5)
+        #     else:
+        #         print("No object detected !")
                     
     def AUTO_SYSTEM(self):
         if self.status_thread_4 == False:
@@ -539,54 +539,58 @@ class MainWindow (QMainWindow):
         delta_y = conveyor.speed * int(counter)
         delta_y = 38 * int(counter) # Cover missing STM32 and UART
         print("Time:",counter)
-        init_pos.P121[1] += delta_y   
-        print("Location Y to pick:", init_pos.P121[1])
-        pos_pick = init_pos.P121
+        if counter < 5:
+            pos_pick = init_pos.P121
+        else:
+            pos_pick = init_pos.P121
+            pos_pick[1] += delta_y * 1000
+        print("Location to pick:", pos_pick)
         
-        if flag.name == "Cung dinh":
-            if flag.flag_cungdinh == 1:
-                print("write byte 1")
-                pos = init_pos.P101
-                # pos[2] += 6000 * int(CountObject.cung_dinh)
-                device.writeVariablePos(101, pos)
-                device.writeVariablePos(121, pos_pick)
-                device.writeByte(21,1)
-                
-        elif flag.name == "Hao Hao":
-            if flag.flag_haohao == 1:
-                print("write byte 2")
-                pos = init_pos.P102
-                # pos[2] += 6000 * int(CountObject.hao_hao)
-                device.writeVariablePos(102, pos)
-                device.writeVariablePos(121, pos_pick)
-                device.writeByte(21,2)
-                
-        elif flag.name == "Kokomi":
-            if flag.flag_kokomi == 1:
-                print("write byte 3")
-                pos = init_pos.P103
-                # pos[2] += 6000 * int(CountObject.kokomi)
-                device.writeVariablePos(103, pos)
-                device.writeVariablePos(121, pos_pick)
-                device.writeByte(21,3)
-                
-        elif flag.name == "Miliket":
-            if flag.flag_miliket == 1:
-                print("write byte 4")
-                pos = init_pos.P104
-                # pos[2] += 6000 * int(CountObject.miliket)
-                device.writeVariablePos(104, pos)
-                device.writeVariablePos(121, pos_pick)
-                device.writeByte(21,4)
-                
-        elif flag.name == "Omachi":
-            if flag.flag_omachi == 1:
-                print("write byte 5")
-                pos = init_pos.P105
-                # pos[2] += 6000 * int(CountObject.omachi)
-                device.writeVariablePos(105, pos)
-                device.writeVariablePos(121, pos_pick)
-                device.writeByte(21,5)
+        if self.robot_status == True:
+            if flag.name == "Cung dinh":
+                if flag.flag_cungdinh == 1:
+                    print("write byte 1")
+                    pos = init_pos.P101
+                    # pos[2] += 6000 * int(CountObject.cung_dinh)
+                    device.writeVariablePos(101, pos)
+                    device.writeVariablePos(121, pos_pick)
+                    device.writeByte(21,1)
+
+            elif flag.name == "Hao Hao":
+                if flag.flag_haohao == 1:
+                    print("write byte 2")
+                    pos = init_pos.P102
+                    # pos[2] += 6000 * int(CountObject.hao_hao)
+                    device.writeVariablePos(102, pos)
+                    device.writeVariablePos(121, pos_pick)
+                    device.writeByte(21,2)
+
+            elif flag.name == "Kokomi":
+                if flag.flag_kokomi == 1:
+                    print("write byte 3")
+                    pos = init_pos.P103
+                    # pos[2] += 6000 * int(CountObject.kokomi)
+                    device.writeVariablePos(103, pos)
+                    device.writeVariablePos(121, pos_pick)
+                    device.writeByte(21,3)
+
+            elif flag.name == "BISTRO":
+                if flag.flag_bistro == 1:
+                    print("write byte 4")
+                    pos = init_pos.P104
+                    # pos[2] += 6000 * int(CountObject.bistro)
+                    device.writeVariablePos(104, pos)
+                    device.writeVariablePos(121, pos_pick)
+                    device.writeByte(21,4)
+
+            elif flag.name == "Omachi":
+                if flag.flag_omachi == 1:
+                    print("write byte 5")
+                    pos = init_pos.P105
+                    # pos[2] += 6000 * int(CountObject.omachi)
+                    device.writeVariablePos(105, pos)
+                    device.writeVariablePos(121, pos_pick)
+                    device.writeByte(21,5)
         
     def RELOAD_POSITION(self):
         # Load initial value of P101 - 105 and P110

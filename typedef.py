@@ -287,7 +287,7 @@ class flag:
     flag_cungdinh = 0       # Flag_cungdinh
     flag_haohao   = 0       # Flag_haohao
     flag_omachi   = 0       # Flag_omachi
-    flag_miliket  = 0       # Flag_miliket
+    flag_bistro   = 0       # Flag_bistro
     name          = ''      # Object name
     flag_setName  = []      # Show object name
     
@@ -309,5 +309,5 @@ class CountObject:
     cung_dinh = 0
     hao_hao   = 0
     kokomi    = 0
-    miliket   = 0
+    bistro    = 0
     omachi    = 0
