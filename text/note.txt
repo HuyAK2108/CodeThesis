@@ -52,3 +52,8 @@ tọa độ khung hình - tọa độ robot
 500 pixel = -195
 501       = -195 + 0.7
 502       = -195 + 0.7 * 2
+
+Thời gian t là khoảng thời gian từ lúc vật qua điểm trigger đến khi robot về vị trí chờ
+t = t2 - t1
+- 2 vật sát nhau    => Thời gian t "lớn"
+- 2 vật xa nhau     => Thời gian t "nhỏ" hoặc bằng "0" 

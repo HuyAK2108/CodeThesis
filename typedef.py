@@ -10,10 +10,10 @@ class constVariable:
     pulse_per_degree_L = 102400 / 90
     pulse_per_degree_U = 51200 / 90
     pulse_per_degree_RBT = 10204 / 30
-
+    error_trigger = 5
     CartesianPos  = [0,0,0,0,0,0]
     PulsePos      = [0,0,0,0,0,0]
-    B022          = [0,0,0,0,0,0]
+    B022          = 0
 
 class receiveType(Enum):
     ON_SERVO = 0x00
@@ -292,13 +292,13 @@ class flag:
     flag_setName  = []      # Show object name
     
 class init_pos:    
-    P101 = [-125*1000, -220*1000, -120*1000, -180*10000,0, 0]
-    P102 = [-40 *1000, -220*1000, -120*1000, -180*10000,0, 0]
-    P103 = [ 40 *1000, -220*1000, -120*1000, -180*10000,0, 0]
-    P104 = [-10 *1000, -315*1000, -120*1000, -180*10000,0, 0]
-    P105 = [-90 *1000, -315*1000, -120*1000, -180*10000,0, 0]
-    P110 = [180 *1000, -130*1000,  10 *1000, -180*10000,0, 0]
-    P121 = [250 *1000, -195*1000, -120*1000, -180*10000,0, 0]
+    P101 = [-125*1000, -220*1000, -120*1000, -180*10000, 0, 0]
+    P102 = [-40 *1000, -220*1000, -120*1000, -180*10000, 0, 0]
+    P103 = [ 40 *1000, -220*1000, -120*1000, -180*10000, 0, 0]
+    P104 = [-10 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
+    P105 = [-90 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
+    P110 = [180 *1000, -130*1000,  10 *1000, -180*10000, 0, 0]
+    P121 = [250 *1000, -195*1000, -120*1000, -180*10000, 0, 0]
     
 class conveyor:
     speed = 0
@@ -311,3 +311,27 @@ class CountObject:
     kokomi    = 0
     bistro    = 0
     omachi    = 0
+    queue     = []
+    
+class Queue:
+    def __init__(self):
+        self.queue = []
+        
+    def enqueue(self,item):
+        self.queue.append(item)
+    
+    def dequeue(self):
+        if len(self.queue) < 1:
+            return None
+        return self.queue.pop(0)
+    
+    def display(self):
+        print(self.queue)
+     
+    def size(self):
+        return len(self.queue)
+        
+def dequeue(queue):
+    if len(queue) < 1:
+        return None
+    return queue.pop(0)

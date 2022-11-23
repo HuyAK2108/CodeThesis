@@ -71,7 +71,6 @@ class Auto_system(QThread):
         super(Auto_system, self).__init__()
         self.index = index
         self.robot_connection = robot_status
-        self.robot_connection = True
         self.count = 0
         self.run_flag = False
         print("Auto thread start", self.index)
@@ -88,94 +87,25 @@ class Auto_system(QThread):
         self.stop()
 
     def stop(self):
-        """Sets waits for thread to finish"""
         print("Auto thread stop", self.index)
         self.wait()
         
     def update_program(self):
-        # print("name: " + flag.name + ", count: " + str(flag.flag_haohao))
-        
-        """ Method 1: Pick at one place
-        """
-        # if self.robot_connection == True:
-        #     x_pos       =  250  * 1000
-        #     y_pos       = -150  * 1000
-        #     z_pos       = -120  * 1000
-        #     roll_pos    = -180  * 10000
-        #     pitch_pos   =  0    * 10000
-        #     yaw_pos     =  0    * 1000
+        # EMIT TIME
+        if Byte.B022 == 0:
+            self.timer_count.emit(self.count)  
+            self.count = 0
+            self.run_flag = True
+                
+        # TIME START
+        if Byte.B022 == 1 and self.run_flag == True:
+            self.count += 0.1
+                
+        # TIME STOP
+        if Byte.B022 == 2:
+            self.run_flag = False
 
-        #     pos_pick = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-            
-        #     if flag.name == "Cung dinh":
-        #         if flag.flag_cungdinh == 1:
-        #             print("write byte 1")
-        #             pos = init_pos.P101
-        #             # pos[2] += 6000 * int(CountObject.cung_dinh)
-        #             device.writeVariablePos(101, pos)
-        #             device.writeVariablePos(121, pos_pick)
-        #             device.writeByte(21,1)
-                    
-        #     elif flag.name == "Hao Hao":
-        #         if flag.flag_haohao == 1:
-        #             print("write byte 2")
-        #             pos = init_pos.P102
-        #             # pos[2] += 6000 * int(CountObject.hao_hao)
-        #             device.writeVariablePos(102, pos)
-        #             device.writeVariablePos(121, pos_pick)
-        #             device.writeByte(21,2)
-
-        #     elif flag.name == "Kokomi":
-        #         if flag.flag_kokomi == 1:
-        #             print("write byte 3")
-        #             pos = init_pos.P103
-        #             # pos[2] += 6000 * int(CountObject.kokomi)
-        #             device.writeVariablePos(103, pos)
-        #             device.writeVariablePos(121, pos_pick)
-        #             device.writeByte(21,3)
-
-        #     elif flag.name == "BISTRO":
-        #         if flag.flag_bistro == 1:
-        #             print("write byte 4")
-        #             pos = init_pos.P104
-        #             # pos[2] += 6000 * int(CountObject.bistro)
-        #             device.writeVariablePos(104, pos)
-        #             device.writeVariablePos(121, pos_pick)
-        #             device.writeByte(21,4)
-
-        #     elif flag.name == "Omachi":
-        #         if flag.flag_omachi == 1:
-        #             print("write byte 5")
-        #             pos = init_pos.P105
-        #             # pos[2] += 6000 * int(CountObject.omachi)
-        #             device.writeVariablePos(105, pos)
-        #             device.writeVariablePos(121, pos_pick)
-        #             device.writeByte(21,5)
-        #     else:
-        #         print("No object detected !")
-                    
-        """ Method 2: Pick at multiple places
-        """        
-        if flag.flag_setName != [0,0,0,0,0]:
-            print(flag.flag_setName)
-            self.run_flag= True
-    
-        if self.robot_connection == True and self.run_flag == True:
-            # TIME START
-            if Byte.B022 == 1:
-                self.count += 0.1
-                # TIME STOP
-                if Byte.B022 == 2 or self.count >= 5:
-                    self.run_flag = False
-                # EMIT TIME
-                if Byte.B022 == 0:
-                    self.timer_count.emit(self.count)  
-                    self.count = 0
-            
-            if Byte.B022 == 0:
-                self.timer_count.emit(self.count)  
-                self.count = 0
-            print("sec: {:.2f}".format(self.count))     
+        print("sec: {:.2f}".format(self.count))  
         
 class UART(QThread):
     get_speed = pyqtSignal(int)
