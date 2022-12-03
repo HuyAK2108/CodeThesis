@@ -311,9 +311,9 @@ class Motomini:
         if self.rx_buffer_cartesian != b"":
             for i in range(6):
                 constVariable.CartesianPos[i] = int.from_bytes(self.rx_buffer_cartesian[52 + i*4:56 + i*4],"little",signed=True)
-        if self.rx_buffer_pulse != b"":
+        elif self.rx_buffer_pulse != b"":
             for i in range(6):
                 constVariable.PulsePos[i] = int.from_bytes(self.rx_buffer_pulse[52 + i*4:56 + i*4],"little",signed=True)
-        if self.rx_buffer_byte != b"":
+        elif self.rx_buffer_byte != b"":
             constVariable.B022 = self.rx_buffer_byte[32]
             

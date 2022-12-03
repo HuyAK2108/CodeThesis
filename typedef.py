@@ -10,10 +10,10 @@ class constVariable:
     pulse_per_degree_L = 102400 / 90
     pulse_per_degree_U = 51200 / 90
     pulse_per_degree_RBT = 10204 / 30
-    error_trigger = 5
+    error_trigger = 7
     CartesianPos  = [0,0,0,0,0,0]
     PulsePos      = [0,0,0,0,0,0]
-    B022          = 0
+    B022          = 10
 
 class receiveType(Enum):
     ON_SERVO = 0x00
@@ -283,13 +283,17 @@ class convertNameJob:
         return buffer
 # Use to check current flag to pick object
 class flag:
-    flag_kokomi   = 0       # Flag_kokomi 
-    flag_cungdinh = 0       # Flag_cungdinh
-    flag_haohao   = 0       # Flag_haohao
-    flag_omachi   = 0       # Flag_omachi
-    flag_bistro   = 0       # Flag_bistro
-    name          = ''      # Object name
-    flag_setName  = []      # Show object name
+    kokomi          = 0         # Flag_kokomi 
+    cungdinh        = 0         # Flag_cungdinh
+    haohao          = 0         # Flag_haohao
+    omachi          = 0         # Flag_omachi
+    bistro          = 0         # Flag_bistro
+    name            = ''        # Object name
+    flag_setName    = []        # Show object name
+    trigger         = False     # Show trigger line
+    conveyor        = False     # Show conveyor line
+    bgs             = False     # Show BGS
+     
     
 class init_pos:    
     P101 = [-125*1000, -220*1000, -120*1000, -180*10000, 0, 0]
@@ -298,40 +302,21 @@ class init_pos:
     P104 = [-10 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
     P105 = [-90 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
     P110 = [180 *1000, -130*1000,  10 *1000, -180*10000, 0, 0]
-    P121 = [250 *1000, -195*1000, -120*1000, -180*10000, 0, 0]
+    # P121 = [250 *1000, -195*1000, -120*1000, -180*10000, 0, 0]
+    P121 = [245 *1000, -90 *1000, -120*1000, -180*10000, 0, 0]
     
-class conveyor:
-    speed = 0
-
-class Byte:
-    B022 = 0
 class CountObject:
     cung_dinh = 0
     hao_hao   = 0
     kokomi    = 0
     bistro    = 0
     omachi    = 0
-    queue     = []
+    angle     = 0
     
-class Queue:
-    def __init__(self):
-        self.queue = []
-        
-    def enqueue(self,item):
-        self.queue.append(item)
+class CenterObject:
+    bistro      = [0,0]
+    cung_dinh   = [0,0]
+    hao_hao     = [0,0]
+    kokomi      = [0,0]
+    omachi      = [0,0]
     
-    def dequeue(self):
-        if len(self.queue) < 1:
-            return None
-        return self.queue.pop(0)
-    
-    def display(self):
-        print(self.queue)
-     
-    def size(self):
-        return len(self.queue)
-        
-def dequeue(queue):
-    if len(queue) < 1:
-        return None
-    return queue.pop(0)

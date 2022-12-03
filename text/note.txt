@@ -1,25 +1,8 @@
-Multithread
-
-gui_handle.py to control gui.py
-module.py to control main.py
-typedef.py: includes data frame
-
 Run main.py to execute
-
-- Omachi
-- Hảo hảo
-- Kokomi
-- Cung đình
-- Miliket
 
 v1.pt : train only lab images
 best.pt: lab + web
 
-Method 1:
-cX = int((startX + endX) / 2.0) - 10
-cY = int((startY + endY) / 2.0)
-
-Method 2:
 cX = float((startX + endX) / 2.0)
 cY = float((startY + endY) / 2.0)
 
@@ -31,29 +14,19 @@ P121: Where to pick object
 
 vị trí chờ gần băng tải: P110
 
-y_next = y_max - v*t + y_prev
-
-DI_24: I/O Box -> I0
-
 Thread 1: Video
-Thread 2: Robot
-Thread 3: UART
-Thread 4: AUTO_SYSTEM
 
-tọa độ khung hình - tọa độ robot
-500               : -195
-600               : -125
+tọa độ khung hình - tọa độ robot:
+Center cY         : X_pos
+160               : ... "A"
+180               : ... "A + x1"
+200               : ... "A + x2"
+220               : ... "A + x3"
 
-520               : -180
-550               : -160
+10 (pixel) = X (mm)
+=> n (pixel) = X*n/10
 
-100 pixel = 70 mm
-1   pixel = 0.7mm
-500 pixel = -195
-501       = -195 + 0.7
-502       = -195 + 0.7 * 2
-
-Thời gian t là khoảng thời gian từ lúc vật qua điểm trigger đến khi robot về vị trí chờ
-t = t2 - t1
-- 2 vật sát nhau    => Thời gian t "lớn"
-- 2 vật xa nhau     => Thời gian t "nhỏ" hoặc bằng "0" 
+tọa độ robot: 
+n = center[1] - 160
+"x_pos = A + X*n/10"
+pos_pick[0] += X*n/10  
