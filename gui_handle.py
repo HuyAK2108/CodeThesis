@@ -2,22 +2,19 @@ import cv2, serial, time
 import numpy as np
 import serial.tools.list_ports
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QSlider, QAbstractItemView, QHeaderView, QTableWidgetItem
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import  pyqtSlot, Qt, QTimer
+from PyQt5.QtWidgets import QMainWindow, QSlider, QAbstractItemView, QHeaderView, QTableWidgetItem, QMessageBox
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import  pyqtSlot, Qt, QTimer, QSize, QThread
 from gui import Ui_MainWindow
 from module import VideoThread
-from robot_controller import Robot, UART, Auto_system
 from motomini import Motomini
 from typedef import *
-q = Queue()
 device = Motomini()
 class MainWindow (QMainWindow):
     def __init__(self):
         super().__init__()
         self.uic = Ui_MainWindow()
         self.uic.setupUi(self)
-        
         self.init_variables()
         self.init_timer()
         self.init_button()
@@ -25,25 +22,37 @@ class MainWindow (QMainWindow):
 
     def init_timer(self):
         self.timer_move_pos = QTimer()
-        self.timer_move_pos.setInterval(100)
+        self.timer_move_pos.setInterval(300)
         self.timer_move_pos.timeout.connect(self.moveRobot)
         
+        self.timer_update_gui = QTimer()
+        self.timer_update_gui.setInterval(300)
+        self.timer_update_gui.timeout.connect(self.updateGUI)
+        
+        self.auto_system = QTimer()
+        self.auto_system.setInterval(50)
+        self.auto_system.timeout.connect(self.auto_program)
+        
+        self.TIMER_UART = QTimer()
+        self.TIMER_UART.setInterval(500)
+        self.TIMER_UART.timeout.connect(self.get_data)
+        
     def init_variables(self):        
-        # Init Thread
-        self.thread = {}
         # Thread Status
         self.status_thread_1 = False
-        self.status_thread_2 = False
-        self.status_thread_3 = False
-        self.status_thread_4 = False
-        
         # Init Button Status
-        self.uic.btn_servoON.setEnabled(False)
-        self.uic.btn_home_pos.setEnabled(False)
-        self.uic.btn_start_job.setEnabled(False)
-        self.uic.btn_stop_job.setEnabled(False)
-        self.uic.btn_offCAM.setEnabled(False)
-        self.uic.btn_closeuart.setEnabled(False)
+        self.uic.btn_on_trigger.setIcon(QIcon("pictures/off.jpg"))
+        self.uic.btn_on_conveyor.setIcon(QIcon("pictures/off.jpg"))
+        self.uic.btn_on_bgs.setIcon(QIcon("pictures/off.jpg"))
+        self.uic.btn_on_bw.setIcon(QIcon("pictures/off.jpg"))
+        self.uic.btn_on_bgs.setIconSize(QSize(80,15))
+        self.uic.btn_on_trigger.setIconSize(QSize(80,15))
+        self.uic.btn_on_conveyor.setIconSize(QSize(80,15))
+        self.uic.btn_on_bw.setIconSize(QSize(80,15))
+        self.uic.btn_on_conveyor.setStyleSheet("border : 1px solid white")
+        self.uic.btn_on_trigger.setStyleSheet("border : 1px solid white")
+        self.uic.btn_on_bgs.setStyleSheet("border : 1px solid white")
+        self.uic.btn_on_bw.setStyleSheet("border : 1px solid white")
         # Init Light status
         self.uic.lb_on_cam.hide()
         self.uic.lb_on_robot.hide()
@@ -111,9 +120,11 @@ class MainWindow (QMainWindow):
     def init_button(self):
         # Button ON - OFF camera
         self.uic.btn_onCAM.clicked.connect(self.START_CAPTURE_VIDEO)
-        self.uic.btn_onCAM.clicked.connect(self.AUTO_SYSTEM)
         self.uic.btn_offCAM.clicked.connect(self.STOP_CAPTURE_VIDEO)
-        self.uic.btn_offCAM.clicked.connect(self.AUTO_SYSTEM)
+        self.uic.btn_on_trigger.clicked.connect(self.ON_OFF_TRIGGER_LINE)
+        self.uic.btn_on_conveyor.clicked.connect(self.ON_OFF_CONVEYOR_LINE)
+        self.uic.btn_on_bgs.clicked.connect(self.ON_OFF_BGS)
+        self.uic.btn_on_bw.clicked.connect(self.ON_OFF_BW)
         # Button OPEN - CLOSE uart
         self.uic.btn_setuart.clicked.connect(self.CONNECT_SERIAL)
         self.uic.btn_closeuart.clicked.connect(self.DISCONNECT_SERIAL)
@@ -167,6 +178,96 @@ class MainWindow (QMainWindow):
         self.uic.Speed_Slider.valueChanged.connect(
             lambda: self.Speed_slider_change_callback(self.uic.Speed_Slider))
             
+    def checkConnect(func):
+        def check(self):
+            if self.connection.checkConnectStatus() == False:
+                self.error_msg("No connection with robot\n"+"Check the connection !")
+                return
+            return func(self)
+        return check
+
+    def checkServo(func):
+        def check(self):
+            if self.connection.checkServoStatus() == False:
+                self.error_msg("Servo is off\n"+"Check the connection !")
+                return
+            return func(self)
+        return check
+    
+    def ON_OFF_TRIGGER_LINE(self):
+        if flag.trigger == False:
+            flag.trigger = True
+            self.uic.btn_on_trigger.setIcon(QIcon("pictures/on.jpg"))
+        else:
+            flag.trigger = False
+            self.uic.btn_on_trigger.setIcon(QIcon("pictures/off.jpg"))   
+    
+    def ON_OFF_CONVEYOR_LINE(self):
+        if flag.conveyor == False:
+            flag.conveyor = True
+            self.uic.btn_on_conveyor.setIcon(QIcon("pictures/on.jpg"))
+        else:
+            flag.conveyor = False
+            self.uic.btn_on_conveyor.setIcon(QIcon("pictures/off.jpg"))
+    
+    def ON_OFF_BGS(self):
+        if flag.bgs == False:
+            flag.bgs = True
+            self.uic.btn_on_bgs.setIcon(QIcon("pictures/on.jpg"))
+        else:
+            flag.bgs = False
+            self.uic.btn_on_bgs.setIcon(QIcon("pictures/off.jpg"))
+            
+    def ON_OFF_BW(self):
+        if flag.bw == False:
+            flag.bw = True
+            self.uic.btn_on_bw.setIcon(QIcon("pictures/on.jpg"))
+        else:
+            flag.bw = False
+            self.uic.btn_on_bw.setIcon(QIcon("pictures/off.jpg"))
+    
+    def updateGUI(self):
+        device.getCartasianPos()
+        time.sleep(0.0005)
+        device.getPulsePos()
+        time.sleep(0.0005)
+        device.convertPos()
+          
+        X     = (str (round (float(constVariable.CartesianPos[0]) / 1000 , 3 ) ) )
+        Y     = (str (round (float(constVariable.CartesianPos[1]) / 1000 , 3 ) ) )
+        Z     = (str (round (float(constVariable.CartesianPos[2]) / 1000 , 3 ) ) )
+        Roll  = (str (round (float(constVariable.CartesianPos[3]) / 10000, 4) ) )
+        Pitch = (str (round (float(constVariable.CartesianPos[4]) / 10000, 4) ) )
+        Yaw   = (str (round (float(constVariable.CartesianPos[5]) / 10000, 4) ) )
+        
+        S     = (str (round (float(constVariable.PulsePos[0]) / constVariable.pulse_per_degree_S   ,3 ) ) )
+        L     = (str (round (float(constVariable.PulsePos[1]) / constVariable.pulse_per_degree_L   ,3 ) ) )
+        U     = (str (round (float(constVariable.PulsePos[2]) / constVariable.pulse_per_degree_U   ,3 ) ) )
+        R     = (str (round (float(constVariable.PulsePos[3]) / constVariable.pulse_per_degree_RBT ,3 ) ) )
+        B     = (str (round (float(constVariable.PulsePos[4]) / constVariable.pulse_per_degree_RBT ,3 ) ) )
+        T     = (str (round (float(constVariable.PulsePos[5]) / constVariable.pulse_per_degree_RBT ,3 ) ) )
+        
+        self.uic.txt_X.setText(X)
+        self.uic.txt_Y.setText(Y)
+        self.uic.txt_Z.setText(Z)
+        self.uic.txt_Roll.setText(Roll)
+        self.uic.txt_Pitch.setText(Pitch)
+        self.uic.txt_Yaw.setText(Yaw)
+        
+        self.uic.X_pos_text.setText(X)
+        self.uic.Y_pos_text.setText(Y)
+        self.uic.Z_pos_text.setText(Z)
+        self.uic.Roll_pos_text.setText(Roll)
+        self.uic.Pitch_pos_text.setText(Pitch)
+        self.uic.Yaw_pos_text.setText(Yaw)
+        
+        self.uic.S_pos_text.setText(S)
+        self.uic.L_pos_text.setText(L)
+        self.uic.U_pos_text.setText(U)
+        self.uic.R_pos_text.setText(R)
+        self.uic.B_pos_text.setText(B)
+        self.uic.T_pos_text.setText(T)
+        
     def moveRobot(self):
         if self.moveSel == 1:
             self.decX()
@@ -196,48 +297,53 @@ class MainWindow (QMainWindow):
     def START_CAPTURE_VIDEO(self):
         """Start video object detection and turn on camera
         """
-        self.uic.btn_onCAM.setEnabled(False)
-        self.uic.btn_offCAM.setEnabled(True)
-        self.uic.btn_onCAM.setStyleSheet("QPushButton {color: green;}")
-        self.uic.btn_offCAM.setStyleSheet("QPushButton {color: black;}")
-        self.uic.lb_on_cam.show()
-        self.uic.lb_off_cam.hide()
-        self.uic.lb_camera_status.setText("ON")
-        self.status_thread_1 = True
-        # create the video capture thread
-        self.thread[1] = VideoThread(index=1)
-        # connect its signal to the show_info slot to display object name
-        self.thread[1].signal.connect(self.show_info)
-        self.thread[1].number.connect(self.show_number)
-        # connect its signal to the update_image slot to display webcam
-        self.thread[1].change_pixmap_signal.connect(self.update_image)
-        self.thread[1].position.connect(self.get_object_position)
-        # start the thread
-        self.thread[1].start()
+        if self.status_thread_1 == False:
+            self.uic.btn_onCAM.setEnabled(False)
+            self.uic.btn_offCAM.setEnabled(True)
+            self.uic.btn_onCAM.setStyleSheet("QPushButton {color: green;}")
+            self.uic.btn_offCAM.setStyleSheet("QPushButton {color: black;}")
+            self.uic.lb_on_cam.show()
+            self.uic.lb_off_cam.hide()
+            self.uic.lb_camera_status.setText("ON")
+            self.status_thread_1 = True
+            # create the video capture thread
+            self.thread = VideoThread(index=1)
+            # connect its signal to the show_info slot to display object name
+            self.thread.label_signal.connect(self.show_info)
+            self.thread.flag_signal.connect(self.show_object_flag)
+            # connect its signal to the update_image slot to display webcam
+            self.thread.change_pixmap_signal.connect(self.update_image)
+            # start the thread
+            self.thread.start(QThread.Priority.HighestPriority)
                 
     def STOP_CAPTURE_VIDEO(self):
         """Stop capture video and turn off camera
         """
-        self.uic.btn_onCAM.setEnabled(True)
-        self.uic.btn_offCAM.setEnabled(False)
-        self.uic.btn_onCAM.setStyleSheet("QPushButton {color: black;}")
-        self.uic.btn_offCAM.setStyleSheet("QPushButton {color: red;}")
-        self.uic.lb_camera_status.setText("OFF")
-        self.uic.lb_on_cam.hide()
-        self.uic.lb_off_cam.show()
-        self.thread[1].stop()
-    
+        if self.status_thread_1 == True:
+            self.status_thread_1 = False
+            self.uic.btn_onCAM.setEnabled(True)
+            self.uic.btn_offCAM.setEnabled(False)
+            self.uic.btn_onCAM.setStyleSheet("QPushButton {color: black;}")
+            self.uic.btn_offCAM.setStyleSheet("QPushButton {color: red;}")
+            self.uic.lb_on_cam.hide()
+            self.uic.lb_off_cam.show()
+            self.uic.lb_camera_status.setText("OFF")
+            self.thread.stop()
+        else:
+            self.error_msg("Camera is not open\n"+"Check the connection !")
+            
     def closeEvent(self, event):
         """Close Window
         """
         if self.status_thread_1 == True:
-            self.thread[1].stop()
-        if self.status_thread_2 == True:
-            self.thread[2].stop()
-        if self.status_thread_3 == True:
-            self.thread[3].stop()
-        if self.status_thread_4 == True:
-            self.thread[4].stop()
+            self.thread.stop()
+            
+        if self.com_connect_status == True:
+            self.TIMER_UART.stop()
+            
+        if self.connection.checkServoStatus() == True:
+            self.timer_update_gui.stop()
+            self.auto_system.stop()  
         event.accept()
         
     def CONNECT_SERIAL(self):
@@ -246,46 +352,40 @@ class MainWindow (QMainWindow):
         self.com = self.uic.COM.currentText()
         self.baudrate = int(self.uic.Baudrate.currentText())
         if self.com_connect_status == False:
-            self.status_thread_3 = True
+            self.ser = serial.Serial(self.com, self.baudrate, timeout = 2.5)
             self.com_connect_status = True
             self.uic.btn_closeuart.setEnabled(True)
             self.uic.btn_setuart.setEnabled(False)
             self.uic.lb_serial_status.setText("ON")
             self.uic.lb_on_serial.show()
             self.uic.lb_off_serial.hide()
-            self.thread[3] = UART(index = 3, com = self.com, baudrate = self.baudrate)
-            self.thread[3].init_timer()
-            self.thread[3].get_speed.connect(self.show_speed)
+            self.TIMER_UART.start()
         
     def DISCONNECT_SERIAL(self):
         """Close UART
         """
-        self.com = self.uic.COM.currentText()   
-        self.uic.text_speed.setText('0')     
-        self.uic.btn_closeuart.setEnabled(False)
-        self.uic.btn_setuart.setEnabled(True)
-        self.uic.lb_serial_status.setText("OFF")
-        self.uic.lb_off_serial.show()
-        self.uic.lb_on_serial.hide()
-        self.com_connect_status = False
-        self.thread[3].stop_timer()
-        self.thread[3].stop()
-    
-    def checkConnect(func):
-        def check(self):
-            if self.connection.checkConnectStatus() == False:
-                print("Warning!!! NO connection with robot")
-                return
-            return func(self)
-        return check
-
-    def checkServo(func):
-        def check(self):
-            if self.connection.checkServoStatus() == False:
-                print("Warning!!! Servo is off")
-                return
-            return func(self)
-        return check
+        if self.com_connect_status == True:
+            self.uic.btn_closeuart.setEnabled(False)
+            self.uic.btn_setuart.setEnabled(True)
+            self.uic.lb_serial_status.setText("OFF")
+            self.uic.lb_off_serial.show()
+            self.uic.lb_on_serial.hide()
+            self.com_connect_status = False
+            self.ser.close() 
+            self.TIMER_UART.stop()
+        else:
+            self.error_msg("Serial is not connected\n"+"Check the connection !")
+            
+    def get_data(self):
+        bytetoread = []
+        if self.com_connect_status == True:
+            bytetoread = self.ser.inWaiting()
+            if bytetoread > 0:
+                RXData = self.ser.readline(bytetoread)
+                speed = RXData[0]
+            else:
+                speed = 0
+            self.uic.text_speed.setText(str(speed))
     
     @checkConnect
     @checkServo
@@ -298,31 +398,35 @@ class MainWindow (QMainWindow):
             if self.connection.onServo() == 0:       
                 self.uic.btn_servoON.setText("SERVO OFF")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: red;}")
-                self.uic.lb_run_status.setText("ON")
                 self.uic.lb_on_robot.show()
                 self.uic.lb_wait_robot.hide()
-                self.status_thread_2 = True
-                self.thread[2] = Robot(index = 2)
-                self.thread[2].start_receive_pos()
-                self.thread[2].get_position.connect(self.show_position)
+                self.uic.lb_on_auto.show()
+                self.uic.lb_off_auto.hide()
+                self.uic.lb_run_status.setText("ON")
+                self.uic.lb_auto_status.setText("ON")
+                
+                self.timer_update_gui.start()
+                self.auto_system.start()
             else:
-                print("Can not on servo")
+                self.error_msg("Can not on servo !\n"+"Check the connection !")
         else:
             if self.connection.offServo() == 0:
                 self.uic.btn_servoON.setText("SERVO ON")
                 self.uic.btn_servoON.setStyleSheet("QPushButton {color: green;}")
-                self.uic.lb_run_status.setText("OFF")
                 self.uic.lb_wait_robot.show()
                 self.uic.lb_on_robot.hide()
-                self.thread[2].stop_receive_pos()
+                self.uic.lb_off_auto.show()
+                self.uic.lb_on_auto.hide()
+                self.uic.lb_run_status.setText("OFF")
+                self.uic.lb_auto_status.setText("OFF")
+                
+                self.timer_update_gui.stop()
+                self.auto_system.stop()
             else:
-                print("Can not off servo")
+                self.error_msg("Can not off servo !\n"+"Check the connection !")
         
     def CONNECT_ROBOT(self):        
         if self.connection.checkConnectStatus() == False:
-            # ip = self.uic.text_IP.text()
-            # port = int(self.uic.text_Port.text())
-            # self.connection.connectMotomini(ip = ip, port = port)
             self.connection.connectMotomini(ip = "192.168.1.12", port = 10040)
             self.uic.btn_servoON.setEnabled(True)
             self.uic.btn_home_pos.setEnabled(True)
@@ -331,7 +435,6 @@ class MainWindow (QMainWindow):
             self.robot_status = True
             self.uic.btn_setconnnect.setText("DISCONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: red;}")
-            print("Connected to Robot")
         else:
             self.connection.disconnectMotomini()
             self.uic.lb_off_robot.show()
@@ -340,7 +443,6 @@ class MainWindow (QMainWindow):
             self.robot_status = False
             self.uic.btn_setconnnect.setText("CONNECT")
             self.uic.btn_setconnnect.setStyleSheet("QPushButton {color: green;}")
-            print("Disconnected to Robot")
     
     @checkConnect
     @checkServo
@@ -348,7 +450,6 @@ class MainWindow (QMainWindow):
         self.uic.btn_load_job.setEnabled(False)
         self.uic.btn_stop_job.setEnabled(True)
         self.uic.btn_start_job.setEnabled(True)
-        self.uic.btn_load_job.setStyleSheet("QPushButton {color: green;}")
         job = self.uic.text_JOB.text()
         line = 1
         # Start current Job at line 1
@@ -361,7 +462,7 @@ class MainWindow (QMainWindow):
         if self.job_status == True:
             self.connection.startJob()
         else:
-            print("Can not load job")
+            self.error_msg("Can not load job\n"+"Check the connection !")
             
     @checkConnect
     @checkServo
@@ -370,9 +471,8 @@ class MainWindow (QMainWindow):
         self.uic.btn_load_job.setEnabled(True)
         self.uic.btn_stop_job.setEnabled(False)
         self.uic.btn_start_job.setEnabled(False)
-        self.uic.btn_load_job.setStyleSheet("QPushButton {color: black;}")
-        self.uic.btn_stop_job.setStyleSheet("QPushButton {color: red;}")
         device.writeByte(21, 6)
+        device.writeByte(9 , 0)
        
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
@@ -393,146 +493,83 @@ class MainWindow (QMainWindow):
     """
     @pyqtSlot(str) 
     def show_info(self, name):
-        flag.name = name
         if flag.flag_setName != [0,0,0,0,0]:   
             self.uic.text_name.setText(name)
-            
-    """Display number of object
-    """
-    @pyqtSlot(int, int, int, int, int)
-    def show_number(self, kokomi, cungdinh, haohao, omachi, bistro):
-        self.uic.num_kokomi.setText(str(kokomi))
-        self.uic.num_cungdinh.setText(str(cungdinh))
-        self.uic.num_haohao.setText(str(haohao))
-        self.uic.num_omachi.setText(str(omachi))
-        self.uic.num_bistro.setText(str(bistro))
-        CountObject.cung_dinh   = cungdinh
-        CountObject.hao_hao     = haohao
-        CountObject.omachi      = omachi
-        CountObject.bistro      = bistro
-        CountObject.kokomi      = kokomi
-
-    """Display current position
-    """  
-    @pyqtSlot(str, str, str, str, str, str, str, str, str, str, str, str, int)
-    def show_position(self, X, Y, Z, Roll, Pitch, Yaw, S, L, U, R, B, T, B022):
-        self.uic.txt_X.setText(X)
-        self.uic.txt_Y.setText(Y)
-        self.uic.txt_Z.setText(Z)
-        self.uic.txt_Roll.setText(Roll)
-        self.uic.txt_Pitch.setText(Pitch)
-        self.uic.txt_Yaw.setText(Yaw)
-        
-        self.uic.X_pos_text.setText(X)
-        self.uic.Y_pos_text.setText(Y)
-        self.uic.Z_pos_text.setText(Z)
-        self.uic.Roll_pos_text.setText(Roll)
-        self.uic.Pitch_pos_text.setText(Pitch)
-        self.uic.Yaw_pos_text.setText(Yaw)
-        
-        self.uic.S_pos_text.setText(S)
-        self.uic.L_pos_text.setText(L)
-        self.uic.U_pos_text.setText(U)
-        self.uic.R_pos_text.setText(R)
-        self.uic.B_pos_text.setText(B)
-        self.uic.T_pos_text.setText(T)
-        
-        Byte.B022 = B022
-        
-    @pyqtSlot(int)
-    def show_speed(self, speed):
-        self.uic.text_speed.setText(str(speed))
-        conveyor.speed = speed
-           
-    @pyqtSlot(int, int, int, int, int)
-    def get_object_position(self, flag_bistro, flag_cungdinh, flag_haohao, flag_kokomi, flag_omachi):
-        flag.flag_kokomi   = flag_kokomi
-        flag.flag_cungdinh = flag_cungdinh
-        flag.flag_haohao   = flag_haohao
-        flag.flag_omachi   = flag_omachi
-        flag.flag_bistro   = flag_bistro
-        flag.flag_setName  = [flag_bistro, flag_cungdinh, flag_haohao, flag_kokomi, flag_omachi]
-         
-    def AUTO_SYSTEM(self):
-        if self.status_thread_4 == False:
-            self.thread[4] = Auto_system(index = 4, robot_status= self.robot_status)
-            self.thread[4].start_program()
-            self.thread[4].timer_count.connect(self.run_auto)
-            self.status_thread_4 = True
-            self.uic.lb_on_auto.show()
-            self.uic.lb_off_auto.hide()
-            self.uic.lb_auto_status.setText("ON")
-        else:
-            self.thread[4].stop_program()
-            self.status_thread_4 = False
-            self.uic.lb_off_auto.show()
-            self.uic.lb_on_auto.hide()
-            self.uic.lb_auto_status.setText("OFF")
     
-    @pyqtSlot(float)
-    def run_auto(self, count):
-        counter = round(count,2) 
-        delta_y = conveyor.speed * counter
-        delta_y = 38 * counter # Cover missing STM32 and UART
-        print("Time:",counter)
-        # print("Name:", flag.name)
-        # print("Flag:", flag.flag_setName)
-        """Calculate position to pick object
-        """
-        pos_pick  = [250000, -195000, -120000, -1800000, 0, 0] # At point 500 pixels
-        if counter == 0:
-            pos_pick[1] += 45 * 1000
-        else:
-            pos_pick[1] += delta_y * 1000
-
-        """Calculate position to place object
-        """
-        if self.robot_status == True:    
-            if Byte.B022 == 0:
+    @pyqtSlot(int, int, int, int, int)    
+    def show_object_flag(self, bistro, cungdinh, haohao, kokomi, omachi):
+        flag.bistro     = bistro
+        flag.cungdinh   = cungdinh
+        flag.haohao     = haohao
+        flag.kokomi     = kokomi
+        flag.omachi     = omachi
+        flag.flag_setName = [bistro, cungdinh, haohao, kokomi, omachi]
+        # Display number of object
+        self.uic.num_kokomi.setText(str(CountObject.kokomi))
+        self.uic.num_cungdinh.setText(str(CountObject.cung_dinh))
+        self.uic.num_haohao.setText(str(CountObject.hao_hao))
+        self.uic.num_omachi.setText(str(CountObject.omachi))
+        self.uic.num_bistro.setText(str(CountObject.bistro))
+        
+    def auto_program(self):
+        pos_pick = [220 *1000, -90 *1000, -120*1000, -180*10000, 0, 0]     
+        
+        if self.robot_status == True:
+            if flag.cungdinh == 1:
+                print("write byte 1")
+                pos_pick[0] += int((CenterObject.cung_dinh[1] -180)/2)  # Tọa độ X
+                pos_place = [-70*1000, -305*1000, -120*1000, -180*10000, 0, -90*10000]
+                pos_place[2] += CountObject.cung_dinh * 6000            # Tọa độ Z
+                pos_place[5] -= CountObject.angle * 10000               # Tọa độ Yaw
                 device.writeVariablePos(121, pos_pick)
-                print("Location to pick:", pos_pick)
-                
-            if flag.name == "CUNG DINH":
-                if flag.flag_cungdinh == 1:
-                    print("write byte 1")
-                    pos_place = [-125*1000, -220*1000, -120*1000, -180*10000, 0, 0]
-                    # pos_place[2] += 6000 * int(CountObject.cung_dinh)
-                    device.writeVariablePos(101, pos_place)
-                    device.writeByte(21,1)
+                device.writeVariablePos(101, pos_place)
+                device.writeByte(21,1)
+                CountObject.cung_dinh += 1
 
-            elif flag.name == "HAO HAO":
-                if flag.flag_haohao == 1:
-                    print("write byte 2")
-                    pos_place = [-40 *1000, -220*1000, -120*1000, -180*10000, 0, 0]
-                    # pos_place[2] += 6000 * int(CountObject.hao_hao)
-                    device.writeVariablePos(102, pos_place)
-                    device.writeByte(21,2)
+            elif flag.haohao == 1:
+                print("write byte 2")
+                pos_pick[0] +=  ((CenterObject.hao_hao[1] -180)/2) * 1000
+                pos_place = [-20*1000, -220*1000, -120*1000, -180*10000, 0, -90*10000]
+                pos_place[2] += CountObject.hao_hao * 6000
+                pos_place[5] -= CountObject.angle * 10000
+                device.writeVariablePos(121, pos_pick)
+                device.writeVariablePos(102, pos_place)
+                device.writeByte(21,2)
+                CountObject.hao_hao += 1
 
-            elif flag.name == "KOKOMI":
-                if flag.flag_kokomi == 1:
-                    print("write byte 3")
-                    pos_place = [40 *1000, -220*1000, -120*1000, -180*10000, 0, 0]
-                    # pos_place[2] += 6000 * int(CountObject.kokomi)
-                    device.writeVariablePos(103, pos_place)
-                    device.writeByte(21,3)
+            elif flag.kokomi == 1:
+                print("write byte 3")
+                pos_pick[0] += ((CenterObject.kokomi[1] -180)/2) * 1000
+                pos_place = [-120*1000, -220*1000, -120*1000, -180*10000, 0, -90*10000]
+                pos_place[2] +=  CountObject.kokomi * 6000   
+                pos_place[5] -= CountObject.angle * 10000
+                device.writeVariablePos(121, pos_pick)
+                device.writeVariablePos(103, pos_place)
+                device.writeByte(21,3)
+                CountObject.kokomi += 1
 
-            elif flag.name == "BISTRO":
-                if flag.flag_bistro == 1:
-                    print("write byte 4")
-                    pos_place = [-10 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
-                    # pos_place[2] += 6000 * int(CountObject.bistro)
-                    device.writeVariablePos(104, pos_place)
-                    device.writeByte(21,4)
+            elif flag.bistro == 1:
+                print("write byte 4")
+                pos_pick[0] += ((CenterObject.bistro[1] -180)/2) * 1000
+                pos_place = [ 35 *1000, -300*1000, -120*1000, -180*10000, 0, -90*10000]
+                pos_place[2] +=  CountObject.bistro * 6000
+                pos_place[5] -= CountObject.angle * 10000
+                device.writeVariablePos(121, pos_pick)
+                device.writeVariablePos(104, pos_place)
+                device.writeByte(21,4)
+                CountObject.bistro += 1
 
-            elif flag.name == "OMACHI":
-                if flag.flag_omachi == 1:
-                    print("write byte 5")
-                    pos_place = [-90 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
-                    # pos_place[2] += 6000 * int(CountObject.omachi)
-                    device.writeVariablePos(105, pos_place)
-                    device.writeByte(21,5)
-            print("Location to place:", pos_place)
-    
+            elif flag.omachi == 1:
+                print("write byte 5")
+                pos_pick[0] += ((CenterObject.omachi[1] -180)/2) * 1000
+                pos_place = [ 90 *1000, -220*1000, -120*1000, -180*10000, 0, -90*10000]
+                pos_place[2] +=  CountObject.omachi * 6000
+                pos_place[5] -= CountObject.angle * 10000
+                device.writeVariablePos(121, pos_pick)
+                device.writeVariablePos(105, pos_place)
+                device.writeByte(21,5)
+                CountObject.omachi += 1
+                    
     def add_row_table_1(self) -> None:
         row_count_1 = self.uic.Point_teach_1.rowCount()
         self.uic.Point_teach_1.insertRow(row_count_1)
@@ -549,7 +586,9 @@ class MainWindow (QMainWindow):
         self.STT_count_2 = 1
         self.point_count_1 = 0
         self.point_count_2 = 0
-     
+    
+    @checkConnect
+    @checkServo
     def TEACH_POINT(self):
         if self.point_count_1 >= self.uic.Point_teach_1.rowCount():
             self.add_row_table_1()
@@ -657,12 +696,12 @@ class MainWindow (QMainWindow):
             device.writeVariablePos(position_reg, pos)
             
     # MANUAL
+    @checkConnect
     def CONVEYOR(self):
         if self.conveyor_status == False:
             device.writeByte(9, 1)
             self.uic.btn_conveyor.setText("OFF")
             self.uic.btn_conveyor.setStyleSheet("QPushButton {color: red;}")
-            self.uic.lb_conveyor_status.setText("ON")
             self.uic.lb_on_conveyor.show()
             self.uic.lb_off_conveyor.hide()
             self.conveyor_status = True
@@ -670,7 +709,6 @@ class MainWindow (QMainWindow):
             device.writeByte(9, 0)
             self.uic.btn_conveyor.setText("ON")
             self.uic.btn_conveyor.setStyleSheet("QPushButton {color: green;}")
-            self.uic.lb_conveyor_status.setText("OFF")
             self.uic.lb_off_conveyor.show()
             self.uic.lb_on_conveyor.hide()
             self.conveyor_status = False
@@ -685,10 +723,10 @@ class MainWindow (QMainWindow):
                 self.timer_move_pos.start()
                 self.moveSel = n
             else:
-                print("Warning!!! Servo is off")
+                self.error_msg("Servo is off\n"+"Check the connection !")
         else:
-            print("Warning!!! NO connection with robot")    
-    
+            self.error_msg("No connection with robot\n"+"Check the connection !")
+              
     def Speed_slider_change_callback(self, slider: QSlider):
         self.uic.progressBar.setValue(slider.value())
             
@@ -1036,3 +1074,11 @@ class MainWindow (QMainWindow):
             self.uic.label_88.setText("deg")
             self.uic.label_89.setText("deg")
             self.uic.label_90.setText("deg")
+            
+    def error_msg(self, text):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setText(text)
+        msg.setWindowTitle("WARNING")
+        msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Close)
+        msg.exec_()

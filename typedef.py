@@ -292,18 +292,8 @@ class flag:
     flag_setName    = []        # Show object name
     trigger         = False     # Show trigger line
     conveyor        = False     # Show conveyor line
-    bgs             = False     # Show BGS
-     
-    
-class init_pos:    
-    P101 = [-125*1000, -220*1000, -120*1000, -180*10000, 0, 0]
-    P102 = [-40 *1000, -220*1000, -120*1000, -180*10000, 0, 0]
-    P103 = [ 40 *1000, -220*1000, -120*1000, -180*10000, 0, 0]
-    P104 = [-10 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
-    P105 = [-90 *1000, -315*1000, -120*1000, -180*10000, 0, 0]
-    P110 = [180 *1000, -130*1000,  10 *1000, -180*10000, 0, 0]
-    # P121 = [250 *1000, -195*1000, -120*1000, -180*10000, 0, 0]
-    P121 = [245 *1000, -90 *1000, -120*1000, -180*10000, 0, 0]
+    bgs             = False     # Show BGS frame
+    bw              = False     # Show black white frame
     
 class CountObject:
     cung_dinh = 0

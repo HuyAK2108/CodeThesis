@@ -108,8 +108,7 @@ class VideoThread(QThread):
             rects_ids = tracker.update(rects)
             for _ , centroid_1 in rects_ids.items():
                 cv2.circle(frame, centroid_1, 5, (0,0,255), -1)
-                print("Y: ",centroid_1[1])
-                CenterObject.bistro = centroid_1                
+                CenterObject.bistro = centroid_1    
                     
         """Cung dinh
         """
@@ -178,7 +177,7 @@ class VideoThread(QThread):
         cap = cv2.VideoCapture(0)
         
         _, bg = cap.read()
-        bg = bg[120:320, 0:640]
+        bg = bg[110:330, 0:640]
         bg_gray = cv2.cvtColor(bg, cv2.COLOR_BGR2GRAY)
         bg_gray = cv2.GaussianBlur(bg_gray, (5,5), 0)    
                       
@@ -197,34 +196,23 @@ class VideoThread(QThread):
             out_video.write(cv_img) # Write video
             # Background substraction 
             _, frame = cap.read()
-            roi = frame[120:320, 0:640]
-            # roi = frame
+            roi = frame[110:330, 0:640]
             gray_frame = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
             gray_frame = cv2.GaussianBlur(gray_frame, (5,5), 0)
 
             difference = cv2.absdiff(bg_gray, gray_frame)
             _, difference = cv2.threshold(difference, 150, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
             cnts, hierachy = cv2.findContours(difference, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-            
-            # for cnt in cnts:
-            #     area = cv2.contourArea(cnt)
-            #     if area > 1000:
-            #         if len(cnt) >= 5:
-            #             ellipse = cv2.fitEllipse(cnt)
-            #             rotation = ellipse[2]
-            #             # print('Angle of Orientation: {}'.format(angle))
-            #             print('Angle of Orientation: {}'.format(rotation))
-            #             cv2.drawContours(roi, cnt, -1, (0,255,0), 3)
                         
             for _, c in enumerate(cnts):
                 area = cv2.contourArea(c)
-                if area < 1000 or area > 10000:
+                if area < 20000 or area > 45000:
                     continue
                 rect = cv2.minAreaRect(c)
                 box  = cv2.boxPoints(rect)
                 box  = np.int0(box)
 
-                center = (int(rect[0][0]),int(rect[0][1])) 
+                # center = (int(rect[0][0]),int(rect[0][1])) 
                 width = int(rect[1][0])
                 height = int(rect[1][1])
                 angle = int(rect[2])
@@ -236,7 +224,7 @@ class VideoThread(QThread):
                   
                 label = str(angle)
                 CountObject.angle = angle
-                cv2.putText(roi, label, (center[0]-50, center[1]-120), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2, cv2.LINE_AA)
+                # cv2.putText(roi, label, (center[0]-50, center[1]-120), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2, cv2.LINE_AA)
                 cv2.drawContours(roi,[box],0,(0,0,255),2)
 
             if flag.trigger == True:
@@ -248,6 +236,8 @@ class VideoThread(QThread):
             
             if ret:
                 if flag.bgs == True:    
+                    self.change_pixmap_signal.emit(roi)
+                elif flag.bw == True:
                     self.change_pixmap_signal.emit(difference)
                 else:
                     self.change_pixmap_signal.emit(cv_img)
