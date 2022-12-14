@@ -2876,6 +2876,24 @@ background-color:rgb(227,227,227);</string>
        </property>
       </widget>
      </widget>
+     <widget class="QPushButton" name="btn_reset_count">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>270</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>RESET</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">

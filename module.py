@@ -12,7 +12,7 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/Trained_Nov19.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/Dec3rd.pt', source= 'local')
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # model.to(device)
 clasess = model.names
@@ -30,7 +30,8 @@ class VideoThread(QThread):
         self._run_flag = True
         self.no_signal = cv2.imread("pictures/no_signal.jpg")
         num = len(os.listdir("videos"))
-        self.output = f"videos/exp{num+1}.mp4"
+        self.output = f"videos/exp_{num+1}.mp4"
+        self.kernel = np.ones((20, 20), np.uint8)
         # Object parameters
         self.object_name = ''
         self.start_point = [400, 0]
@@ -174,12 +175,11 @@ class VideoThread(QThread):
         """This function runs the loop to read the video frame by frame 
         """
         # Capture from web cam
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture('videos/exp_22.mp4')
         
         _, bg = cap.read()
-        bg = bg[110:330, 0:640]
         bg_gray = cv2.cvtColor(bg, cv2.COLOR_BGR2GRAY)
-        bg_gray = cv2.GaussianBlur(bg_gray, (5,5), 0)    
+        bg_gray = cv2.GaussianBlur(bg_gray, (7,7), 0)    
                       
         # Save video capture from webcam
         out_video = cv2.VideoWriter(self.output, cv2.VideoWriter_fourcc(*'mp4v'), 15, (640, 480))
@@ -192,21 +192,26 @@ class VideoThread(QThread):
             end_time = time()
             self.fps = 1 / (np.round(end_time - start_time, 3))
             text = round(self.fps,2)
-            cv2.putText(cv_img,"FPS: {}".format(str(text)), (10, 40), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2) # write FPS on bbox
+            # cv2.putText(cv_img,"FPS: {}".format(str(text)), (10, 40), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2) # write FPS on bbox
             out_video.write(cv_img) # Write video
             # Background substraction 
             _, frame = cap.read()
-            roi = frame[110:330, 0:640]
+            roi = frame
             gray_frame = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-            gray_frame = cv2.GaussianBlur(gray_frame, (5,5), 0)
+            gray_frame = cv2.GaussianBlur(gray_frame, (7,7), 0)
 
             difference = cv2.absdiff(bg_gray, gray_frame)
-            _, difference = cv2.threshold(difference, 150, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-            cnts, hierachy = cv2.findContours(difference, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-                        
+            
+            _, difference = cv2.threshold(difference, 20, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            img_dilation = cv2.dilate(difference, self.kernel, iterations= 2)
+            img_erosion = cv2.erode(img_dilation, self.kernel, iterations= 2)
+            
+            # cnts, hierachy = cv2.findContours(difference, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+            cnts, hierachy = cv2.findContours(img_erosion, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+              
             for _, c in enumerate(cnts):
                 area = cv2.contourArea(c)
-                if area < 20000 or area > 45000:
+                if area < 5000 or area > 30000:
                     continue
                 rect = cv2.minAreaRect(c)
                 box  = cv2.boxPoints(rect)
@@ -216,15 +221,14 @@ class VideoThread(QThread):
                 width = int(rect[1][0])
                 height = int(rect[1][1])
                 angle = int(rect[2])
-
-                if width < height:
-                  angle = 90 - angle
-                else:
-                  angle = -angle
+                angle = 90 - angle
+                # if width < height:
+                #   angle = 90 - angle
+                # else:
+                #   angle = -angle
                   
-                label = str(angle)
                 CountObject.angle = angle
-                # cv2.putText(roi, label, (center[0]-50, center[1]-120), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2, cv2.LINE_AA)
+                cv2.putText(roi, "Angle: {}".format(str(angle)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2, cv2.LINE_AA)
                 cv2.drawContours(roi,[box],0,(0,0,255),2)
 
             if flag.trigger == True:
@@ -238,7 +242,7 @@ class VideoThread(QThread):
                 if flag.bgs == True:    
                     self.change_pixmap_signal.emit(roi)
                 elif flag.bw == True:
-                    self.change_pixmap_signal.emit(difference)
+                    self.change_pixmap_signal.emit(img_erosion)
                 else:
                     self.change_pixmap_signal.emit(cv_img)
         # shut down capture system

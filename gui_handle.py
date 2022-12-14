@@ -118,6 +118,7 @@ class MainWindow (QMainWindow):
             self.uic.Point_teach_2.insertRow(y)
             
     def init_button(self):
+        self.uic.btn_reset_count.clicked.connect(self.RESET_COUNT_OBJECT)
         # Button ON - OFF camera
         self.uic.btn_onCAM.clicked.connect(self.START_CAPTURE_VIDEO)
         self.uic.btn_offCAM.clicked.connect(self.STOP_CAPTURE_VIDEO)
@@ -194,6 +195,13 @@ class MainWindow (QMainWindow):
             return func(self)
         return check
     
+    def RESET_COUNT_OBJECT(self):
+        CountObject.bistro      = 0
+        CountObject.cung_dinh   = 0
+        CountObject.hao_hao     = 0
+        CountObject.kokomi      = 0
+        CountObject.omachi      = 0
+        
     def ON_OFF_TRIGGER_LINE(self):
         if flag.trigger == False:
             flag.trigger = True
@@ -512,14 +520,14 @@ class MainWindow (QMainWindow):
         self.uic.num_bistro.setText(str(CountObject.bistro))
         
     def auto_program(self):
-        pos_pick = [220 *1000, -90 *1000, -120*1000, -180*10000, 0, 0]     
+        pos_pick = [220 *1000, -95 *1000, -120*1000, -180*10000, 0, 0]     
         
         if self.robot_status == True:
             if flag.cungdinh == 1:
                 print("write byte 1")
-                pos_pick[0] += int((CenterObject.cung_dinh[1] -180)/2)  # Tọa độ X
-                pos_place = [-70*1000, -305*1000, -120*1000, -180*10000, 0, -90*10000]
-                pos_place[2] += CountObject.cung_dinh * 6000            # Tọa độ Z
+                pos_pick[0] += int(((CenterObject.cung_dinh[1] -177)/2) * 1000)  # Tọa độ X
+                pos_place = [-90*1000, -311*1000, -120*1000, -180*10000, 0, -88*10000]
+                pos_place[2] += CountObject.cung_dinh * 4000            # Tọa độ Z
                 pos_place[5] -= CountObject.angle * 10000               # Tọa độ Yaw
                 device.writeVariablePos(121, pos_pick)
                 device.writeVariablePos(101, pos_place)
@@ -528,9 +536,9 @@ class MainWindow (QMainWindow):
 
             elif flag.haohao == 1:
                 print("write byte 2")
-                pos_pick[0] +=  ((CenterObject.hao_hao[1] -180)/2) * 1000
-                pos_place = [-20*1000, -220*1000, -120*1000, -180*10000, 0, -90*10000]
-                pos_place[2] += CountObject.hao_hao * 6000
+                pos_pick[0] +=  int(((CenterObject.hao_hao[1] -177)/2) * 1000)
+                pos_place = [-45*1000, -220*1000, -120*1000, -180*10000, 0, -88*10000]
+                pos_place[2] += CountObject.hao_hao * 4000
                 pos_place[5] -= CountObject.angle * 10000
                 device.writeVariablePos(121, pos_pick)
                 device.writeVariablePos(102, pos_place)
@@ -539,9 +547,9 @@ class MainWindow (QMainWindow):
 
             elif flag.kokomi == 1:
                 print("write byte 3")
-                pos_pick[0] += ((CenterObject.kokomi[1] -180)/2) * 1000
-                pos_place = [-120*1000, -220*1000, -120*1000, -180*10000, 0, -90*10000]
-                pos_place[2] +=  CountObject.kokomi * 6000   
+                pos_pick[0] += int(((CenterObject.kokomi[1] -177)/2) * 1000)
+                pos_place = [-140*1000, -222*1000, -120*1000, -180*10000, 0, -88*10000]
+                pos_place[2] +=  CountObject.kokomi * 4000   
                 pos_place[5] -= CountObject.angle * 10000
                 device.writeVariablePos(121, pos_pick)
                 device.writeVariablePos(103, pos_place)
@@ -550,9 +558,9 @@ class MainWindow (QMainWindow):
 
             elif flag.bistro == 1:
                 print("write byte 4")
-                pos_pick[0] += ((CenterObject.bistro[1] -180)/2) * 1000
-                pos_place = [ 35 *1000, -300*1000, -120*1000, -180*10000, 0, -90*10000]
-                pos_place[2] +=  CountObject.bistro * 6000
+                pos_pick[0] += int(((CenterObject.bistro[1] -177)/2) * 1000)
+                pos_place = [ 7 *1000, -310*1000, -120*1000, -180*10000, 0, -88*10000]
+                pos_place[2] +=  CountObject.bistro * 4000
                 pos_place[5] -= CountObject.angle * 10000
                 device.writeVariablePos(121, pos_pick)
                 device.writeVariablePos(104, pos_place)
@@ -561,9 +569,9 @@ class MainWindow (QMainWindow):
 
             elif flag.omachi == 1:
                 print("write byte 5")
-                pos_pick[0] += ((CenterObject.omachi[1] -180)/2) * 1000
-                pos_place = [ 90 *1000, -220*1000, -120*1000, -180*10000, 0, -90*10000]
-                pos_place[2] +=  CountObject.omachi * 6000
+                pos_pick[0] += int(((CenterObject.omachi[1] -177)/2) * 1000)
+                pos_place = [ 50 *1000, -216*1000, -120*1000, -180*10000, 0, -88*10000]
+                pos_place[2] +=  CountObject.omachi * 4000
                 pos_place[5] -= CountObject.angle * 10000
                 device.writeVariablePos(121, pos_pick)
                 device.writeVariablePos(105, pos_place)
@@ -701,6 +709,7 @@ class MainWindow (QMainWindow):
         if self.conveyor_status == False:
             device.writeByte(9, 1)
             self.uic.btn_conveyor.setText("OFF")
+            self.uic.lb_conveyor_status.setText("ON")
             self.uic.btn_conveyor.setStyleSheet("QPushButton {color: red;}")
             self.uic.lb_on_conveyor.show()
             self.uic.lb_off_conveyor.hide()
@@ -708,6 +717,7 @@ class MainWindow (QMainWindow):
         else:
             device.writeByte(9, 0)
             self.uic.btn_conveyor.setText("ON")
+            self.uic.lb_conveyor_status.setText("OFF")
             self.uic.btn_conveyor.setStyleSheet("QPushButton {color: green;}")
             self.uic.lb_off_conveyor.show()
             self.uic.lb_on_conveyor.hide()

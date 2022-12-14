@@ -18,15 +18,17 @@ Thread 1: Video
 
 tọa độ khung hình - tọa độ robot:
 Center cY         : X_pos
-160               : ... "A"
-180               : ... "A + x1"
-200               : ... "A + x2"
+180               : 230 "A"
+200               : 240 "A + x2"
 220               : ... "A + x3"
+230               : 245
 
-10 (pixel) = X (mm)
-=> n (pixel) = X*n/10
+20 (pixel) = 10 (mm)
+=> n (pixel) = 10*n/20 = n/2 (mm)
 
 tọa độ robot: 
-n = center[1] - 160
+n = center[1] - 180
 "x_pos = A + X*n/10"
-pos_pick[0] += X*n/10  
+pos_pick[0] += X*n/10
+
+230 + (X-180)/2
