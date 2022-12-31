@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Auto">
      <attribute name="title">
@@ -2836,6 +2836,35 @@ background-color:rgb(227,227,227);</string>
        </property>
        <property name="text">
         <string>Position</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btn_get_pos">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>30</y>
+         <width>131</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>121</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Get Position</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="txt_get_pos">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>30</y>
+         <width>85</width>
+         <height>25</height>
+        </rect>
        </property>
       </widget>
      </widget>

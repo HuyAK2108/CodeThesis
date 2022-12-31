@@ -12,7 +12,7 @@ tracker_3 = CentroidTracker3()
 tracker_4 = CentroidTracker4()
 tracker_5 = CentroidTracker5()
 # Load model
-model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/Dec3rd.pt', source= 'local')
+model = torch.hub.load('D:/Python/Senior/yolov5','custom', path = 'model/Dec14th.pt', source= 'local')
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # model.to(device)
 clasess = model.names
@@ -30,7 +30,7 @@ class VideoThread(QThread):
         self._run_flag = True
         self.no_signal = cv2.imread("pictures/no_signal.jpg")
         num = len(os.listdir("videos"))
-        self.output = f"videos/exp_{num+1}.mp4"
+        self.output = f"videos/report_{num+1}.mp4"
         self.kernel = np.ones((20, 20), np.uint8)
         # Object parameters
         self.object_name = ''
@@ -175,7 +175,7 @@ class VideoThread(QThread):
         """This function runs the loop to read the video frame by frame 
         """
         # Capture from web cam
-        cap = cv2.VideoCapture('videos/exp_22.mp4')
+        cap = cv2.VideoCapture(0)
         
         _, bg = cap.read()
         bg_gray = cv2.cvtColor(bg, cv2.COLOR_BGR2GRAY)
@@ -192,7 +192,7 @@ class VideoThread(QThread):
             end_time = time()
             self.fps = 1 / (np.round(end_time - start_time, 3))
             text = round(self.fps,2)
-            # cv2.putText(cv_img,"FPS: {}".format(str(text)), (10, 40), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2) # write FPS on bbox
+            cv2.putText(cv_img,"FPS: {}".format(str(text)), (10, 40), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2) # write FPS on bbox
             out_video.write(cv_img) # Write video
             # Background substraction 
             _, frame = cap.read()
@@ -217,15 +217,15 @@ class VideoThread(QThread):
                 box  = cv2.boxPoints(rect)
                 box  = np.int0(box)
 
-                # center = (int(rect[0][0]),int(rect[0][1])) 
+                center = (int(rect[0][0]),int(rect[0][1])) 
                 width = int(rect[1][0])
                 height = int(rect[1][1])
                 angle = int(rect[2])
-                angle = 90 - angle
-                # if width < height:
-                #   angle = 90 - angle
-                # else:
-                #   angle = -angle
+                
+                if width < height:
+                  angle = 90 - angle
+                else:
+                  angle = -angle
                   
                 CountObject.angle = angle
                 cv2.putText(roi, "Angle: {}".format(str(angle)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2, cv2.LINE_AA)
@@ -242,6 +242,7 @@ class VideoThread(QThread):
                 if flag.bgs == True:    
                     self.change_pixmap_signal.emit(roi)
                 elif flag.bw == True:
+                    # self.change_pixmap_signal.emit(difference)
                     self.change_pixmap_signal.emit(img_erosion)
                 else:
                     self.change_pixmap_signal.emit(cv_img)

@@ -118,6 +118,9 @@ class MainWindow (QMainWindow):
             self.uic.Point_teach_2.insertRow(y)
             
     def init_button(self):
+        # Button Get Position
+        self.uic.btn_get_pos.clicked.connect(self.GET_VARIABLE_POS)
+        # Button Reset Count Object
         self.uic.btn_reset_count.clicked.connect(self.RESET_COUNT_OBJECT)
         # Button ON - OFF camera
         self.uic.btn_onCAM.clicked.connect(self.START_CAPTURE_VIDEO)
@@ -195,6 +198,58 @@ class MainWindow (QMainWindow):
             return func(self)
         return check
     
+    def GET_VARIABLE_POS(self):
+        num_pos = int(self.uic.txt_get_pos.text())
+        device.getVariablePos(index= num_pos)
+        device.convertGetPos()
+        X     = (str (round (float(constVariable.VariablePos[0]) / 1000 , 3 ) ) )
+        Y     = (str (round (float(constVariable.VariablePos[1]) / 1000 , 3 ) ) )
+        Z     = (str (round (float(constVariable.VariablePos[2]) / 1000 , 3 ) ) )
+        Roll  = (str (round (float(constVariable.VariablePos[3]) / 10000, 4 ) ) )
+        Pitch = (str (round (float(constVariable.VariablePos[4]) / 10000, 4 ) ) )
+        Yaw   = (str (round (float(constVariable.VariablePos[5]) / 10000, 4 ) ) )
+        
+        if self.point_count_2 >= self.uic.Point_teach_2.rowCount():
+            self.add_row_table_2()
+          
+        item = QTableWidgetItem()
+        item.setText(self.uic.txt_get_pos.text())
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.STT.value, item)
+        
+        item = QTableWidgetItem()
+        item.setText(X)
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.X_col.value, item)
+        item = QTableWidgetItem()
+        
+        item.setText(Y)
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Y_col.value, item)
+        item = QTableWidgetItem()
+        
+        item.setText(Z)
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Z_col.value, item)
+        item = QTableWidgetItem()
+        
+        item.setText(Roll)
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Roll_col.value, item)
+        item = QTableWidgetItem()
+        
+        item.setText(Pitch)
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Pitch_col.value, item)
+        item = QTableWidgetItem()
+        
+        item.setText(Yaw)
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Yaw_col.value, item)
+        
+        self.point_count_2 += 1
+        self.STT_count_2   += 1     
+        
     def RESET_COUNT_OBJECT(self):
         CountObject.bistro      = 0
         CountObject.cung_dinh   = 0
@@ -240,6 +295,7 @@ class MainWindow (QMainWindow):
         device.getPulsePos()
         time.sleep(0.0005)
         device.convertPos()
+        device.convertPulsePos()
           
         X     = (str (round (float(constVariable.CartesianPos[0]) / 1000 , 3 ) ) )
         Y     = (str (round (float(constVariable.CartesianPos[1]) / 1000 , 3 ) ) )
@@ -520,15 +576,15 @@ class MainWindow (QMainWindow):
         self.uic.num_bistro.setText(str(CountObject.bistro))
         
     def auto_program(self):
-        pos_pick = [220 *1000, -95 *1000, -120*1000, -180*10000, 0, 0]     
+        pos_pick = [220 *1000, -95 *1000, -121*1000, -180*10000, 0, 0]     
         
         if self.robot_status == True:
             if flag.cungdinh == 1:
                 print("write byte 1")
-                pos_pick[0] += int(((CenterObject.cung_dinh[1] -177)/2) * 1000)  # Tọa độ X
-                pos_place = [-90*1000, -311*1000, -120*1000, -180*10000, 0, -88*10000]
-                pos_place[2] += CountObject.cung_dinh * 4000            # Tọa độ Z
-                pos_place[5] -= CountObject.angle * 10000               # Tọa độ Yaw
+                pos_pick[0] += int(((CenterObject.cung_dinh[1] -172)/2) * 1000)         # Tọa độ X
+                pos_place = [-95*1000, -311*1000, -120*1000, -180*10000, 0, -88*10000]
+                pos_place[2] += CountObject.cung_dinh * 4000                            # Tọa độ Z
+                pos_place[5] -= CountObject.angle * 10000                               # Tọa độ Yaw
                 device.writeVariablePos(121, pos_pick)
                 device.writeVariablePos(101, pos_place)
                 device.writeByte(21,1)
@@ -536,7 +592,7 @@ class MainWindow (QMainWindow):
 
             elif flag.haohao == 1:
                 print("write byte 2")
-                pos_pick[0] +=  int(((CenterObject.hao_hao[1] -177)/2) * 1000)
+                pos_pick[0] +=  int(((CenterObject.hao_hao[1] -172)/2) * 1000)
                 pos_place = [-45*1000, -220*1000, -120*1000, -180*10000, 0, -88*10000]
                 pos_place[2] += CountObject.hao_hao * 4000
                 pos_place[5] -= CountObject.angle * 10000
@@ -547,7 +603,7 @@ class MainWindow (QMainWindow):
 
             elif flag.kokomi == 1:
                 print("write byte 3")
-                pos_pick[0] += int(((CenterObject.kokomi[1] -177)/2) * 1000)
+                pos_pick[0] += int(((CenterObject.kokomi[1] -172)/2) * 1000)
                 pos_place = [-140*1000, -222*1000, -120*1000, -180*10000, 0, -88*10000]
                 pos_place[2] +=  CountObject.kokomi * 4000   
                 pos_place[5] -= CountObject.angle * 10000
@@ -558,7 +614,7 @@ class MainWindow (QMainWindow):
 
             elif flag.bistro == 1:
                 print("write byte 4")
-                pos_pick[0] += int(((CenterObject.bistro[1] -177)/2) * 1000)
+                pos_pick[0] += int(((CenterObject.bistro[1] -172)/2) * 1000)
                 pos_place = [ 7 *1000, -310*1000, -120*1000, -180*10000, 0, -88*10000]
                 pos_place[2] +=  CountObject.bistro * 4000
                 pos_place[5] -= CountObject.angle * 10000
@@ -569,7 +625,7 @@ class MainWindow (QMainWindow):
 
             elif flag.omachi == 1:
                 print("write byte 5")
-                pos_pick[0] += int(((CenterObject.omachi[1] -177)/2) * 1000)
+                pos_pick[0] += int(((CenterObject.omachi[1] -172)/2) * 1000)
                 pos_place = [ 50 *1000, -216*1000, -120*1000, -180*10000, 0, -88*10000]
                 pos_place[2] +=  CountObject.omachi * 4000
                 pos_place[5] -= CountObject.angle * 10000
@@ -600,108 +656,50 @@ class MainWindow (QMainWindow):
     def TEACH_POINT(self):
         if self.point_count_1 >= self.uic.Point_teach_1.rowCount():
             self.add_row_table_1()
-        if self.point_count_2 >= self.uic.Point_teach_2.rowCount():
-            self.add_row_table_2()
+                 
+        item = QTableWidgetItem()
+        item.setText(self.uic.txt_pos.text())
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.STT.value, item)
         
-        if self.uic.Cartesian_coor.isChecked() == True:  
-            item = QTableWidgetItem()
-            item.setText(self.uic.txt_pos.text())
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.STT.value, item)
-            
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.S_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.X_col.value, item)
-            item = QTableWidgetItem()
-            
-            item.setText(str(self.uic.L_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Y_col.value, item)
+        item = QTableWidgetItem()
+        item.setText(str(self.uic.S_move_text.text()))
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.X_col.value, item)
+        item = QTableWidgetItem()
+        item.setText(str(self.uic.L_move_text.text()))
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.Y_col.value, item)
+        item = QTableWidgetItem()
+        item.setText(str(self.uic.U_move_text.text()))
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.Z_col.value, item)
+        item = QTableWidgetItem()
+        item.setText(str(self.uic.R_move_text.text()))
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.Roll_col.value, item)
+        item = QTableWidgetItem()
+        item.setText(str(self.uic.B_move_text.text()))
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.Pitch_col.value, item)
+        item = QTableWidgetItem()
+        item.setText(str(self.uic.T_move_text.text()))
+        item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.Yaw_col.value, item)
 
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.U_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Z_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.R_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Roll_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.B_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Pitch_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.T_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_2.setItem(self.point_count_2, tableColumn_2.Yaw_col.value, item)
-            
-            self.point_count_2 += 1
-            self.STT_count_2 += 1
-            
-            x_pos       = int( float (self.uic.S_move_text.text()) * 1000)
-            y_pos       = int( float (self.uic.L_move_text.text()) * 1000)
-            z_pos       = int( float (self.uic.U_move_text.text()) * 1000)
-            roll_pos    = int( float (self.uic.R_move_text.text()) * 10000)
-            pitch_pos   = int( float (self.uic.B_move_text.text()) * 10000)
-            yaw_pos     = int( float (self.uic.T_move_text.text()) * 10000)
-            pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
-            position_reg = int(self.uic.txt_pos.text())
-            print('P' + str(position_reg) +': '+ str(pos))
-            device.writeVariablePos(position_reg, pos)
-        
-        else:         
-            item = QTableWidgetItem()
-            item.setText(self.uic.txt_pos.text())
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.STT.value, item)
-            
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.S_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.S_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.L_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.L_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.U_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.U_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.R_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.R_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.B_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.B_col.value, item)
-
-            item = QTableWidgetItem()
-            item.setText(str(self.uic.T_move_text.text()))
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.uic.Point_teach_1.setItem(self.point_count_1, tableColumn.T_col.value, item)
-  
-            self.point_count_1 += 1
-            self.STT_count_1 += 1
-     
-            s_pos = int( float (self.uic.S_move_text.text()) * constVariable.pulse_per_degree_S)
-            l_pos = int( float (self.uic.L_move_text.text()) * constVariable.pulse_per_degree_L)
-            u_pos = int( float (self.uic.U_move_text.text()) * constVariable.pulse_per_degree_U)
-            r_pos = int( float (self.uic.R_move_text.text()) * constVariable.pulse_per_degree_RBT)
-            b_pos = int( float (self.uic.B_move_text.text()) * constVariable.pulse_per_degree_RBT)
-            t_pos = int( float (self.uic.T_move_text.text()) * constVariable.pulse_per_degree_RBT)
-            pos = [s_pos, l_pos, u_pos, r_pos, b_pos, t_pos]
-            position_reg = int(self.uic.txt_pos.text())
-            print('P' + str(position_reg) +': '+ str(pos))
-            device.writeVariablePos(position_reg, pos)
+        self.point_count_1 += 1
+        self.STT_count_1 += 1
+    
+        x_pos       = int( float (self.uic.S_move_text.text()) * 1000)
+        y_pos       = int( float (self.uic.L_move_text.text()) * 1000)
+        z_pos       = int( float (self.uic.U_move_text.text()) * 1000)
+        roll_pos    = int( float (self.uic.R_move_text.text()) * 10000)
+        pitch_pos   = int( float (self.uic.B_move_text.text()) * 10000)
+        yaw_pos     = int( float (self.uic.T_move_text.text()) * 10000)
+        pos = [x_pos, y_pos, z_pos, roll_pos, pitch_pos, yaw_pos]
+        position_reg = int(self.uic.txt_pos.text())
+        print('P' + str(position_reg) +': '+ str(pos))
+        device.writeVariablePos(position_reg, pos)
             
     # MANUAL
     @checkConnect

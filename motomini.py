@@ -16,6 +16,7 @@ class Motomini:
         self.rx_buffer_pulse: QByteArray = QByteArray()
         self.rx_buffer_cartesian: QByteArray = QByteArray()
         self.rx_buffer_byte: QByteArray = QByteArray()
+        self.rx_buffer_pos: QByteArray = QByteArray()
 
     def connectMotomini(self, ip: str, port: int):
         self.sever_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -51,6 +52,8 @@ class Motomini:
                 self.rx_buffer_pulse = self.rx_buffer
             elif self.rx_buffer[11] == 14:
                 self.rx_buffer_byte = self.rx_buffer
+            elif self.rx_buffer[11] == 12:
+                self.rx_buffer_pos = self.rx_buffer
         except socket.timeout:
             pass
 
@@ -311,9 +314,16 @@ class Motomini:
         if self.rx_buffer_cartesian != b"":
             for i in range(6):
                 constVariable.CartesianPos[i] = int.from_bytes(self.rx_buffer_cartesian[52 + i*4:56 + i*4],"little",signed=True)
-        elif self.rx_buffer_pulse != b"":
-            for i in range(6):
-                constVariable.PulsePos[i] = int.from_bytes(self.rx_buffer_pulse[52 + i*4:56 + i*4],"little",signed=True)
         elif self.rx_buffer_byte != b"":
             constVariable.B022 = self.rx_buffer_byte[32]
+            
+    def convertPulsePos(self):
+        if self.rx_buffer_pulse != b"":
+            for i in range(6):
+                constVariable.PulsePos[i] = int.from_bytes(self.rx_buffer_pulse[52 + i*4:56 + i*4],"little",signed=True)
+    
+    def convertGetPos(self):
+        if self.rx_buffer_pos != b"":
+            for i in range(6):
+                constVariable.VariablePos[i] = int.from_bytes(self.rx_buffer_pos[52 + i*4:56 + i*4],"little",signed=True)
             

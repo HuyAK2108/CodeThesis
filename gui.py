@@ -935,6 +935,13 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.PointTableBox)
         self.label.setGeometry(QtCore.QRect(150, 35, 71, 16))
         self.label.setObjectName("label")
+        self.btn_get_pos = QtWidgets.QPushButton(self.PointTableBox)
+        self.btn_get_pos.setGeometry(QtCore.QRect(450, 30, 131, 26))
+        self.btn_get_pos.setMinimumSize(QtCore.QSize(121, 26))
+        self.btn_get_pos.setObjectName("btn_get_pos")
+        self.txt_get_pos = QtWidgets.QLineEdit(self.PointTableBox)
+        self.txt_get_pos.setGeometry(QtCore.QRect(590, 30, 85, 25))
+        self.txt_get_pos.setObjectName("txt_get_pos")
         self.groupBox_4 = QtWidgets.QGroupBox(self.Manual)
         self.groupBox_4.setGeometry(QtCore.QRect(400, 190, 151, 71))
         font = QtGui.QFont()
@@ -1184,7 +1191,7 @@ class Ui_MainWindow(object):
         self.actionhand.setObjectName("actionhand")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1323,6 +1330,7 @@ class Ui_MainWindow(object):
         item = self.Point_teach_2.horizontalHeaderItem(6)
         item.setText(_translate("MainWindow", "Yaw"))
         self.label.setText(_translate("MainWindow", "Position"))
+        self.btn_get_pos.setText(_translate("MainWindow", "Get Position"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Conveyor"))
         self.btn_conveyor.setText(_translate("MainWindow", "ON"))
         self.btn_reset_count.setText(_translate("MainWindow", "RESET"))

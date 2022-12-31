@@ -14,6 +14,7 @@ class constVariable:
     CartesianPos  = [0,0,0,0,0,0]
     PulsePos      = [0,0,0,0,0,0]
     B022          = 10
+    VariablePos   = [0,0,0,0,0,0]
 
 class receiveType(Enum):
     ON_SERVO = 0x00
@@ -47,12 +48,12 @@ class Joint_position(Enum):
 class tableColumn(Enum):
     NA = -1
     STT = 0
-    S_col = 1
-    L_col = 2
-    U_col = 3
-    R_col = 4
-    B_col = 5
-    T_col = 6
+    X_col = 1
+    Y_col = 2
+    Z_col = 3
+    Roll_col = 4
+    Pitch_col = 5
+    Yaw_col = 6
 class tableColumn_2(Enum):
     NA = -1
     STT = 0
